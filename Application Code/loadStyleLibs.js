@@ -116,5 +116,6 @@ function loadCustomLibs(){
 module.exports = {
     "loadFonts": loadFonts(),
     "loadIcons": loadIcons(),
-    "loadCSS":loadCSS()
+    "loadCSS":loadCSS(),
+    "loadCustomCss":loadCustomLibs()
 }
