@@ -1,54 +1,14 @@
 /**
- * Register the user on the Smart Docs Users Datamodel
- * Make a Ajax Request to get the worker and then call update service 
+ * Check if the user exist on Smart Docs Users Datamodel
+ * Make a Ajax Request to get the worker and then call get smart users service
  */
-let userInformation = "No start";
 
-function registerUseronSmartDocs() {
-    let workerUserRegister = $.ajax({
-        method: "GET",
-        dataType: "script",
-        url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=0a558148-e0b1-411e-928e-ec031a352447&attachmentId=689823"
-    });
-    $.when(workerUserRegister).done(function (workerUserRegisterResponse) {
-        $('<script>')
-            .attr('type', 'javascript/worker')
-            .attr('id', 'workerUserRegister')
-            .text(workerUserRegisterResponse)
-            .appendTo('head');
-
-        let blob = new Blob([
-            $("#workerUserRegister").text()
-        ], { type: "text/javascript" })
-        var worker = new Worker(URL.createObjectURL(blob));
-
-        worker.addEventListener('message', function (e) {
-
-            console.log(e.data);
-            userInformation = "Worker Response Ok";
-            //reference.userRegister = e.data;
-            //reference.loadWorkerCurrentTime(true);
-            //reference.cleanConsole();
-        }, false);
-
-        worker.postMessage({ "username": username, "tenantId": tenantId }); // Send data to our worker.
-
-        console.log("Smart Register User has Loaded");
-
-    }).fail(function () {
-        console.log("Smart Register User has Failed");
-    });
-}
-
-
-module.exports = {
-    userInformation: "Nothing yet",
-    registerUser: function () {
-        let reference;
+function checkUserSmart() {
+    return new Promise(function (resolve, reject) {
         let workerUserRegister = $.ajax({
             method: "GET",
             dataType: "script",
-            url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=0a558148-e0b1-411e-928e-ec031a352447&attachmentId=689823"
+            url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=5a564cec-9b0e-4a96-a74a-2fbb9bbac180&attachmentId=fcd25cd8-9e5e-470d-8f33-3b5a51421a2f"
         });
         $.when(workerUserRegister).done(function (workerUserRegisterResponse) {
             $('<script>')
@@ -63,63 +23,60 @@ module.exports = {
             var worker = new Worker(URL.createObjectURL(blob));
 
             worker.addEventListener('message', function (e) {
-
-                console.log("Response: " + e.data);
-                reference.userInformation = "Data was chenged";
-                reference.getCurrentTime();
-                //reference.userRegister = e.data;
-                //reference.loadWorkerCurrentTime(true);
-                //reference.cleanConsole();
+                resolve(e.data);
             }, false);
 
-            worker.postMessage({ "username": username, "tenantId": tenantId }); // Send data to our worker.
+            worker.postMessage({ "username": username, "userId": USER_ID, "token": csrfToken, "tenantId": tenantId }); // Send data to our worker.
 
-            console.log("Smart Register User has Loaded");
+            console.log("[Wk] - Smart Register User has Loaded");
 
-        }).fail(function () {
-            console.log("Smart Register User has Failed");
+        }).fail(function (error) {
+            console.log("[Wk] - Smart Register User has Failed");
+            reject(error);
         });
-    },
-    currentTime: "",
-    getCurrentTime: function () {
-        let reference = this;
-        return new Promise(function (resolve, reject) {
-            let workerCurrentTime = $.ajax({
-                method: "GET",
-                dataType: "script",
-                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=14e84949-6f60-45ae-a265-ed28ae81ab0c&attachmentId=689745"
-            });
-            $.when(workerCurrentTime).done(function (workerCurrentTimeResponse) {
-                $('<script>')
-                    .attr('type', 'javascript/worker')
-                    .attr('id', 'workerCurrentTime')
-                    .text(workerCurrentTimeResponse)
-                    .appendTo('head');
+    });
+}
 
-                let blob = new Blob([
-                    $("#workerCurrentTime").text()
-                ], { type: "text/javascript" })
+/**
+ * Get the curren time on Local Time based on UTC Server Time 
+ * Make a Ajax Request to get the worker and then call currentTime service 
+ */
 
-                var worker = new Worker(URL.createObjectURL(blob));
-                worker.addEventListener('message', function (e) {
-                    //reference.currentTime = e.data;
-                    console.log(e.data);
-                    reference.currentTime = e.data;
-                    resolve(e.data);
-                }, false);
-
-                worker.postMessage({ "username": username, "tenantId": tenantId }); // Send data to our worker.
-
-                console.log("Current Time has Loaded");
-
-            }).fail(function (error) {
-                reject(error);
-                console.log("Current Time has Failed");
-            });
+function currentTime() {
+    return new Promise(function (resolve, reject) {
+        let workerCurrentTime = $.ajax({
+            method: "GET",
+            dataType: "script",
+            url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=425c4286-6102-43b0-9833-b151990734f5&attachmentId=19293cb6-5f7e-48a0-8e48-ab92abbfb207"
         });
+        $.when(workerCurrentTime).done(function (workerCurrentTimeResponse) {
+            $('<script>')
+                .attr('type', 'javascript/worker')
+                .attr('id', 'workerCurrentTime')
+                .text(workerCurrentTimeResponse)
+                .appendTo('head');
 
+            let blob = new Blob([
+                $("#workerCurrentTime").text()
+            ], { type: "text/javascript" })
 
-    },
-    passInformation: function () {
-    }
+            var worker = new Worker(URL.createObjectURL(blob));
+            worker.addEventListener('message', function (e) {
+                resolve(e.data);
+            }, false);
+
+            worker.postMessage({ "username": username, "userId": USER_ID, "token": csrfToken, "tenantId": tenantId }); // Send data to our worker.
+
+            console.log("[Wk] - Current Time has Loaded");
+
+        }).fail(function (error) {
+            reject(error);
+            console.log("[Wk] - Current Time has Failed");
+        });
+    });
+}
+
+module.exports = {
+    checkUserSmart: checkUserSmart(),
+    getCurrentTime: currentTime(),
 };
