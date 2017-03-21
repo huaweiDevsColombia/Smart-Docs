@@ -2,8 +2,8 @@ self.addEventListener('message', function (e) {
 
     var data = e.data;
     var http = new XMLHttpRequest();
-    var url = "https://100l-app.teleows.com/servicecreator/pageservices/service.do?forAccessLog={serviceName:co_sm_users_get,username:" + e.data.username + ",tenantId:" + e.data.tenantId + "}";
-    var params = "account_id=" + e.data.username + "&serviceId=co_sm_users_get";
+    var url = "https://100l-app.teleows.com/servicecreator/pageservices/service.do?forAccessLog={serviceName:co_sm_users_get,userId:" + e.data.userId + ",tenantId:" + e.data.tenantId + "}";
+    var params = "account_id=" + e.data.username + " &csrfToken="+e.data.token+"&serviceId=co_sm_users_get";
     http.open("POST", url, true);
 
     //Send the proper header information along with the request
