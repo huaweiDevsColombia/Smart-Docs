@@ -8,7 +8,8 @@ module.exports = {
         console.log("Message: " + msg);
         $("#" + selector).text(msg);
     },
-    removeMessageLoader: function (selector){
-        $("#"+selector).remove();
+    removeMessageLoader: function (location){
+        $("#loader").remove();
+        $(location).removeClass("loader");
     }
 }

@@ -55,7 +55,7 @@ module.exports = {
  * Load JS hierarchically - LoadLowJS
  * Bootstrap Datatables - buttonsDatatble - vs_fonts
  */
-    "LoadLowJS":function () {
+    "loadLowJS":function () {
     return new Promise(function (resolve, reject) {
         let bootstrapDataTables = $.ajax({
             method: "GET",
@@ -75,7 +75,7 @@ module.exports = {
             });
     });
 },
-    "loadLow2JS":function loadLowJS2(){
+    "loadLow2JS":function(){
      return new Promise(function (resolve, reject) {
         let buttonsDataTables = $.ajax({
             method: "GET",
