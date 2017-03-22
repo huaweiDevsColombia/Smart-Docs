@@ -1,8 +1,9 @@
-/**
+module.exports = {
+    /**
  * Load JS hierarchically - loadHighJS
  * bootstrap  
  */
-function loadHighJS() {
+    "loadHighJS":function () {
     return new Promise(function (resolve, reject) {
         let bootstrap = $.ajax({
             method: "GET",
@@ -15,12 +16,12 @@ function loadHighJS() {
             reject(error);
         });
     });
-}
+},
 /**
  * Load JS hierarchically - loadMediumJS
  * Boostrap Switch - JqueryMinHeight - Jquery Datatables
  */
-function loadMediumJS() {
+    "loadMediumJS": function loadMediumJS() {
     return new Promise(function (resolve, reject) {
         let bootstrapSwitch = $.ajax({
             method: "GET",
@@ -49,12 +50,12 @@ function loadMediumJS() {
                 reject(error);
             });
     });
-}
+},
 /**
  * Load JS hierarchically - LoadLowJS
  * Bootstrap Datatables - buttonsDatatble - vs_fonts
  */
-function loadLowJS() {
+    "LoadLowJS":function () {
     return new Promise(function (resolve, reject) {
         let bootstrapDataTables = $.ajax({
             method: "GET",
@@ -73,8 +74,8 @@ function loadLowJS() {
                 reject(error);
             });
     });
-}
-function loadLowJS2(){
+},
+    "loadLow2JS":function loadLowJS2(){
      return new Promise(function (resolve, reject) {
         let buttonsDataTables = $.ajax({
             method: "GET",
@@ -99,12 +100,12 @@ function loadLowJS2(){
                 reject(error);
             });
     });
-}
+},
 /**
  * Load Custom JS - OWS JS Datamodel
  * Smart Engine - Application
  */
-function loadcustomJS(){
+    "loadcustomJS":function(){
     return new Promise(function(resolve,reject){
         let smart_Engine = $.ajax({
                 method: "GET",
@@ -124,11 +125,4 @@ function loadcustomJS(){
                 });
     });
 }
-
-module.exports = {
-    "loadHighJS":loadHighJS(),
-    "loadMediumJS":loadMediumJS(),
-    "LoadLowJS":loadLowJS(),
-    "loadLow2JS":loadLowJS2(),
-    "loadcustomJS":loadcustomJS()
 }
