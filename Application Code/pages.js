@@ -55,17 +55,17 @@ module.exports = {
             });
         });
     },
-    bootstrapPage: function(page_id){
+    bootstrapPage: function (page_id) {
         let reference = this;
-        return new Promise(function(resolve,reject){
-            reference.filterPage(page_id).then(function(pageCode){
+        return new Promise(function (resolve, reject) {
+            reference.filterPage(page_id).then(function (pageCode) {
                 reference.changeMainContent(pageCode);
                 resolve();
-            }).catch(function (error){
+            }).catch(function (error) {
                 reject(error);
             });
         });
-    }, 
+    },
     changeMenuContent: function (pageCode) {
         $('body').append("<div class='app-container'><div class='row content-container'></div> </div>");
         $('body').addClass("flat-blue");
@@ -79,7 +79,7 @@ module.exports = {
     menuItems: function () {
         let items = [
             { id: "itemInicio", id_page: "page-004" },
-            { id: "itemTareas", id_page: "page-008"},
+            { id: "itemTareas", id_page: "page-008" },
             { id: "itemReportes", id_page: "page-014" },
             { id: "itemDeveloper", id_page: "" },
             { id: "itemTesting", id_page: "" },
@@ -92,14 +92,23 @@ module.exports = {
         let reference = this;
         for (let menu_item of reference.menuItems()) {
             $("#" + menu_item.id).click(function () {
-                reference.bootstrapPage(menu_item.id_page).then(function(){
+                reference.bootstrapPage(menu_item.id_page).then(function () {
                     reference.changeActiveMenu(menu_item.id);
                 });
             });
         }
     },
-    changeActiveMenu: function(id_page){
+    changeActiveMenu: function (id_page) {
         $(".active").removeClass("active");
-        $("#"+id).addClass("active");
+        $("#" + id).addClass("active");
+    },
+    showUserInformationNav: function (userInformation) {
+        $("#userFullname").text(userInformation.fullname);
+        $("#userFullname").append("<span class='caret'></span>");
+        $("#userRol").text(userInformation.userGroups);
+        $("#userGroup").text(userInformation.userGroup);
+        $("#explainUserGroup").text("Group Information");
+        $("#userAccount").text(userInformation.username);
+        $("#userEmail").text(userInformation.email);
     }
 }

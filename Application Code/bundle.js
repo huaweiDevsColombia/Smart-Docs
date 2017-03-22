@@ -127,7 +127,7 @@ module.exports = {
  * Load JS hierarchically - LoadLowJS
  * Bootstrap Datatables - buttonsDatatble - vs_fonts
  */
-    "LoadLowJS":function () {
+    "loadLowJS":function () {
     return new Promise(function (resolve, reject) {
         let bootstrapDataTables = $.ajax({
             method: "GET",
@@ -147,7 +147,7 @@ module.exports = {
             });
     });
 },
-    "loadLow2JS":function loadLowJS2(){
+    "loadLow2JS":function(){
      return new Promise(function (resolve, reject) {
         let buttonsDataTables = $.ajax({
             method: "GET",
@@ -369,6 +369,45 @@ function checkUserSmart() {
 }
 
 /**
+ * Get the information from Users Datamodel
+ * Make a Ajax Request to get the worker and then call get user service
+ */
+
+function getUserInformation() {
+    return new Promise(function (resolve, reject) {
+        let workerUserInformation = $.ajax({
+            method: "GET",
+            dataType: "script",
+            url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=3e9d8bc0-999e-434f-aeeb-dda673659611&attachmentId=88315474-b2b2-4751-9e8a-2ab077c8ac94"
+        });
+        $.when(workerUserInformation).done(function (workerUserInformationResponse) {
+            $('<script>')
+                .attr('type', 'javascript/worker')
+                .attr('id', 'workerUserInformation')
+                .text(workerUserInformationResponse)
+                .appendTo('head');
+
+            let blob = new Blob([
+                $("#workerUserInformation").text()
+            ], { type: "text/javascript" })
+            var worker = new Worker(URL.createObjectURL(blob));
+
+            worker.addEventListener('message', function (e) {
+                resolve(e.data);
+            }, false);
+
+            worker.postMessage({ "username": username, "userId": USER_ID, "token": csrfToken, "tenantId": tenantId }); // Send data to our worker.
+
+            console.log("[Wk] - User Information has Loaded");
+
+        }).fail(function (error) {
+            console.log("[Wk] - User Information User has Failed");
+            reject(error);
+        });
+    });
+}
+
+/**
  * Get the curren time on Local Time based on UTC Server Time 
  * Make a Ajax Request to get the worker and then call currentTime service 
  */
@@ -410,6 +449,7 @@ function currentTime() {
 module.exports = {
     checkUserSmart: checkUserSmart(),
     getCurrentTime: currentTime(),
+    getUserInformation: getUserInformation()
 };
 
 /***/ }),
@@ -493,17 +533,17 @@ module.exports = {
             });
         });
     },
-    bootstrapPage: function(page_id){
+    bootstrapPage: function (page_id) {
         let reference = this;
-        return new Promise(function(resolve,reject){
-            reference.filterPage(page_id).then(function(pageCode){
+        return new Promise(function (resolve, reject) {
+            reference.filterPage(page_id).then(function (pageCode) {
                 reference.changeMainContent(pageCode);
                 resolve();
-            }).catch(function (error){
+            }).catch(function (error) {
                 reject(error);
             });
         });
-    }, 
+    },
     changeMenuContent: function (pageCode) {
         $('body').append("<div class='app-container'><div class='row content-container'></div> </div>");
         $('body').addClass("flat-blue");
@@ -517,7 +557,7 @@ module.exports = {
     menuItems: function () {
         let items = [
             { id: "itemInicio", id_page: "page-004" },
-            { id: "itemTareas", id_page: "page-008"},
+            { id: "itemTareas", id_page: "page-008" },
             { id: "itemReportes", id_page: "page-014" },
             { id: "itemDeveloper", id_page: "" },
             { id: "itemTesting", id_page: "" },
@@ -530,15 +570,24 @@ module.exports = {
         let reference = this;
         for (let menu_item of reference.menuItems()) {
             $("#" + menu_item.id).click(function () {
-                reference.bootstrapPage(menu_item.id_page).then(function(){
+                reference.bootstrapPage(menu_item.id_page).then(function () {
                     reference.changeActiveMenu(menu_item.id);
                 });
             });
         }
     },
-    changeActiveMenu: function(id_page){
+    changeActiveMenu: function (id_page) {
         $(".active").removeClass("active");
-        $("#"+id).addClass("active");
+        $("#" + id).addClass("active");
+    },
+    showUserInformationNav: function (userInformation) {
+        $("#userFullname").text(userInformation.fullname);
+        $("#userFullname").append("<span class='caret'></span>");
+        $("#userRol").text(userInformation.userGroups);
+        $("#userGroup").text(userInformation.userGroup);
+        $("#explainUserGroup").text("Group Information");
+        $("#userAccount").text(userInformation.username);
+        $("#userEmail").text(userInformation.email);
     }
 }
 
@@ -566,7 +615,8 @@ $(function () {
                 reference.userRegisterOnSmart = (Object.keys(data).length === 0);
                 console.log("Check User Smart:" + reference.userRegisterOnSmart);
             });
-            message.addMessageLoder("pageLoaderContent", "body");
+
+            message.addMessageLoder("pageLoaderContent","body");
             cssLibs.loadFonts.then(function () {
                 console.log("Fonts libs were loaded");
                 message.changeMessageLoader("pageLoaderContent", "Fonts Libs were loaded");
@@ -582,29 +632,31 @@ $(function () {
             }).then(function () {
                 console.log("CSS Custom Libs were loaded");
                 message.changeMessageLoader("pageLoaderContent", "CSS Custom Libs were loaded");
-                return jsLibs.loadHighJS;
+                return jsLibs.loadHighJS();
             }).then(function () {
                 console.log("High JS were loaded");
                 message.changeMessageLoader("pageLoaderContent", "High JS were loaded");
-                return jsLibs.loadMediumJS;
+                return jsLibs.loadMediumJS();
             }).then(function () {
                 console.log("JS Medium Libs were loaded");
                 message.changeMessageLoader("pageLoaderContent", "JS Medium Libs were loaded");
-                return jsLibs.LoadLowJS;
+                return jsLibs.loadLowJS();
             }).then(function () {
                 console.log("JS Low Libs were loaded");
                 message.changeMessageLoader("pageLoaderContent", "JS Low Libs were loaded");
-                return jsLibs.LoadLowJS2;
+                return jsLibs.loadLow2JS();
             }).then(function () {
                 console.log("JS Low 2 were loaded");
-                message.changeMessageLoader("pageLoaderContent", "JS Low 2 were loaded");
-            }).then(function () {
-                console.log("Js High was loader");
-                message.changeMessageLoader("pageLoaderContent", "Js High was loaded");
+                message.changeMessageLoader("pageLoaderContent", "Js Low 2  were loaded");
                 return pages.loadAllPages();
             }).then(function (data) {
                 message.changeMessageLoader("pageLoaderContent", "Pages were loaded");
                 pages.bootstrapMenu("page-022").then(function () {
+                    return workers.getUserInformation;
+                }).then(function (data) {
+                    message.changeMessageLoader("pageLoaderContent", "User Information was loaded");
+                    reference.userInformation = JSON.parse(data).result;
+                    pages.showUserInformationNav(reference.userInformation);
                     message.removeMessageLoader("body");
                 });
             })
@@ -615,6 +667,7 @@ $(function () {
         },
         userRegisterOnSmart: "",
         currentTime: "",
+        userInformation: ""
     }
 
     smart.onInit();

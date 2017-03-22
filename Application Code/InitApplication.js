@@ -18,7 +18,8 @@ $(function () {
                 reference.userRegisterOnSmart = (Object.keys(data).length === 0);
                 console.log("Check User Smart:" + reference.userRegisterOnSmart);
             });
-            message.addMessageLoder("pageLoaderContent", "body");
+
+            message.addMessageLoder("pageLoaderContent","body");
             cssLibs.loadFonts.then(function () {
                 console.log("Fonts libs were loaded");
                 message.changeMessageLoader("pageLoaderContent", "Fonts Libs were loaded");
@@ -34,29 +35,31 @@ $(function () {
             }).then(function () {
                 console.log("CSS Custom Libs were loaded");
                 message.changeMessageLoader("pageLoaderContent", "CSS Custom Libs were loaded");
-                return jsLibs.loadHighJS;
+                return jsLibs.loadHighJS();
             }).then(function () {
                 console.log("High JS were loaded");
                 message.changeMessageLoader("pageLoaderContent", "High JS were loaded");
-                return jsLibs.loadMediumJS;
+                return jsLibs.loadMediumJS();
             }).then(function () {
                 console.log("JS Medium Libs were loaded");
                 message.changeMessageLoader("pageLoaderContent", "JS Medium Libs were loaded");
-                return jsLibs.LoadLowJS;
+                return jsLibs.loadLowJS();
             }).then(function () {
                 console.log("JS Low Libs were loaded");
                 message.changeMessageLoader("pageLoaderContent", "JS Low Libs were loaded");
-                return jsLibs.LoadLowJS2;
+                return jsLibs.loadLow2JS();
             }).then(function () {
                 console.log("JS Low 2 were loaded");
-                message.changeMessageLoader("pageLoaderContent", "JS Low 2 were loaded");
-            }).then(function () {
-                console.log("Js High was loader");
-                message.changeMessageLoader("pageLoaderContent", "Js High was loaded");
+                message.changeMessageLoader("pageLoaderContent", "Js Low 2  were loaded");
                 return pages.loadAllPages();
             }).then(function (data) {
                 message.changeMessageLoader("pageLoaderContent", "Pages were loaded");
                 pages.bootstrapMenu("page-022").then(function () {
+                    return workers.getUserInformation;
+                }).then(function (data) {
+                    message.changeMessageLoader("pageLoaderContent", "User Information was loaded");
+                    reference.userInformation = JSON.parse(data).result;
+                    pages.showUserInformationNav(reference.userInformation);
                     message.removeMessageLoader("body");
                 });
             })
@@ -67,6 +70,7 @@ $(function () {
         },
         userRegisterOnSmart: "",
         currentTime: "",
+        userInformation: ""
     }
 
     smart.onInit();
