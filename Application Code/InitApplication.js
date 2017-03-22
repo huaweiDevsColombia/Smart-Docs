@@ -3,7 +3,7 @@ $(function () {
     let cssLibs = require("./loadStyleLibs");
     let jsLibs = require("./loadJSLibs");
     let pages = require("./loadPages");
-
+    let message = require("./messages");
 
     let smart = {
         onInit: function () {
@@ -17,58 +17,51 @@ $(function () {
                 reference.userRegisterOnSmart = (Object.keys(data).length === 0);
                 console.log("Check User Smart:" + reference.userRegisterOnSmart);
             });
-            reference.addMessageLoder();
+            message.addMessageLoder("pageLoaderContent","body");
             cssLibs.loadFonts.then(function () {
                 console.log("Fonts libs were loaded");
-                reference.changeMessageLoader("loaderContent", "Fonts Libs were loaded");
+                message.changeMessageLoader("pageLoaderContent", "Fonts Libs were loaded");
                 return cssLibs.loadIcons;
             }).then(function () {
                 console.log("Icons libs were loaded");
-                reference.changeMessageLoader("loaderContent", "Icons libs were loaded");
+                message.changeMessageLoader("pageLoaderContent", "Icons libs were loaded");
                 return cssLibs.loadCSS;
             }).then(function () {
                 console.log("CSS Libs were loaded");
-                reference.changeMessageLoader("loaderContent", "CSS Libs were loaded");
+                message.changeMessageLoader("pageLoaderContent", "CSS Libs were loaded");
                 return cssLibs.loadCustomCss;
             }).then(function () {
                 console.log("CSS Custom Libs were loaded");
-                reference.changeMessageLoader("loaderContent", "CSS Custom Libs were loaded");
+                message.changeMessageLoader("pageLoaderContent", "CSS Custom Libs were loaded");
                 return jsLibs.loadHighJS;
             }).then(function () {
                 console.log("High JS were loaded");
-                reference.changeMessageLoader("loaderContent", "High JS were loaded");
+                message.changeMessageLoader("pageLoaderContent", "High JS were loaded");
                 return jsLibs.loadMediumJS;
             }).then(function () {
                 console.log("JS Medium Libs were loaded");
-                reference.changeMessageLoader("loaderContent", "JS Medium Libs were loaded");
+                message.changeMessageLoader("pageLoaderContent", "JS Medium Libs were loaded");
                 return jsLibs.LoadLowJS;
             }).then(function () {
                 console.log("JS Low Libs were loaded");
-                reference.changeMessageLoader("loaderContent", "JS Low Libs were loaded");
+                message.changeMessageLoader("pageLoaderContent", "JS Low Libs were loaded");
                 return jsLibs.LoadLowJS2;
             }).then(function () {
                 console.log("JS Low 2 were loaded");
-                reference.changeMessageLoader("loaderContent", "JS Low 2 were loaded");
+                message.changeMessageLoader("pageLoaderContent", "JS Low 2 were loaded");
             }).then(function () {
                 console.log("Js High was loader");
-                reference.changeMessageLoader("loaderContent", "Js High was loaded");
+                message.changeMessageLoader("pageLoaderContent", "Js High was loaded");
                 return pages.loadAllPages;
             }).then(function (data) {
-                reference.changeMessageLoader("loaderContent", "Pages were loaded");
+                message.changeMessageLoader("pageLoaderContent", "Pages were loaded");
                 reference.pages = data;
                 reference.bootstrapMenu("page-022");
             })
                 .catch(function (error) {
                     console.log(error);
-                    reference.changeMessageLoader("loaderContent", "Ha ocurrido un error: "+ error);
+                    message.changeMessageLoader("pageLoaderContent", "Ha ocurrido un error: "+ JSON.stringify (error));
                 });
-        },
-        addMessageLoder: function () {
-            $("body").addClass("loader");
-            $("body").append("<div id='loader' class='loader-container text-center color-white'><div><i style='color:white' class='fa fa-spinner fa-pulse fa-3x'></i></div><div style='color:white'><h4>Smart Docs <br> <small> Cargando Recursos <div id='loaderContent'> </div> </small> <br><small>... Se esta preparando para ti ...</small></h4><h5>Desarollado por: Huawei Colombia  <br> OSS IT Team </h5></div></div>");
-        },
-        changeMessageLoader: function (selector, msg) {
-            $("#" + selector).text(msg);
         },
         userRegisterOnSmart: "",
         currentTime: "",
