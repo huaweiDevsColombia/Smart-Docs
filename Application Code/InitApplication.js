@@ -5,7 +5,6 @@ $(function () {
     let message = require("./messages");
     let pages = require("./pages");
 
-
     let smart = {
         onInit: function () {
             let reference = this;
@@ -65,14 +64,13 @@ $(function () {
                     }
                     reference.userGroups = userGroupsEdited;
                     console.log("User Groups: " + reference.userGroups);
-                    reference.grantPermissions(reference.userGroups);
                     return workers.getUserInformation;
                 })
                     .then(function (data) {
                         message.changeMessageLoader("pageLoaderContent", "User Information was loaded");
                         reference.userInformation = JSON.parse(data).result;
                         pages.showUserInformationNav(reference.userInformation);
-                        message.removeMessageLoader("body");
+                        reference.grantPermissions(reference.userGroups);
                     });
             })
                 .catch(function (error) {
@@ -84,7 +82,7 @@ $(function () {
         currentTime: "",
         userInformation: "",
         userGroups: "",
-        userGroup:"",
+        userGroup: "",
         groupSelected: "",
         grantPermissions: function (userGroups) {
             let reference = this;
@@ -108,7 +106,8 @@ $(function () {
                     break;
                 //Dev
                 case "0-0-0-1":
-                    //reference.userGroup = "Developer";
+                    reference.userGroup = "Developer";
+                    reference.openSmatApp();
                     //reference.loadMainMenu();
                     break;
                 //Adm-Dev
@@ -139,11 +138,13 @@ $(function () {
                 //Adm
                 case "0-0-1-0":
                     reference.userGroup = "Admin";
+                    reference.openSmatApp();
                     //reference.loadMainMenu();
                     break;
                 //Qua
                 case "0-1-0-0":
-                    //reference.userGroup = "Quality";
+                    reference.userGroup = "Quality";
+                    reference.openSmatApp();
                     //reference.loadMainMenu();
                     break;
                 //All
@@ -170,7 +171,8 @@ $(function () {
                     break;
                 //Fme
                 case "1-0-0-0":
-                    //reference.userGroup = "FME";
+                    reference.userGroup = "FME";
+                    reference.openSmatApp();
                     //reference.loadWorkerAllTickets();
                     break;
                 //Fme-Adm
@@ -217,10 +219,22 @@ $(function () {
                 reference.userGroup = groupSelected;
                 $("#userGroup").text(groupSelected);
                 $("#groupError").modal('hide');
+                reference.openSmatApp();
             });
             $("#groupError").modal({ backdrop: 'static', keyboard: false });
+        },
+        openSmatApp: function () {
+            let reference = this;
+            pages.hideMenuItems(reference.userGroup);
+            message.removeMessageLoader("body");
         }
     }
 
     smart.onInit();
+
 });
+
+    module.exports = {
+        userGroup : smart.userGroup,
+        userGroups: smart.userGroups
+    }

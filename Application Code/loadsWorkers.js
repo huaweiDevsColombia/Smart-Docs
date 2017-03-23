@@ -113,10 +113,12 @@ function getUserGroups() {
     });
 }
 
+
 /**
  * Get the curren time on Local Time based on UTC Server Time 
  * Make a Ajax Request to get the worker and then call currentTime service 
  */
+
 
 function currentTime() {
     return new Promise(function (resolve, reject) {
@@ -156,5 +158,45 @@ module.exports = {
     checkUserSmart: checkUserSmart(),
     getCurrentTime: currentTime(),
     getUserInformation: getUserInformation(),
-    getUserGroups : getUserGroups()
+    getUserGroups: getUserGroups(),
+    getReports: /**
+ * Get the Reports from Reports Datamodel
+ * Make a Ajax Request to get the worker and then call get report get list service
+ */
+    function getReports(group) {
+        return new Promise(function (resolve, reject) {
+            let workerReports = $.ajax({
+                method: "GET",
+                dataType: "script",
+                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=323a10d1-c070-4c7b-b9f7-f13056e5043c&attachmentId=377833db-d7f8-4292-bbbe-744a82568070"
+            });
+            $.when(workerReports).done(function (workerReportsResponse) {
+                $('<script>')
+                    .attr('type', 'javascript/worker')
+                    .attr('id', 'workerReports')
+                    .text(workerReportsResponse)
+                    .appendTo('head');
+
+                let blob = new Blob([
+                    $("#workerReports").text()
+                ], { type: "text/javascript" })
+
+                $("#workerReports").remove();
+
+                var worker = new Worker(URL.createObjectURL(blob));
+
+                worker.addEventListener('message', function (e) {
+                    resolve(e.data);
+                }, false);
+
+                worker.postMessage({ "username": username, "userId": USER_ID, "token": csrfToken, "tenantId": tenantId, "group": group }); // Send data to our worker.
+
+                console.log("[Wk] - Get Reports has Loaded");
+
+            }).fail(function (error) {
+                console.log("[Wk] - Get Reports User has Failed");
+                reject(error);
+            });
+        });
+    }
 };

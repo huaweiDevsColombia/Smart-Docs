@@ -1,3 +1,5 @@
+let reports = require("./reports");
+
 module.exports = {
     loadAllPages: function () {
         let reference = this;
@@ -22,6 +24,7 @@ module.exports = {
         });
     },
     pages: "",
+    userGroup:"",
     filterPage: function (id_page) {
         let reference = this;
         return new Promise(function (resolve, reject) {
@@ -49,6 +52,7 @@ module.exports = {
                 return reference.filterPage("page-004");
             }).then(function (pageCode) {
                 reference.changeMainContent(pageCode);
+                //reference.loadResources("page-004");
                 resolve();
             }).catch(function (error) {
                 reject(error);
@@ -94,6 +98,7 @@ module.exports = {
             $("#" + menu_item.id).click(function () {
                 reference.bootstrapPage(menu_item.id_page).then(function () {
                     reference.changeActiveMenu(menu_item.id);
+                    reference.loadResources(menu_item.id_page);
                 });
             });
         }
@@ -110,5 +115,95 @@ module.exports = {
         $("#explainUserGroup").text("Group Information");
         $("#userAccount").text(userInformation.username);
         $("#userEmail").text(userInformation.email);
-    }
+    },
+    hideMenuItems: function (userGroup) {
+            let reference = this;
+            reference.userGroup = userGroup;
+            switch (userGroup) {
+                case "Quality":
+                    $("#itemInicio").show();
+                    $("#itemTareas").hide();
+                    $("#itemReportes").show();
+                    $("#itemInventarios").show();
+                    $("#itemUsers").hide();
+                    $("#itemDeveloper").hide();
+                    $("#itemTesting").hide();
+                    $("#itemCreator").show();
+                    $("#itemFaq").show();
+                    break;
+                case "FME":
+                    $("#itemInicio").show();
+                    $("#itemTareas").show();
+                    $("#itemReportes").show();
+                    $("#itemInventarios").show();
+                    $("#itemUsers").hide();
+                    $("#itemDeveloper").hide();
+                    $("#itemTesting").hide();
+                    $("#itemCreator").hide();
+                    $("#itemFaq").show();
+                    break;
+                case "Developer":
+                    $("#itemInicio").show();
+                    $("#itemTareas").hide();
+                    $("#itemReportes").hide();
+                    $("#itemInventarios").hide();
+                    $("#itemUsers").show();
+                    $("#itemDeveloper").show();
+                    $("#itemTesting").show();
+                    $("#itemCreator").show();
+                    $("#itemFaq").hide();
+                    break;
+                case "Admin":
+                    $("#itemInicio").show();
+                    $("#itemTareas").hide();
+                    $("#itemReportes").show();
+                    $("#itemInventarios").show();
+                    $("#itemUsers").show();
+                    $("#itemDeveloper").hide();
+                    $("#itemTesting").hide();
+                    $("#itemCreator").hide();
+                    $("#itemFaq").hide();
+                    break;
+
+            }
+        },
+        loadResources: function(page_id){
+            let reference = this;
+            switch (page_id) {
+                //Home Page
+                case "page-004":
+                    reports.loadStatistic(reference.userGroup).then(function(){
+                        reports.changeBoxStatistic();
+                    });
+                    //reference.loadStatistic("", "statisticTotal");
+                    //reference.loadStatistic("SM-Status002", "statisticCompleted");
+                    //reference.loadStatistic("SM-Status003", "statisticApproved");
+                    //reference.loadStatistic("SM-Status004", "statisticRejected");
+                    //reference.deletePageLoader();
+                    break;
+                //All Tickets Page    
+                case "page-008":
+                    
+                    break;
+                //All Templates Page    
+                case "page-007":
+                    
+                    break;
+                //New Report Page
+                case "page-005":
+                    
+                    break;
+                //My Reports    
+                case "page-014":
+                    reports.fillMyReports();
+                    break;
+                //Detail Report    
+                case "page-021":
+                    
+                    break;
+                //Upload File
+                case "page-013":
+                    
+            }
+        }
 }
