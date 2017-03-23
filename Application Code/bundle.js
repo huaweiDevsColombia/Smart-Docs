@@ -63,11 +63,258 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 5);
+/******/ 	return __webpack_require__(__webpack_require__.s = 6);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports) {
+
+/**
+ * Check if the user exist on Smart Docs Users Datamodel
+ * Make a Ajax Request to get the worker and then call get smart users service
+ */
+
+function checkUserSmart() {
+    return new Promise(function (resolve, reject) {
+        let workerUserRegister = $.ajax({
+            method: "GET",
+            dataType: "script",
+            url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=5a564cec-9b0e-4a96-a74a-2fbb9bbac180&attachmentId=fcd25cd8-9e5e-470d-8f33-3b5a51421a2f"
+        });
+        $.when(workerUserRegister).done(function (workerUserRegisterResponse) {
+            $('<script>')
+                .attr('type', 'javascript/worker')
+                .attr('id', 'workerUserRegister')
+                .text(workerUserRegisterResponse)
+                .appendTo('head');
+
+            let blob = new Blob([
+                $("#workerUserRegister").text()
+            ], { type: "text/javascript" })
+            var worker = new Worker(URL.createObjectURL(blob));
+
+            worker.addEventListener('message', function (e) {
+                resolve(e.data);
+            }, false);
+
+            worker.postMessage({ "username": username, "userId": USER_ID, "token": csrfToken, "tenantId": tenantId }); // Send data to our worker.
+
+            console.log("[Wk] - Smart Register User has Loaded");
+
+        }).fail(function (error) {
+            console.log("[Wk] - Smart Register User has Failed");
+            reject(error);
+        });
+    });
+}
+
+/**
+ * Get the information from Users Datamodel
+ * Make a Ajax Request to get the worker and then call get user service
+ */
+function getUserInformation() {
+    return new Promise(function (resolve, reject) {
+        let workerUserInformation = $.ajax({
+            method: "GET",
+            dataType: "script",
+            url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=3e9d8bc0-999e-434f-aeeb-dda673659611&attachmentId=88315474-b2b2-4751-9e8a-2ab077c8ac94"
+        });
+        $.when(workerUserInformation).done(function (workerUserInformationResponse) {
+            $('<script>')
+                .attr('type', 'javascript/worker')
+                .attr('id', 'workerUserInformation')
+                .text(workerUserInformationResponse)
+                .appendTo('head');
+
+            let blob = new Blob([
+                $("#workerUserInformation").text()
+            ], { type: "text/javascript" })
+            var worker = new Worker(URL.createObjectURL(blob));
+
+            worker.addEventListener('message', function (e) {
+                resolve(e.data);
+            }, false);
+
+            worker.postMessage({ "username": username, "userId": USER_ID, "token": csrfToken, "tenantId": tenantId }); // Send data to our worker.
+
+            console.log("[Wk] - User Information has Loaded");
+
+        }).fail(function (error) {
+            console.log("[Wk] - User Information User has Failed");
+            reject(error);
+        });
+    });
+}
+
+/**
+ * Get the Groups from Users Groups Datamodel
+ * Make a Ajax Request to get the worker and then call get user groups service
+ */
+function getUserGroups() {
+    return new Promise(function (resolve, reject) {
+        let workerUserGroups = $.ajax({
+            method: "GET",
+            dataType: "script",
+            url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=77d6e69f-f30e-4519-804e-65e5ec407dbf&attachmentId=350e4762-971a-4651-a771-b326b710f0eb"
+        });
+        $.when(workerUserGroups).done(function (workerUserGroupsResponse) {
+            $('<script>')
+                .attr('type', 'javascript/worker')
+                .attr('id', 'workerUserGroups')
+                .text(workerUserGroupsResponse)
+                .appendTo('head');
+
+            let blob = new Blob([
+                $("#workerUserGroups").text()
+            ], { type: "text/javascript" })
+            var worker = new Worker(URL.createObjectURL(blob));
+
+            worker.addEventListener('message', function (e) {
+                resolve(e.data);
+            }, false);
+
+            worker.postMessage({ "username": username, "userId": USER_ID, "token": csrfToken, "tenantId": tenantId }); // Send data to our worker.
+
+            console.log("[Wk] - User Information has Loaded");
+
+        }).fail(function (error) {
+            console.log("[Wk] - User Information User has Failed");
+            reject(error);
+        });
+    });
+}
+
+
+/**
+ * Get the curren time on Local Time based on UTC Server Time 
+ * Make a Ajax Request to get the worker and then call currentTime service 
+ */
+
+
+function currentTime() {
+    return new Promise(function (resolve, reject) {
+        let workerCurrentTime = $.ajax({
+            method: "GET",
+            dataType: "script",
+            url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=425c4286-6102-43b0-9833-b151990734f5&attachmentId=19293cb6-5f7e-48a0-8e48-ab92abbfb207"
+        });
+        $.when(workerCurrentTime).done(function (workerCurrentTimeResponse) {
+            $('<script>')
+                .attr('type', 'javascript/worker')
+                .attr('id', 'workerCurrentTime')
+                .text(workerCurrentTimeResponse)
+                .appendTo('head');
+
+            let blob = new Blob([
+                $("#workerCurrentTime").text()
+            ], { type: "text/javascript" })
+
+            var worker = new Worker(URL.createObjectURL(blob));
+            worker.addEventListener('message', function (e) {
+                resolve(e.data);
+            }, false);
+
+            worker.postMessage({ "username": username, "userId": USER_ID, "token": csrfToken, "tenantId": tenantId }); // Send data to our worker.
+
+            console.log("[Wk] - Current Time has Loaded");
+
+        }).fail(function (error) {
+            reject(error);
+            console.log("[Wk] - Current Time has Failed");
+        });
+    });
+}
+
+module.exports = {
+    checkUserSmart: checkUserSmart(),
+    getCurrentTime: currentTime(),
+    getUserInformation: getUserInformation(),
+    getUserGroups: getUserGroups(),
+    getReports: /**
+ * Get the Reports from Reports Datamodel
+ * Make a Ajax Request to get the worker and then call get report get list service
+ */
+    function getReports(group) {
+        return new Promise(function (resolve, reject) {
+            let workerReports = $.ajax({
+                method: "GET",
+                dataType: "script",
+                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=323a10d1-c070-4c7b-b9f7-f13056e5043c&attachmentId=377833db-d7f8-4292-bbbe-744a82568070"
+            });
+            $.when(workerReports).done(function (workerReportsResponse) {
+                $('<script>')
+                    .attr('type', 'javascript/worker')
+                    .attr('id', 'workerReports')
+                    .text(workerReportsResponse)
+                    .appendTo('head');
+
+                let blob = new Blob([
+                    $("#workerReports").text()
+                ], { type: "text/javascript" })
+
+                $("#workerReports").remove();
+
+                var worker = new Worker(URL.createObjectURL(blob));
+
+                worker.addEventListener('message', function (e) {
+                    resolve(e.data);
+                }, false);
+
+                worker.postMessage({ "username": username, "userId": USER_ID, "token": csrfToken, "tenantId": tenantId, "group": group }); // Send data to our worker.
+
+                console.log("[Wk] - Get Reports has Loaded");
+
+            }).fail(function (error) {
+                console.log("[Wk] - Get Reports User has Failed");
+                reject(error);
+            });
+        });
+    },
+     getTickets: /**
+ * Get the Tickets from Reports Datamodel
+ * Make a Ajax Request to get the worker and then call get tickets get list service
+ */
+    function getTickets() {
+        return new Promise(function (resolve, reject) {
+            let workerTickets = $.ajax({
+                method: "GET",
+                dataType: "script",
+                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=36b8f29d-79cf-488a-9e6d-70d118e81dec&attachmentId=689fcf33-651c-4345-bf20-97c738c2dc13"
+            });
+            $.when(workerTickets).done(function (workerTicketsResponse) {
+                $('<script>')
+                    .attr('type', 'javascript/worker')
+                    .attr('id', 'workerTickets')
+                    .text(workerTicketsResponse)
+                    .appendTo('head');
+
+                let blob = new Blob([
+                    $("#workerTickets").text()
+                ], { type: "text/javascript" })
+
+                $("#workerTickets").remove();
+
+                var worker = new Worker(URL.createObjectURL(blob));
+
+                worker.addEventListener('message', function (e) {
+                    resolve(e.data);
+                }, false);
+
+                worker.postMessage({ "username": username, "userId": USER_ID, "token": csrfToken, "tenantId": tenantId }); // Send data to our worker.
+
+                console.log("[Wk] - Get Tickets has Loaded");
+
+            }).fail(function (error) {
+                console.log("[Wk] - Get Tickets has Failed");
+                reject(error);
+            });
+        });
+    }
+};
+
+/***/ }),
+/* 1 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -200,7 +447,7 @@ module.exports = {
 }
 
 /***/ }),
-/* 1 */
+/* 2 */
 /***/ (function(module, exports) {
 
 /**
@@ -326,171 +573,6 @@ module.exports = {
 }
 
 /***/ }),
-/* 2 */
-/***/ (function(module, exports) {
-
-/**
- * Check if the user exist on Smart Docs Users Datamodel
- * Make a Ajax Request to get the worker and then call get smart users service
- */
-
-function checkUserSmart() {
-    return new Promise(function (resolve, reject) {
-        let workerUserRegister = $.ajax({
-            method: "GET",
-            dataType: "script",
-            url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=5a564cec-9b0e-4a96-a74a-2fbb9bbac180&attachmentId=fcd25cd8-9e5e-470d-8f33-3b5a51421a2f"
-        });
-        $.when(workerUserRegister).done(function (workerUserRegisterResponse) {
-            $('<script>')
-                .attr('type', 'javascript/worker')
-                .attr('id', 'workerUserRegister')
-                .text(workerUserRegisterResponse)
-                .appendTo('head');
-
-            let blob = new Blob([
-                $("#workerUserRegister").text()
-            ], { type: "text/javascript" })
-            var worker = new Worker(URL.createObjectURL(blob));
-
-            worker.addEventListener('message', function (e) {
-                resolve(e.data);
-            }, false);
-
-            worker.postMessage({ "username": username, "userId": USER_ID, "token": csrfToken, "tenantId": tenantId }); // Send data to our worker.
-
-            console.log("[Wk] - Smart Register User has Loaded");
-
-        }).fail(function (error) {
-            console.log("[Wk] - Smart Register User has Failed");
-            reject(error);
-        });
-    });
-}
-
-/**
- * Get the information from Users Datamodel
- * Make a Ajax Request to get the worker and then call get user service
- */
-function getUserInformation() {
-    return new Promise(function (resolve, reject) {
-        let workerUserInformation = $.ajax({
-            method: "GET",
-            dataType: "script",
-            url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=3e9d8bc0-999e-434f-aeeb-dda673659611&attachmentId=88315474-b2b2-4751-9e8a-2ab077c8ac94"
-        });
-        $.when(workerUserInformation).done(function (workerUserInformationResponse) {
-            $('<script>')
-                .attr('type', 'javascript/worker')
-                .attr('id', 'workerUserInformation')
-                .text(workerUserInformationResponse)
-                .appendTo('head');
-
-            let blob = new Blob([
-                $("#workerUserInformation").text()
-            ], { type: "text/javascript" })
-            var worker = new Worker(URL.createObjectURL(blob));
-
-            worker.addEventListener('message', function (e) {
-                resolve(e.data);
-            }, false);
-
-            worker.postMessage({ "username": username, "userId": USER_ID, "token": csrfToken, "tenantId": tenantId }); // Send data to our worker.
-
-            console.log("[Wk] - User Information has Loaded");
-
-        }).fail(function (error) {
-            console.log("[Wk] - User Information User has Failed");
-            reject(error);
-        });
-    });
-}
-
-/**
- * Get the Groups from Users Groups Datamodel
- * Make a Ajax Request to get the worker and then call get user groups service
- */
-function getUserGroups() {
-    return new Promise(function (resolve, reject) {
-        let workerUserGroups = $.ajax({
-            method: "GET",
-            dataType: "script",
-            url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=77d6e69f-f30e-4519-804e-65e5ec407dbf&attachmentId=350e4762-971a-4651-a771-b326b710f0eb"
-        });
-        $.when(workerUserGroups).done(function (workerUserGroupsResponse) {
-            $('<script>')
-                .attr('type', 'javascript/worker')
-                .attr('id', 'workerUserGroups')
-                .text(workerUserGroupsResponse)
-                .appendTo('head');
-
-            let blob = new Blob([
-                $("#workerUserGroups").text()
-            ], { type: "text/javascript" })
-            var worker = new Worker(URL.createObjectURL(blob));
-
-            worker.addEventListener('message', function (e) {
-                resolve(e.data);
-            }, false);
-
-            worker.postMessage({ "username": username, "userId": USER_ID, "token": csrfToken, "tenantId": tenantId }); // Send data to our worker.
-
-            console.log("[Wk] - User Information has Loaded");
-
-        }).fail(function (error) {
-            console.log("[Wk] - User Information User has Failed");
-            reject(error);
-        });
-    });
-}
-
-/**
- * Get the curren time on Local Time based on UTC Server Time 
- * Make a Ajax Request to get the worker and then call currentTime service 
- */
-
-function currentTime() {
-    return new Promise(function (resolve, reject) {
-        let workerCurrentTime = $.ajax({
-            method: "GET",
-            dataType: "script",
-            url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=425c4286-6102-43b0-9833-b151990734f5&attachmentId=19293cb6-5f7e-48a0-8e48-ab92abbfb207"
-        });
-        $.when(workerCurrentTime).done(function (workerCurrentTimeResponse) {
-            $('<script>')
-                .attr('type', 'javascript/worker')
-                .attr('id', 'workerCurrentTime')
-                .text(workerCurrentTimeResponse)
-                .appendTo('head');
-
-            let blob = new Blob([
-                $("#workerCurrentTime").text()
-            ], { type: "text/javascript" })
-
-            var worker = new Worker(URL.createObjectURL(blob));
-            worker.addEventListener('message', function (e) {
-                resolve(e.data);
-            }, false);
-
-            worker.postMessage({ "username": username, "userId": USER_ID, "token": csrfToken, "tenantId": tenantId }); // Send data to our worker.
-
-            console.log("[Wk] - Current Time has Loaded");
-
-        }).fail(function (error) {
-            reject(error);
-            console.log("[Wk] - Current Time has Failed");
-        });
-    });
-}
-
-module.exports = {
-    checkUserSmart: checkUserSmart(),
-    getCurrentTime: currentTime(),
-    getUserInformation: getUserInformation(),
-    getUserGroups : getUserGroups()
-};
-
-/***/ }),
 /* 3 */
 /***/ (function(module, exports) {
 
@@ -512,7 +594,9 @@ module.exports = {
 
 /***/ }),
 /* 4 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
+
+let reports = __webpack_require__(5);
 
 module.exports = {
     loadAllPages: function () {
@@ -538,6 +622,7 @@ module.exports = {
         });
     },
     pages: "",
+    userGroup: "",
     filterPage: function (id_page) {
         let reference = this;
         return new Promise(function (resolve, reject) {
@@ -565,6 +650,7 @@ module.exports = {
                 return reference.filterPage("page-004");
             }).then(function (pageCode) {
                 reference.changeMainContent(pageCode);
+                //reference.loadResources("page-004");
                 resolve();
             }).catch(function (error) {
                 reject(error);
@@ -610,6 +696,7 @@ module.exports = {
             $("#" + menu_item.id).click(function () {
                 reference.bootstrapPage(menu_item.id_page).then(function () {
                     reference.changeActiveMenu(menu_item.id);
+                    reference.loadResources(menu_item.id_page);
                 });
             });
         }
@@ -626,6 +713,185 @@ module.exports = {
         $("#explainUserGroup").text("Group Information");
         $("#userAccount").text(userInformation.username);
         $("#userEmail").text(userInformation.email);
+    },
+    hideMenuItems: function (userGroup) {
+        let reference = this;
+        reference.userGroup = userGroup;
+        switch (userGroup) {
+            case "Quality":
+                $("#itemInicio").show();
+                $("#itemTareas").hide();
+                $("#itemReportes").show();
+                $("#itemInventarios").show();
+                $("#itemUsers").hide();
+                $("#itemDeveloper").hide();
+                $("#itemTesting").hide();
+                $("#itemCreator").show();
+                $("#itemFaq").show();
+                break;
+            case "FME":
+                $("#itemInicio").show();
+                $("#itemTareas").show();
+                $("#itemReportes").show();
+                $("#itemInventarios").show();
+                $("#itemUsers").hide();
+                $("#itemDeveloper").hide();
+                $("#itemTesting").hide();
+                $("#itemCreator").hide();
+                $("#itemFaq").show();
+                break;
+            case "Developer":
+                $("#itemInicio").show();
+                $("#itemTareas").hide();
+                $("#itemReportes").hide();
+                $("#itemInventarios").hide();
+                $("#itemUsers").show();
+                $("#itemDeveloper").show();
+                $("#itemTesting").show();
+                $("#itemCreator").show();
+                $("#itemFaq").hide();
+                break;
+            case "Admin":
+                $("#itemInicio").show();
+                $("#itemTareas").hide();
+                $("#itemReportes").show();
+                $("#itemInventarios").show();
+                $("#itemUsers").show();
+                $("#itemDeveloper").hide();
+                $("#itemTesting").hide();
+                $("#itemCreator").hide();
+                $("#itemFaq").hide();
+                break;
+
+        }
+    },
+    loadResources: function (page_id) {
+        let reference = this;
+        switch (page_id) {
+            //Home Page
+            case "page-004":
+                reports.loadStatistic(reference.userGroup).then(function () {
+                    reports.changeBoxStatistic(reports.allReports);
+                });
+                //reference.loadStatistic("", "statisticTotal");
+                //reference.loadStatistic("SM-Status002", "statisticCompleted");
+                //reference.loadStatistic("SM-Status003", "statisticApproved");
+                //reference.loadStatistic("SM-Status004", "statisticRejected");
+                //reference.deletePageLoader();
+                break;
+            //All Tickets Page    
+            case "page-008":
+                reports.loadTickets().then(function () {
+                    reference.changeTicketsPage(reports.allTickets);
+                });
+                break;
+            //All Templates Page    
+            case "page-007":
+
+                break;
+            //New Report Page
+            case "page-005":
+
+                break;
+            //My Reports    
+            case "page-014":
+                reports.fillMyReports();
+                break;
+            //Detail Report    
+            case "page-021":
+
+                break;
+            //Upload File
+            case "page-013":
+
+        }
+    },
+    changeBoxStatistic: function (allReports) {
+        let reference = this;
+        let statusFME = [
+            { status: "SM-Status002", selector: "statisticCompleted", labelSel: "labelStatisticCompleted", label: "Reportes Completados (SOLO YO)" },
+            { status: "SM-Status003", selector: "statisticApproved", labelSel: "labelStatisticApproved", label: "Reportes Aprobados (SOLO YO)" },
+            { status: "SM-Status004", selector: "statisticRejected", labelSel: "labelStatisticRejected", label: "Reportes Rechazados (SOLO YO)" },
+        ]
+
+        let statusQUALITY = [
+            { status: "SM-Status002", selector: "statisticCompleted", labelSel: "labelStatisticCompleted", label: "Reportes Completados (EN EL SISTEMA)" },
+            { status: "SM-Status003", selector: "statisticApproved", labelSel: "labelStatisticApproved", label: "Reportes Aprobados (EN EL SISTEMA)" },
+            { status: "SM-Status004", selector: "statisticRejected", labelSel: "labelStatisticRejected", label: "Reportes Rechazados (EN EL SISTEMA)" },
+        ]
+
+        switch (reference.userGroup) {
+            case "FME":
+
+                $("#labelStatisticTotal").text("Total Reportes (Solo Yo)");
+                $("#statisticTotal").text(allReports.length);
+
+                for (let statusFilter of statusFME) {
+                    var reportFiltered = allReports.filter(function (report) {
+                        return report.status_id == statusFilter.status;
+                    });
+                    $("#" + statusFilter.labelSel).text(reportFiltered.label);
+                    $("#" + statusFilter.selector).text(reportFiltered.length);
+                }
+
+                break;
+
+            case "Quality":
+                $("#labelStatisticTotal").text("Total Reportes (SISTEMA)");
+                $("#statisticTotal").text(allReports.length);
+
+                for (let statusFilter of statusFME) {
+                    var reportFiltered = allReports.filter(function (report) {
+                        return report.status_id == statusFilter.status;
+                    });
+                    $("#" + statusFilter.labelSel).text();
+                    $("#" + statusFilter.selector).text(reportFiltered.length);
+                }
+                break;
+        }
+    },
+    changeTicketsPage: function (allTickets) {
+
+        let PMLength = (allTickets.PM != undefined) ? allTickets.PM.total : 0;
+        let CMLength = (allTickets.CM != undefined) ? allTickets.CM.total : 0;
+        let PMLLength = (allTickets.PLM != undefined) ? allTickets.PLM.total : 0;
+        let ticketsType = ["PM","CM","PLM"];
+        
+        if(PMLength == 0){
+            ticketsType.splice(ticketsType.indexOf("PM"),1)
+        } 
+        if(CMLength == 0){
+            ticketsType.splice(ticketsType.indexOf("CM"),1)
+        }
+        if(PMLLength == 0){
+            ticketsType.splice(ticketsType.indexOf("PLM"),1)
+        }
+        
+        if (PMLength > 0 || CMLength > 0 || PMlLength > 0) {
+            $("#ticketsNotFound").remove();
+            let cont = 0;
+            for(let ticket_type of ticketsType){
+                for (let ticket of allTickets[ticket_type].results) {
+                ticket.ticket_priority = (ticket.ticket_priority == undefined) ? " N/A" : ticket.ticket_priority;
+                $("#allTicketsDiv").append("<div class='col-sm-12 col-md-6 col-lg-3'><div class='pricing-table yellow'><div class=pt-header><div class=plan-pricing><div class=pricing style=font-size:1.5em>" + ticket.subject + "</div><div class=pricing-type> Reportes Asociados: 0 </div></div></div><div class=pt-body><h4>" + ticket.type + " - " + ticket.project + "</h4><ul class=plan-detail><li><b>Region :</b> " + ticket.region + " - " + ticket.city + "<li><b>Prioridad : </b>" + ticket.ticket_priority + "<li><b>Estado : </b>" + ticket.status + "<li><b>Ticket Id:<br></b>CM-" + ticket.orderid + "</ul></div><div class=pt-footer><button id='doReport_" + cont + "' class='btn btn-warning'type=button>Realizar Reporte</button></div></div></div>");
+                $("#doReport_" + cont).on("click", {
+                    val:
+                    {
+                        "project": ticket.project,
+                        "region": ticket.region,
+                        "site_id": ticket.site,
+                        "site_name": ticket.site_name,
+                        "ticket_id": ticket_type + "-" + ticket.orderid,
+                        "work_client": ticket.customer_tt,
+                        "supplier": ticket.site_contractor
+                    }
+                }, function (event) {
+                    console.log("Click on Report" + event.data.val);
+                });
+                cont++;
+            }
+            }
+        }
     }
 }
 
@@ -633,13 +899,132 @@ module.exports = {
 /* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
+let workers = __webpack_require__(0);
+module.exports = {
+    allReports: "",
+    allTickets:"",
+    userGroup: "",
+    loadStatistic: function (userGroup) {
+        let reference = this;
+        reference.userGroup = userGroup;
+        return new Promise(function (resolve, reject) {
+            workers.getReports(userGroup).then(function (data) {
+                reference.allReports = JSON.parse(data)[0].results;
+                resolve();
+            }).catch(function (error) {
+                reject(error);
+            });
+        });
+    },
+    fillMyReports: function () {
+        let reference = this;
+        //Save the reference of one report to don't add again
+        let wrapReports = [];
+
+        let reportsFiltered = reference.allReports.filter(function (report) {
+            console.log(wrapReports.indexOf(report.ticket_id));
+            if(wrapReports.indexOf(report.ticket_id) == -1){
+                wrapReports.push(report.ticket_id);
+                return report;
+            }
+        });
+
+        console.log("Wrap Reports: " , reportsFiltered)
+        
+       /*
+        let cont = 0;
+        for (let recordsContainer of reports) {
+            for (let records of recordsContainer.results) {
+
+                $("#" + table + " > tbody").append("<tr class=" + records.class_sm + "><td style='cursor:pointer' id='" + item_name + cont + "'>" + records.ticket_id + "</td><td>" + records.template_name + "</td><td>" + records.site_id + "</td><td>" + records.site_name + "</td><td>" + records.work_client + "</td><td>" + records.project + "</td><td>" + records.region + "</td><td style='text-align:-webkit-center'>" + records.status + "</td><td>" + records.creation_date + "</td><td>" + records.author + "</td><td>" + records.id_report + "</td><td><input id='" + item_name + cont + "Details' type='image' name='image' src='https://cdn2.iconfinder.com/data/icons/flat-ui-icons-24-px/24/eye-24-20.png'></td></tr>");
+
+                $('#' + item_name + cont).add('#' + item_name + cont + "Details").on("click",
+                    {
+                        "approval_date": records.approval_date,
+                        "approver": records.approver,
+                        "author": records.author,
+                        "comment": records.comment,
+                        "completed_date": records.completed_date,
+                        "creation_date": records.creation_date,
+                        "file": records.file,
+                        "file_location": records.file_location,
+                        "id_report": records.id_report,
+                        "last_modification": records.last_modification,
+                        "modified_by": records.modified_by,
+                        "project": records.project,
+                        "region": records.region,
+                        "rejected_date": records.rejected_date,
+                        "site_id": records.site_id,
+                        "site_name": records.site_name,
+                        "status": records.status,
+                        "status_id": records.status_id,
+                        "supplier": records.supplier,
+                        "ticket_id": records.ticket_id,
+                        "web_template": records.template_name,
+                        "web_template_location": records.web_template_location,
+                        "web_template_form": records.web_template_form,
+                        "work_client": records.work_client,
+                        "class_sm": records.class_sm
+                    }
+                    , function (event) {
+                        let ticket_selected = {
+                            "approval_date": (event.data.approval_date == undefined) ? "" : event.data.approval_date,
+                            "approver": (event.data.approver == undefined) ? "" : event.data.approver,
+                            "author": (event.data.author == undefined) ? "" : event.data.author,
+                            "comment": (event.data.comment == undefined) ? [] : event.data.comment,
+                            "completed_date": (event.data.completed_date == undefined) ? "" : event.data.completed_date,
+                            "creation_date": (event.data.creation_date == undefined) ? "" : event.data.creation_date,
+                            "file": (event.data.file == undefined) ? "" : event.data.file,
+                            "file_location": (event.data.file_location == undefined) ? "" : event.data.file_location,
+                            "id_report": (event.data.id_report == undefined) ? "" : event.data.id_report,
+                            "last_modification": (event.data.last_modification == undefined) ? "" : event.data.last_modification,
+                            "modified_by": (event.data.modified_by == undefined) ? "" : event.data.modified_by,
+                            "project": (event.data.project == undefined) ? "" : event.data.project,
+                            "region": (event.data.region == undefined) ? "" : event.data.region,
+                            "rejected_date": (event.data.rejected_date == undefined) ? "" : event.data.rejected_date,
+                            "site_id": (event.data.site_id == undefined) ? "" : event.data.site_id,
+                            "site_name": (event.data.site_name == undefined) ? "" : event.data.site_name,
+                            "status": (event.data.status == undefined) ? "" : event.data.status,
+                            "status_id": (event.data.status_id == undefined) ? "" : event.data.status_id,
+                            "supplier": (event.data.supplier == undefined) ? "" : event.data.supplier,
+                            "ticket_id": (event.data.ticket_id == undefined) ? "" : event.data.ticket_id,
+                            "web_template": (event.data.web_template == undefined) ? "" : event.data.web_template,
+                            "web_template_location": (event.data.web_template_location == undefined) ? "" : event.data.web_template_location,
+                            "web_template_form": (event.data.web_template_form == undefined) ? "" : event.data.web_template_form,
+                            "work_client": (event.data.work_client == undefined) ? "" : event.data.work_client,
+                            "class_sm": (event.data.class_sm == undefined) ? "" : event.data.class_sm
+                        };
+
+                    })
+                cont += 1;
+            }
+
+        }
+            */
+    },
+    loadTickets:function(){
+        let reference = this;
+        return new Promise(function(resolve,reject){
+            workers.getTickets().then(function(data){
+            reference.allTickets = JSON.parse(data)[0];
+            resolve();
+        }).catch(function(error){
+            reject(error);
+        });
+        });
+    }
+}
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
 $(function () {
-    let workers = __webpack_require__(2);
-    let cssLibs = __webpack_require__(1);
-    let jsLibs = __webpack_require__(0);
+    let workers = __webpack_require__(0);
+    let cssLibs = __webpack_require__(2);
+    let jsLibs = __webpack_require__(1);
     let message = __webpack_require__(3);
     let pages = __webpack_require__(4);
-
 
     let smart = {
         onInit: function () {
@@ -700,14 +1085,13 @@ $(function () {
                     }
                     reference.userGroups = userGroupsEdited;
                     console.log("User Groups: " + reference.userGroups);
-                    reference.grantPermissions(reference.userGroups);
                     return workers.getUserInformation;
                 })
                     .then(function (data) {
                         message.changeMessageLoader("pageLoaderContent", "User Information was loaded");
                         reference.userInformation = JSON.parse(data).result;
                         pages.showUserInformationNav(reference.userInformation);
-                        message.removeMessageLoader("body");
+                        reference.grantPermissions(reference.userGroups);
                     });
             })
                 .catch(function (error) {
@@ -719,7 +1103,7 @@ $(function () {
         currentTime: "",
         userInformation: "",
         userGroups: "",
-        userGroup:"",
+        userGroup: "",
         groupSelected: "",
         grantPermissions: function (userGroups) {
             let reference = this;
@@ -743,7 +1127,8 @@ $(function () {
                     break;
                 //Dev
                 case "0-0-0-1":
-                    //reference.userGroup = "Developer";
+                    reference.userGroup = "Developer";
+                    reference.openSmatApp();
                     //reference.loadMainMenu();
                     break;
                 //Adm-Dev
@@ -774,11 +1159,13 @@ $(function () {
                 //Adm
                 case "0-0-1-0":
                     reference.userGroup = "Admin";
+                    reference.openSmatApp();
                     //reference.loadMainMenu();
                     break;
                 //Qua
                 case "0-1-0-0":
-                    //reference.userGroup = "Quality";
+                    reference.userGroup = "Quality";
+                    reference.openSmatApp();
                     //reference.loadMainMenu();
                     break;
                 //All
@@ -805,7 +1192,8 @@ $(function () {
                     break;
                 //Fme
                 case "1-0-0-0":
-                    //reference.userGroup = "FME";
+                    reference.userGroup = "FME";
+                    reference.openSmatApp();
                     //reference.loadWorkerAllTickets();
                     break;
                 //Fme-Adm
@@ -852,12 +1240,19 @@ $(function () {
                 reference.userGroup = groupSelected;
                 $("#userGroup").text(groupSelected);
                 $("#groupError").modal('hide');
+                reference.openSmatApp();
             });
             $("#groupError").modal({ backdrop: 'static', keyboard: false });
+        },
+        openSmatApp: function () {
+            let reference = this;
+            pages.hideMenuItems(reference.userGroup);
+            message.removeMessageLoader("body");
         }
     }
 
     smart.onInit();
+
 });
 
 /***/ })
