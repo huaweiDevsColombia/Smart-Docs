@@ -233,8 +233,3 @@ $(function () {
     smart.onInit();
 
 });
-
-    module.exports = {
-        userGroup : smart.userGroup,
-        userGroups: smart.userGroups
-    }

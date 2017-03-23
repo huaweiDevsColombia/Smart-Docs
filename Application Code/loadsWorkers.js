@@ -198,5 +198,45 @@ module.exports = {
                 reject(error);
             });
         });
+    },
+     getTickets: /**
+ * Get the Tickets from Reports Datamodel
+ * Make a Ajax Request to get the worker and then call get tickets get list service
+ */
+    function getTickets() {
+        return new Promise(function (resolve, reject) {
+            let workerTickets = $.ajax({
+                method: "GET",
+                dataType: "script",
+                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=36b8f29d-79cf-488a-9e6d-70d118e81dec&attachmentId=689fcf33-651c-4345-bf20-97c738c2dc13"
+            });
+            $.when(workerTickets).done(function (workerTicketsResponse) {
+                $('<script>')
+                    .attr('type', 'javascript/worker')
+                    .attr('id', 'workerTickets')
+                    .text(workerTicketsResponse)
+                    .appendTo('head');
+
+                let blob = new Blob([
+                    $("#workerTickets").text()
+                ], { type: "text/javascript" })
+
+                $("#workerTickets").remove();
+
+                var worker = new Worker(URL.createObjectURL(blob));
+
+                worker.addEventListener('message', function (e) {
+                    resolve(e.data);
+                }, false);
+
+                worker.postMessage({ "username": username, "userId": USER_ID, "token": csrfToken, "tenantId": tenantId }); // Send data to our worker.
+
+                console.log("[Wk] - Get Tickets has Loaded");
+
+            }).fail(function (error) {
+                console.log("[Wk] - Get Tickets has Failed");
+                reject(error);
+            });
+        });
     }
 };
