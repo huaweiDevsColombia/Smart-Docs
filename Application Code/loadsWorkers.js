@@ -238,5 +238,47 @@ module.exports = {
                 reject(error);
             });
         });
+    },
+    getTemplates:
+    /**
+ * Get the templates from Templates Datamodel
+ * Make a Ajax Request to get the worker and then call get templates get list service
+ */
+function getTemplates(project) {
+        return new Promise(function (resolve, reject) {
+            let workerTemplates = $.ajax({
+                method: "GET",
+                dataType: "script",
+                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=8bc8f750-9601-49f1-b953-c79f1f45b795&attachmentId=602b101b-d920-4357-8f3a-a92f1e6ebb67"
+            });
+            $.when(workerTemplates).done(function (workerTemplatesResponse) {
+                $('<script>')
+                    .attr('type', 'javascript/worker')
+                    .attr('id', 'workerTemplates')
+                    .text(workerTemplatesResponse)
+                    .appendTo('head');
+
+                let blob = new Blob([
+                    $("#workerTemplates").text()
+                ], { type: "text/javascript" })
+
+                $("#workerTemplates").remove();
+
+                var worker = new Worker(URL.createObjectURL(blob));
+
+                worker.addEventListener('message', function (e) {
+                    resolve(e.data);
+                }, false);
+
+                worker.postMessage({ "username": username, "userId": USER_ID, "token": csrfToken, "tenantId": tenantId, "project":project }); // Send data to our worker.
+
+                console.log("[Wk] - Get Templates has Loaded");
+
+            }).fail(function (error) {
+                console.log("[Wk] - Get Templates has Failed");
+                reject(error);
+            });
+        });
     }
+    
 };

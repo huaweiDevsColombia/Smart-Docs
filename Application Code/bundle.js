@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 6);
+/******/ 	return __webpack_require__(__webpack_require__.s = 8);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -310,11 +310,75 @@ module.exports = {
                 reject(error);
             });
         });
+    },
+    getTemplates:
+    /**
+ * Get the templates from Templates Datamodel
+ * Make a Ajax Request to get the worker and then call get templates get list service
+ */
+function getTemplates(project) {
+        return new Promise(function (resolve, reject) {
+            let workerTemplates = $.ajax({
+                method: "GET",
+                dataType: "script",
+                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=8bc8f750-9601-49f1-b953-c79f1f45b795&attachmentId=602b101b-d920-4357-8f3a-a92f1e6ebb67"
+            });
+            $.when(workerTemplates).done(function (workerTemplatesResponse) {
+                $('<script>')
+                    .attr('type', 'javascript/worker')
+                    .attr('id', 'workerTemplates')
+                    .text(workerTemplatesResponse)
+                    .appendTo('head');
+
+                let blob = new Blob([
+                    $("#workerTemplates").text()
+                ], { type: "text/javascript" })
+
+                $("#workerTemplates").remove();
+
+                var worker = new Worker(URL.createObjectURL(blob));
+
+                worker.addEventListener('message', function (e) {
+                    resolve(e.data);
+                }, false);
+
+                worker.postMessage({ "username": username, "userId": USER_ID, "token": csrfToken, "tenantId": tenantId, "project":project }); // Send data to our worker.
+
+                console.log("[Wk] - Get Templates has Loaded");
+
+            }).fail(function (error) {
+                console.log("[Wk] - Get Templates has Failed");
+                reject(error);
+            });
+        });
     }
+    
 };
 
 /***/ }),
 /* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+let workers = __webpack_require__(0);
+
+module.exports = {
+    allTickets: "",
+    loadTickets: function () {
+        let reference = this;
+        return new Promise(function (resolve, reject) {
+            workers.getTickets().then(function (data) {
+                reference.allTickets = JSON.parse(data)[0];
+                resolve();
+            }).catch(function (error) {
+                reject(error);
+            });
+        });
+    },
+    ticketSelected:""
+}
+
+/***/ }),
+/* 2 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -447,7 +511,7 @@ module.exports = {
 }
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, exports) {
 
 /**
@@ -573,7 +637,7 @@ module.exports = {
 }
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -593,10 +657,12 @@ module.exports = {
 }
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
-let reports = __webpack_require__(5);
+let tickets = __webpack_require__(1);
+let reports = __webpack_require__(6);
+let templates = __webpack_require__(7);
 
 module.exports = {
     loadAllPages: function () {
@@ -662,6 +728,7 @@ module.exports = {
         return new Promise(function (resolve, reject) {
             reference.filterPage(page_id).then(function (pageCode) {
                 reference.changeMainContent(pageCode);
+                reference.loadResources(page_id);
                 resolve();
             }).catch(function (error) {
                 reject(error);
@@ -696,7 +763,6 @@ module.exports = {
             $("#" + menu_item.id).click(function () {
                 reference.bootstrapPage(menu_item.id_page).then(function () {
                     reference.changeActiveMenu(menu_item.id);
-                    reference.loadResources(menu_item.id_page);
                 });
             });
         }
@@ -781,13 +847,15 @@ module.exports = {
                 break;
             //All Tickets Page    
             case "page-008":
-                reports.loadTickets().then(function () {
-                    reference.changeTicketsPage(reports.allTickets);
+                tickets.loadTickets().then(function () {
+                    reference.changeTicketsPage(tickets.allTickets);
                 });
                 break;
             //All Templates Page    
             case "page-007":
-
+                templates.loadTemplates(tickets.ticketSelected.project).then(function () {
+                    reference.changeTemplatesPage(templates.allTemplates);
+                });
                 break;
             //New Report Page
             case "page-005":
@@ -851,52 +919,77 @@ module.exports = {
         }
     },
     changeTicketsPage: function (allTickets) {
-
+        let reference = this;
         let PMLength = (allTickets.PM != undefined) ? allTickets.PM.total : 0;
         let CMLength = (allTickets.CM != undefined) ? allTickets.CM.total : 0;
         let PMLLength = (allTickets.PLM != undefined) ? allTickets.PLM.total : 0;
-        let ticketsType = ["PM","CM","PLM"];
-        
-        if(PMLength == 0){
-            ticketsType.splice(ticketsType.indexOf("PM"),1)
-        } 
-        if(CMLength == 0){
-            ticketsType.splice(ticketsType.indexOf("CM"),1)
+        let ticketsType = ["PM", "CM", "PLM"];
+
+        if (PMLength == 0) {
+            ticketsType.splice(ticketsType.indexOf("PM"), 1)
         }
-        if(PMLLength == 0){
-            ticketsType.splice(ticketsType.indexOf("PLM"),1)
+        if (CMLength == 0) {
+            ticketsType.splice(ticketsType.indexOf("CM"), 1)
         }
-        
+        if (PMLLength == 0) {
+            ticketsType.splice(ticketsType.indexOf("PLM"), 1)
+        }
+
         if (PMLength > 0 || CMLength > 0 || PMlLength > 0) {
             $("#ticketsNotFound").remove();
             let cont = 0;
-            for(let ticket_type of ticketsType){
+            for (let ticket_type of ticketsType) {
                 for (let ticket of allTickets[ticket_type].results) {
-                ticket.ticket_priority = (ticket.ticket_priority == undefined) ? " N/A" : ticket.ticket_priority;
-                $("#allTicketsDiv").append("<div class='col-sm-12 col-md-6 col-lg-3'><div class='pricing-table yellow'><div class=pt-header><div class=plan-pricing><div class=pricing style=font-size:1.5em>" + ticket.subject + "</div><div class=pricing-type> Reportes Asociados: 0 </div></div></div><div class=pt-body><h4>" + ticket.type + " - " + ticket.project + "</h4><ul class=plan-detail><li><b>Region :</b> " + ticket.region + " - " + ticket.city + "<li><b>Prioridad : </b>" + ticket.ticket_priority + "<li><b>Estado : </b>" + ticket.status + "<li><b>Ticket Id:<br></b>CM-" + ticket.orderid + "</ul></div><div class=pt-footer><button id='doReport_" + cont + "' class='btn btn-warning'type=button>Realizar Reporte</button></div></div></div>");
-                $("#doReport_" + cont).on("click", {
-                    val:
-                    {
-                        "project": ticket.project,
-                        "region": ticket.region,
-                        "site_id": ticket.site,
-                        "site_name": ticket.site_name,
-                        "ticket_id": ticket_type + "-" + ticket.orderid,
-                        "work_client": ticket.customer_tt,
-                        "supplier": ticket.site_contractor
-                    }
-                }, function (event) {
-                    console.log("Click on Report" + event.data.val);
-                });
-                cont++;
+                    ticket.ticket_priority = (ticket.ticket_priority == undefined) ? " N/A" : ticket.ticket_priority;
+                    $("#allTicketsDiv").append("<div class='col-sm-12 col-md-6 col-lg-3'><div class='pricing-table yellow'><div class=pt-header><div class=plan-pricing><div class=pricing style=font-size:1.5em>" + ticket.subject + "</div><div class=pricing-type> Reportes Asociados: 0 </div></div></div><div class=pt-body><h4>" + ticket.type + " - " + ticket.project + "</h4><ul class=plan-detail><li><b>Region :</b> " + ticket.region + " - " + ticket.city + "<li><b>Prioridad : </b>" + ticket.ticket_priority + "<li><b>Estado : </b>" + ticket.status + "<li><b>Ticket Id:<br></b>CM-" + ticket.orderid + "</ul></div><div class=pt-footer><button id='doReport_" + cont + "' class='btn btn-warning'type=button>Realizar Reporte</button></div></div></div>");
+                    $("#doReport_" + cont).on("click", {
+                        val:
+                        {
+                            "project": ticket.project,
+                            "region": ticket.region,
+                            "site_id": ticket.site,
+                            "site_name": ticket.site_name,
+                            "ticket_id": ticket_type + "-" + ticket.orderid,
+                            "work_client": ticket.customer_tt,
+                            "supplier": ticket.site_contractor
+                        }
+                    }, function (event) {
+                        console.log("Click on Report", event.data.val);
+                        tickets.ticketSelected = event.data.val;
+                        reference.bootstrapPage("page-007");
+
+                    });
+                    cont++;
+                }
             }
+        }
+    },
+    changeTemplatesPage: function (allTemplates) {
+        let attachmentId;
+        let batchId;
+        let cont = 0;
+        if (allTemplates.length > 0) {
+            $("#templatesNotFound").remove();
+            for (let template of allTemplates) {
+                attachmentId = template.icon_template.attachment[0].attachmentId;
+                batchId = template.icon_template.attachment[0].batchId;
+                $("#allTemplatesDiv").append("<div class='col-sm-12 col-md-6 col-lg-6'><div class=pricing-table><div class=pt-header style=background-color:#fff><div class=plan-pricing><div class=pricing style=font-size:1.5em>" + template.template_name + "</div><img src='https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=" + batchId + "&attachmentId=" + attachmentId + "'style=padding:10px><div class=pricing-type><!--<b>Id:</b>" + template.id_template + "!--></div></div></div><div class=pt-footer><p><b>Ultima Actualizacion: </b> " + template.template_date + " </p><button id='createTemplate_" + cont + "'class='btn btn-primary' style='margin-right:5px' type=button>Crear Reporte</button></div></div></div>");
+                $("#createTemplate_" + cont).on("click", {
+                    val:
+                    { id_template: template.id_template, template_name: template.template_name, template_pdf: template.template_pdf, template_project: template.template_project, template_web: template.template_web }
+                }, function (event) {
+                    template.templateSelected = event.data.val;
+                    console.log(template.templateSelected);
+                    reference.bootstrapPage("page-005");
+                });
+                cont += 1;
             }
         }
     }
 }
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 let workers = __webpack_require__(0);
@@ -1001,30 +1094,44 @@ module.exports = {
 
         }
             */
-    },
-    loadTickets:function(){
-        let reference = this;
-        return new Promise(function(resolve,reject){
-            workers.getTickets().then(function(data){
-            reference.allTickets = JSON.parse(data)[0];
-            resolve();
-        }).catch(function(error){
-            reject(error);
-        });
-        });
     }
 }
 
 /***/ }),
-/* 6 */
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+let workers = __webpack_require__ (0);
+let tickets = __webpack_require__ (1);
+module.exports ={
+    allTemplates: "",
+    templateSelected : "",
+    loadTemplates: function(project){
+        let reference = this;
+        return new Promise(function(resolve,reject){
+         workers.getTemplates(project).then(function(data){
+            reference.allTemplates = JSON.parse(data).results; 
+            console.log("All Tempates",reference.allTemplates);
+            console.log("Type Of:"+ typeof (reference.allTemplates));
+            resolve();
+        }).catch(function(error){
+            reject(error);
+        });    
+        });
+       
+    }
+}
+
+/***/ }),
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 $(function () {
     let workers = __webpack_require__(0);
-    let cssLibs = __webpack_require__(2);
-    let jsLibs = __webpack_require__(1);
-    let message = __webpack_require__(3);
-    let pages = __webpack_require__(4);
+    let cssLibs = __webpack_require__(3);
+    let jsLibs = __webpack_require__(2);
+    let message = __webpack_require__(4);
+    let pages = __webpack_require__(5);
 
     let smart = {
         onInit: function () {

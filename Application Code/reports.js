@@ -1,6 +1,7 @@
 let workers = require("./loadsWorkers");
 module.exports = {
     allReports: "",
+    allTickets:"",
     userGroup: "",
     loadStatistic: function (userGroup) {
         let reference = this;
