@@ -16,7 +16,7 @@ self.addEventListener('message', function (e) {
             });
         }
         else{
-            self.postMessage(JSON.stringify(allReports));
+            self.postMessage(allReports);
             self.close()
         }
     })

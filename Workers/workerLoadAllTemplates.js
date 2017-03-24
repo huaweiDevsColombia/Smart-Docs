@@ -1,24 +1,10 @@
 self.addEventListener('message', function (e) {
-    var allReports = [];
-    var params = "&start=0&limit=1000&dir=DESC&sort=id";
-    if(e.data.group=='FME'){
-        params += "&author="+e.data.username;
-    }
-    var promise = get("co_sm_report_getList", e.data.username, "100l", params);
-    promise.then(function (reportsRespond) {
-        let reports = JSON.parse(reportsRespond);
-        allReports.push(reports);
-        if (reports.total > 1000) {
-            return get("co_sm_report_getList", e.data.username, "100l", params).then(function (reportsRespond2) {
-                allReports.push(JSON.stringify(allReports));
-                self.postMessage(JSON.stringify(allReports));
-                self.close();
-            });
-        }
-        else{
-            self.postMessage(allReports);
-            self.close()
-        }
+    var params = "&start=0&limit=1000&dir=ASC&sort=id_template&template_project=" + e.data.project;
+    
+    var promise = get("co_sm_web_template_getList", e.data.username, "100l", params);
+    promise.then(function (templatesRespond) {
+        self.postMessage(templatesRespond);
+        self.close()
     })
         .catch(function (error) {
             console.log(error);
