@@ -1,3 +1,4 @@
+let tickets = require("./tickets");
 let reports = require("./reports");
 
 module.exports = {
@@ -183,8 +184,8 @@ module.exports = {
                 break;
             //All Tickets Page    
             case "page-008":
-                reports.loadTickets().then(function () {
-                    reference.changeTicketsPage(reports.allTickets);
+                tickets.loadTickets().then(function () {
+                    reference.changeTicketsPage(tickets.allTickets);
                 });
                 break;
             //All Templates Page    
@@ -253,7 +254,7 @@ module.exports = {
         }
     },
     changeTicketsPage: function (allTickets) {
-
+        let reference = this;
         let PMLength = (allTickets.PM != undefined) ? allTickets.PM.total : 0;
         let CMLength = (allTickets.CM != undefined) ? allTickets.CM.total : 0;
         let PMLLength = (allTickets.PLM != undefined) ? allTickets.PLM.total : 0;
@@ -288,7 +289,9 @@ module.exports = {
                         "supplier": ticket.site_contractor
                     }
                 }, function (event) {
-                    console.log("Click on Report" + event.data.val);
+                    console.log("Click on Report" , event.data.val);
+                    tickets.ticketSelected = event.data.val;
+                    reference.bootstrapPage("page-005");
                 });
                 cont++;
             }
