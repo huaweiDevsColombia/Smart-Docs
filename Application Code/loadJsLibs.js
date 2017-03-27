@@ -110,7 +110,7 @@ module.exports = {
         let smart_Engine = $.ajax({
                 method: "GET",
                 dataType: "script",
-                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=ed57f477-55af-48ae-ad63-70633c2ea5a6&attachmentId=689849"
+                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=d63a70c5-afde-4275-840a-9c1de5003be3&attachmentId=88381a7d-39ae-4221-9813-f4855faae131"
             });
             let app = $.ajax({
                 method: "GET",

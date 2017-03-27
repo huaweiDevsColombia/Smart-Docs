@@ -47,9 +47,14 @@ $(function () {
                 console.log("JS Low Libs were loaded");
                 message.changeMessageLoader("pageLoaderContent", "JS Low Libs were loaded");
                 return jsLibs.loadLow2JS();
-            }).then(function () {
+            }).then(function(){
                 console.log("JS Low 2 were loaded");
                 message.changeMessageLoader("pageLoaderContent", "Js Low 2  were loaded");
+                return jsLibs.loadcustomJS();
+            })
+            .then(function () {
+                console.log("JS Load custom were loaded");
+                message.changeMessageLoader("pageLoaderContent", "JS Load custom were loaded");
                 return pages.loadAllPages();
             }).then(function (data) {
                 message.changeMessageLoader("pageLoaderContent", "Pages were loaded");

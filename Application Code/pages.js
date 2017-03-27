@@ -1,6 +1,7 @@
 let tickets = require("./tickets");
 let reports = require("./reports");
 let templates = require("./templates");
+let smartEngine = require("./smartEngine");
 
 module.exports = {
     loadAllPages: function () {
@@ -198,13 +199,14 @@ module.exports = {
             //New Report Page
             case "page-005":
                 let templateSelected = templates.templateSelected;
-                
+
                 templates.loadTemplate(templateSelected.template_web.attachment[0].batchId,
-                templateSelected.template_web.attachment[0].attachmentId,
-                templateSelected.template_pdf.attachment[0].batchId,
-                templateSelected.template_pdf.attachment[0].attachmentId).then(function (){
-                    console.log("Load Template: ", templates.template);
-                });
+                    templateSelected.template_web.attachment[0].attachmentId,
+                    templateSelected.template_pdf.attachment[0].batchId,
+                    templateSelected.template_pdf.attachment[0].attachmentId).then(function () {
+                        smartEngine.executeEngine(templates.template[0].jsonWeb);
+                        reference.loadEventSaveReport();
+                    });
 
                 break;
             //My Reports    
@@ -332,5 +334,25 @@ module.exports = {
                 cont += 1;
             }
         }
+    },
+    loadEventSaveReport: () => {
+        let reference = this;
+        $("#btnSave").click(() => {
+            let answer = smartEngine.saveAnswer();
+            console.log("Smart Engine Answer: " , answer);
+            if(answer.completed){
+              reference.showCompleteModal();  
+            }
+            else{
+              reference.showIncompleteModal();
+            }
+        });
+    },
+    showCompleteModal: () => {
+        $("#notEmptyFields").modal({ backdrop: 'static', keyboard: false });
+    },
+    showIncompleteModal: (emptyFields) => {
+        $("#emptyFieldsText").text(emptyFields);
+        $("#emptyFields").modal({ backdrop: 'static', keyboard: false });
     }
 }
