@@ -286,7 +286,7 @@ function getTemplates(project) {
             let workerTemplates = $.ajax({
                 method: "GET",
                 dataType: "script",
-                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=ffea72c8-47f1-4c10-9516-426e55cf2270&attachmentId=c7dea7cc-1246-4cdb-80af-53f25b4b4b1e"
+                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=a0955b30-5b3f-4937-a231-e1778dd3d6f0&attachmentId=942193b3-c040-4cb7-831e-a877d7696c60"
             });
             $.when(workerTemplates).done(function (workerTemplatesResponse) {
                 $('<script>')

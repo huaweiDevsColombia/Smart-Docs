@@ -24,6 +24,7 @@ module.exports ={
             workers.getTemplate(batchIdWeb,attachmentWeb,batchIdPdf,attachmentPdf).then(function(loadTemplateResponse){
                 reference.template = loadTemplateResponse;
                 console.log(reference.template);
+                console.log(executeEngine);
                 resolve();
             }).catch(function (error){
                 reject(error);
