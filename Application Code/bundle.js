@@ -351,6 +351,43 @@ function getTemplates(project) {
                 reject(error);
             });
         });
+    },
+    getTemplate: 
+    function getTemplate(batchIdWeb,attachmentIdWeb,batchIdPdf,attachmentIdPdf) {
+        return new Promise(function (resolve, reject) {
+            let workerTemplates = $.ajax({
+                method: "GET",
+                dataType: "script",
+                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=ffea72c8-47f1-4c10-9516-426e55cf2270&attachmentId=c7dea7cc-1246-4cdb-80af-53f25b4b4b1e"
+            });
+            $.when(workerTemplates).done(function (workerTemplatesResponse) {
+                $('<script>')
+                    .attr('type', 'javascript/worker')
+                    .attr('id', 'workerTemplates')
+                    .text(workerTemplatesResponse)
+                    .appendTo('head');
+
+                let blob = new Blob([
+                    $("#workerTemplates").text()
+                ], { type: "text/javascript" })
+
+                $("#workerTemplates").remove();
+
+                var worker = new Worker(URL.createObjectURL(blob));
+
+                worker.addEventListener('message', function (e) {
+                    resolve(e.data);
+                }, false);
+
+                worker.postMessage({"batchIdWeb":batchIdWeb,"attachmentIdWeb":attachmentIdWeb,"batchIdPdf":batchIdPdf,"attachmentIdPdf":attachmentIdPdf}); // Send data to our worker.
+
+                console.log("[Wk] - Get Template has Loaded");
+
+            }).fail(function (error) {
+                console.log("[Wk] - Get Template has Failed");
+                reject(error);
+            });
+        });
     }
     
 };
@@ -859,6 +896,14 @@ module.exports = {
                 break;
             //New Report Page
             case "page-005":
+                let templateSelected = templates.templateSelected;
+                
+                templates.loadTemplate(templateSelected.template_web.attachment[0].batchId,
+                templateSelected.template_web.attachment[0].attachmentId,
+                templateSelected.template_pdf.attachment[0].batchId,
+                templateSelected.template_pdf.attachment[0].attachmentId).then(function (){
+                    console.log("Load Template: ", templates.template);
+                });
 
                 break;
             //My Reports    
@@ -965,6 +1010,7 @@ module.exports = {
         }
     },
     changeTemplatesPage: function (allTemplates) {
+        let reference = this;
         let attachmentId;
         let batchId;
         let cont = 0;
@@ -978,8 +1024,8 @@ module.exports = {
                     val:
                     { id_template: template.id_template, template_name: template.template_name, template_pdf: template.template_pdf, template_project: template.template_project, template_web: template.template_web }
                 }, function (event) {
-                    template.templateSelected = event.data.val;
-                    console.log(template.templateSelected);
+                    templates.templateSelected = event.data.val;
+                    console.log(templates.templateSelected);
                     reference.bootstrapPage("page-005");
                 });
                 cont += 1;
@@ -1106,6 +1152,7 @@ let tickets = __webpack_require__ (1);
 module.exports ={
     allTemplates: "",
     templateSelected : "",
+    template : "",
     loadTemplates: function(project){
         let reference = this;
         return new Promise(function(resolve,reject){
@@ -1119,6 +1166,18 @@ module.exports ={
         });    
         });
        
+    },
+    loadTemplate:function(batchIdWeb,attachmentWeb,batchIdPdf,attachmentPdf){
+        let reference = this;
+        return new Promise(function (resolve,reject){
+            workers.getTemplate(batchIdWeb,attachmentWeb,batchIdPdf,attachmentPdf).then(function(loadTemplateResponse){
+                reference.template = loadTemplateResponse;
+                console.log(reference.template);
+                resolve();
+            }).catch(function (error){
+                reject(error);
+            });
+        });
     }
 }
 

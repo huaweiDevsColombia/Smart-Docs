@@ -279,6 +279,43 @@ function getTemplates(project) {
                 reject(error);
             });
         });
+    },
+    getTemplate: 
+    function getTemplate(batchIdWeb,attachmentIdWeb,batchIdPdf,attachmentIdPdf) {
+        return new Promise(function (resolve, reject) {
+            let workerTemplates = $.ajax({
+                method: "GET",
+                dataType: "script",
+                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=ffea72c8-47f1-4c10-9516-426e55cf2270&attachmentId=c7dea7cc-1246-4cdb-80af-53f25b4b4b1e"
+            });
+            $.when(workerTemplates).done(function (workerTemplatesResponse) {
+                $('<script>')
+                    .attr('type', 'javascript/worker')
+                    .attr('id', 'workerTemplates')
+                    .text(workerTemplatesResponse)
+                    .appendTo('head');
+
+                let blob = new Blob([
+                    $("#workerTemplates").text()
+                ], { type: "text/javascript" })
+
+                $("#workerTemplates").remove();
+
+                var worker = new Worker(URL.createObjectURL(blob));
+
+                worker.addEventListener('message', function (e) {
+                    resolve(e.data);
+                }, false);
+
+                worker.postMessage({"batchIdWeb":batchIdWeb,"attachmentIdWeb":attachmentIdWeb,"batchIdPdf":batchIdPdf,"attachmentIdPdf":attachmentIdPdf}); // Send data to our worker.
+
+                console.log("[Wk] - Get Template has Loaded");
+
+            }).fail(function (error) {
+                console.log("[Wk] - Get Template has Failed");
+                reject(error);
+            });
+        });
     }
     
 };

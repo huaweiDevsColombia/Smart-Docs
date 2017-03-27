@@ -197,6 +197,14 @@ module.exports = {
                 break;
             //New Report Page
             case "page-005":
+                let templateSelected = templates.templateSelected;
+                
+                templates.loadTemplate(templateSelected.template_web.attachment[0].batchId,
+                templateSelected.template_web.attachment[0].attachmentId,
+                templateSelected.template_pdf.attachment[0].batchId,
+                templateSelected.template_pdf.attachment[0].attachmentId).then(function (){
+                    console.log("Load Template: ", templates.template);
+                });
 
                 break;
             //My Reports    
@@ -303,6 +311,7 @@ module.exports = {
         }
     },
     changeTemplatesPage: function (allTemplates) {
+        let reference = this;
         let attachmentId;
         let batchId;
         let cont = 0;
@@ -316,8 +325,8 @@ module.exports = {
                     val:
                     { id_template: template.id_template, template_name: template.template_name, template_pdf: template.template_pdf, template_project: template.template_project, template_web: template.template_web }
                 }, function (event) {
-                    template.templateSelected = event.data.val;
-                    console.log(template.templateSelected);
+                    templates.templateSelected = event.data.val;
+                    console.log(templates.templateSelected);
                     reference.bootstrapPage("page-005");
                 });
                 cont += 1;

@@ -3,6 +3,7 @@ let tickets = require ("./tickets");
 module.exports ={
     allTemplates: "",
     templateSelected : "",
+    template : "",
     loadTemplates: function(project){
         let reference = this;
         return new Promise(function(resolve,reject){
@@ -16,5 +17,17 @@ module.exports ={
         });    
         });
        
+    },
+    loadTemplate:function(batchIdWeb,attachmentWeb,batchIdPdf,attachmentPdf){
+        let reference = this;
+        return new Promise(function (resolve,reject){
+            workers.getTemplate(batchIdWeb,attachmentWeb,batchIdPdf,attachmentPdf).then(function(loadTemplateResponse){
+                reference.template = loadTemplateResponse;
+                console.log(reference.template);
+                resolve();
+            }).catch(function (error){
+                reject(error);
+            });
+        });
     }
 }
