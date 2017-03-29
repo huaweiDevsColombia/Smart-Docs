@@ -1,3 +1,4 @@
+let workers = require("./loadsWorkers");
 let tickets = require("./tickets");
 let reports = require("./reports");
 let templates = require("./templates");
@@ -335,17 +336,32 @@ module.exports = {
             }
         }
     },
-    loadEventSaveReport: () => {
+    loadEventSaveReport: function () {
         let reference = this;
         $("#btnSave").click(() => {
             let answer = smartEngine.saveAnswer();
-            console.log("Smart Engine Answer: " , answer);
-            if(answer.completed){
-              reference.showCompleteModal();  
-            }
-            else{
-              reference.showIncompleteModal();
-            }
+            let comments = [];
+            let status = (answer.completed) ? "SM-Status002" : "SM-Status001";
+            workers.getCurrentTime.then(function (currentTimeResponse) {
+                comments.push({ "author": username, "comment": "El reporte ha sido creado exitosamente en el sistema", "time": currentTimeResponse, "status": status })
+                var answerText = answer.userAnswer.filter(function (e, index) {
+                    console.log((a != undefined) ? "" : a.length)
+                    if (e.type == 'text') {
+                        return e;
+                    }
+                });
+                return reference.saveDatamodel(answerText, status, comments, tickets.ticketSelected.project, tickets.ticketSelected.region,
+                    tickets.ticketSelected.site_id, tickets.ticketSelected.supplier, tickets.ticketSelected.ticket_id, templates.templateSelected.id_template, tickets.ticketSelected.work_client)
+            }).then(function () {
+
+
+                if (answer.completed) {
+                    reference.showCompleteModal();
+                }
+                else {
+                    reference.showIncompleteModal();
+                }
+            });
         });
     },
     showCompleteModal: () => {
@@ -354,5 +370,65 @@ module.exports = {
     showIncompleteModal: (emptyFields) => {
         $("#emptyFieldsText").text(emptyFields);
         $("#emptyFields").modal({ backdrop: 'static', keyboard: false });
+    },
+    saveDatamodel: function (answer, status, comment, project, region, site, supplier, ticket, template, workClient) {
+
+        return new Promise(function (resolve, reject) {
+            /*
+            var http = new XMLHttpRequest();
+            var url = "https://100l-app.teleows.com/servicecreator/debugMessage";
+            var messageData = { "modified_by": "", "author": "", "last_modification": "", "creation_date": "", "answer": answer, "approval_date": "", "approver": "", "comments": comment, "completed_date": "", "id_report": "", "project": project, "region": region, "rejected_date": "", "rejecter": "", "site_id": site, "status": status, "supplier": supplier, "ticket_id": ticket, "web_template": template, "work_client": workClient, "active": "", "actual_model_id": "" }
+            var params = "comeFrom=page&messageId=10113&csrfToken=" + csrfToken + "&messageData=" + JSON.stringify(messageData);
+
+            http.open("POST", url, true);
+
+            //Send the proper header information along with the request
+            http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+            http.onreadystatechange = function () {//Call a function when the state changes.
+                if (http.readyState == 4 && http.status == 200) {
+                    console.log("Se ha guardado Exitosamente");
+                    console.log(http.readyState);
+                    console.log(http.response);
+                    resolve();
+                }
+            }
+            http.send(params);
+            */
+            MessageProcessor.process({
+                serviceId: "co_sm_report_create",
+                data: {
+                    "answer": JSON.stringify(answer),
+                    "status": status,
+                    "comment": JSON.stringify(comment),
+                    "project": project,
+                    "region": region,
+                    "site_id": site,
+                    "supplier": supplier,
+                    "ticket_id": ticket,
+                    "web_template": template,
+                    "work_client": workClient
+                },
+                success: function (data) {
+                    console.log(data);
+                    resolve();
+                }
+            });
+        });
+    },
+    saveAnswerByChunks: function (answer, idReport) {
+        return new Promise(function (resolve, reject) {
+            MessageProcessor.process({
+                serviceId: "co_sm_report_update_chunk",
+                data: {
+                    "id_report":idReport,
+                    "answer": answer
+                },
+                success: function (data) {
+                    console.log(data);
+                    resolve();
+                }
+            });
+        });
     }
 }

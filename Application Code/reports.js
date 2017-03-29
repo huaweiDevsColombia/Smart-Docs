@@ -100,5 +100,20 @@ module.exports = {
 
         }
             */
+    },
+    "saveAnswerRespond":"",
+    "saveAnswer": function(answer,status,comment,project,region,site,supplier,ticket,template,workClient){
+            let reference = this;
+            return new Promise(function(resolve,reject){
+                workers.saveAnswer(answer,status,comment,project,region,site,supplier,ticket,template,workClient)
+                .then(function(saveAnswerRespond){
+                    reference.saveAnswerRespond = saveAnswerRespond;
+                    console.log(reference.saveAnswerRespond);
+                    resolve();
+                })
+                .catch(function (error){
+                    reject(error);
+                });
+                });
     }
 }

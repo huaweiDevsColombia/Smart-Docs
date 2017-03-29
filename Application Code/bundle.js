@@ -388,6 +388,48 @@ function getTemplates(project) {
                 reject(error);
             });
         });
+    },
+    saveAnswer: 
+    function saveAnswer(answer,status,comment,project,region,site,supplier,ticket,template,workClient) {
+        return new Promise(function (resolve, reject) {
+            let workerSaveAnswer = $.ajax({
+                method: "GET",
+                dataType: "script",
+                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=ba646758-8ac5-4612-805a-de96867dd631&attachmentId=0e9ba0e7-5491-4516-8d05-c5f1e27bb333"
+            });
+            $.when(workerSaveAnswer).done(function (workerSaveAnswerResponse) {
+                $('<script>')
+                    .attr('type', 'javascript/worker')
+                    .attr('id', 'workerSaveAnswer')
+                    .text(workerSaveAnswerResponse)
+                    .appendTo('head');
+
+                let blob = new Blob([
+                    $("#workerSaveAnswer").text()
+                ], { type: "text/javascript" })
+
+                $("#workerSaveAnswer").remove();
+
+                var worker = new Worker(URL.createObjectURL(blob));
+
+                worker.addEventListener('message', function (e) {
+                    resolve(e.data);
+                }, false);
+
+                worker.addEventListener("error", function(error){
+                    console.log("Se ha producido un error : "+ error);
+                }
+                , false);
+
+                worker.postMessage({"answer":JSON.stringify(answer),"status":status,"comment":JSON.stringify(comment),"project":project,"region":region,"site":site,"supplier":supplier,"ticket":ticket,"template":template,"workClient":workClient,"userId": USER_ID,"token": csrfToken, "tenantId": tenantId,}); // Send data to our worker.
+
+                console.log("[Wk] - Get Template has Loaded");
+
+            }).fail(function (error) {
+                console.log("[Wk] - Get Template has Failed");
+                reject(error);
+            });
+        });
     }
     
 };
@@ -697,6 +739,7 @@ module.exports = {
 /* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
+let workers = __webpack_require__(0);
 let tickets = __webpack_require__(1);
 let reports = __webpack_require__(6);
 let templates = __webpack_require__(8);
@@ -1034,10 +1077,32 @@ module.exports = {
             }
         }
     },
-    loadEventSaveReport: () => {
+    loadEventSaveReport: function () {
+        let reference = this;
         $("#btnSave").click(() => {
             let answer = smartEngine.saveAnswer();
-            console.log("Smart Engine Answer: " , answer);
+            let comments = [];
+            let status = (answer.completed) ? "SM-Status002" : "SM-Status001";
+            workers.getCurrentTime.then(function (currentTimeResponse) {
+                comments.push({ "author": username, "comment": "El reporte ha sido creado exitosamente en el sistema", "time": currentTimeResponse, "status": status })
+                var answerText = answer.userAnswer.filter(function (e, index) {
+                    console.log((a != undefined) ? "" : a.length)
+                    if (e.type == 'text') {
+                        return e;
+                    }
+                });
+                return reference.saveDatamodel(answerText, status, comments, tickets.ticketSelected.project, tickets.ticketSelected.region,
+                    tickets.ticketSelected.site_id, tickets.ticketSelected.supplier, tickets.ticketSelected.ticket_id, templates.templateSelected.id_template, tickets.ticketSelected.work_client)
+            }).then(function () {
+
+
+                if (answer.completed) {
+                    reference.showCompleteModal();
+                }
+                else {
+                    reference.showIncompleteModal();
+                }
+            });
         });
     },
     showCompleteModal: () => {
@@ -1046,6 +1111,66 @@ module.exports = {
     showIncompleteModal: (emptyFields) => {
         $("#emptyFieldsText").text(emptyFields);
         $("#emptyFields").modal({ backdrop: 'static', keyboard: false });
+    },
+    saveDatamodel: function (answer, status, comment, project, region, site, supplier, ticket, template, workClient) {
+
+        return new Promise(function (resolve, reject) {
+            /*
+            var http = new XMLHttpRequest();
+            var url = "https://100l-app.teleows.com/servicecreator/debugMessage";
+            var messageData = { "modified_by": "", "author": "", "last_modification": "", "creation_date": "", "answer": answer, "approval_date": "", "approver": "", "comments": comment, "completed_date": "", "id_report": "", "project": project, "region": region, "rejected_date": "", "rejecter": "", "site_id": site, "status": status, "supplier": supplier, "ticket_id": ticket, "web_template": template, "work_client": workClient, "active": "", "actual_model_id": "" }
+            var params = "comeFrom=page&messageId=10113&csrfToken=" + csrfToken + "&messageData=" + JSON.stringify(messageData);
+
+            http.open("POST", url, true);
+
+            //Send the proper header information along with the request
+            http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+            http.onreadystatechange = function () {//Call a function when the state changes.
+                if (http.readyState == 4 && http.status == 200) {
+                    console.log("Se ha guardado Exitosamente");
+                    console.log(http.readyState);
+                    console.log(http.response);
+                    resolve();
+                }
+            }
+            http.send(params);
+            */
+            MessageProcessor.process({
+                serviceId: "co_sm_report_create",
+                data: {
+                    "answer": JSON.stringify(answer),
+                    "status": status,
+                    "comment": JSON.stringify(comment),
+                    "project": project,
+                    "region": region,
+                    "site_id": site,
+                    "supplier": supplier,
+                    "ticket_id": ticket,
+                    "web_template": template,
+                    "work_client": workClient
+                },
+                success: function (data) {
+                    console.log(data);
+                    resolve();
+                }
+            });
+        });
+    },
+    saveAnswerByChunks: function (answer, idReport) {
+        return new Promise(function (resolve, reject) {
+            MessageProcessor.process({
+                serviceId: "co_sm_report_update_chunk",
+                data: {
+                    "id_report":idReport,
+                    "answer": answer
+                },
+                success: function (data) {
+                    console.log(data);
+                    resolve();
+                }
+            });
+        });
     }
 }
 
@@ -1155,6 +1280,21 @@ module.exports = {
 
         }
             */
+    },
+    "saveAnswerRespond":"",
+    "saveAnswer": function(answer,status,comment,project,region,site,supplier,ticket,template,workClient){
+            let reference = this;
+            return new Promise(function(resolve,reject){
+                workers.saveAnswer(answer,status,comment,project,region,site,supplier,ticket,template,workClient)
+                .then(function(saveAnswerRespond){
+                    reference.saveAnswerRespond = saveAnswerRespond;
+                    console.log(reference.saveAnswerRespond);
+                    resolve();
+                })
+                .catch(function (error){
+                    reject(error);
+                });
+                });
     }
 }
 

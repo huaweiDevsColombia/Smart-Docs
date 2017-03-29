@@ -316,6 +316,48 @@ function getTemplates(project) {
                 reject(error);
             });
         });
+    },
+    saveAnswer: 
+    function saveAnswer(answer,status,comment,project,region,site,supplier,ticket,template,workClient) {
+        return new Promise(function (resolve, reject) {
+            let workerSaveAnswer = $.ajax({
+                method: "GET",
+                dataType: "script",
+                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=ba646758-8ac5-4612-805a-de96867dd631&attachmentId=0e9ba0e7-5491-4516-8d05-c5f1e27bb333"
+            });
+            $.when(workerSaveAnswer).done(function (workerSaveAnswerResponse) {
+                $('<script>')
+                    .attr('type', 'javascript/worker')
+                    .attr('id', 'workerSaveAnswer')
+                    .text(workerSaveAnswerResponse)
+                    .appendTo('head');
+
+                let blob = new Blob([
+                    $("#workerSaveAnswer").text()
+                ], { type: "text/javascript" })
+
+                $("#workerSaveAnswer").remove();
+
+                var worker = new Worker(URL.createObjectURL(blob));
+
+                worker.addEventListener('message', function (e) {
+                    resolve(e.data);
+                }, false);
+
+                worker.addEventListener("error", function(error){
+                    console.log("Se ha producido un error : "+ error);
+                }
+                , false);
+
+                worker.postMessage({"answer":JSON.stringify(answer),"status":status,"comment":JSON.stringify(comment),"project":project,"region":region,"site":site,"supplier":supplier,"ticket":ticket,"template":template,"workClient":workClient,"userId": USER_ID,"token": csrfToken, "tenantId": tenantId,}); // Send data to our worker.
+
+                console.log("[Wk] - Get Template has Loaded");
+
+            }).fail(function (error) {
+                console.log("[Wk] - Get Template has Failed");
+                reject(error);
+            });
+        });
     }
     
 };
