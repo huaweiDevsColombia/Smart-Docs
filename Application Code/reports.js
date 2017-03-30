@@ -3,6 +3,7 @@ module.exports = {
     allReports: "",
     allTickets:"",
     userGroup: "",
+    reportSelected :"",
     loadStatistic: function (userGroup) {
         let reference = this;
         reference.userGroup = userGroup;

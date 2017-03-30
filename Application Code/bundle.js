@@ -918,7 +918,7 @@ module.exports = {
             //Home Page
             case "page-004":
                 reports.loadStatistic(reference.userGroup).then(function () {
-                    reports.changeBoxStatistic(reports.allReports);
+                    reference.changeBoxStatistic(reports.allReports);
                 });
                 //reference.loadStatistic("", "statisticTotal");
                 //reference.loadStatistic("SM-Status002", "statisticCompleted");
@@ -957,7 +957,9 @@ module.exports = {
                 break;
             //Detail Report    
             case "page-021":
-
+                reports.loadStatistic(reference.userGroup).then(function () {
+                    reference.changeDataReport();
+                });
                 break;
             //Upload File
             case "page-013":
@@ -1031,7 +1033,7 @@ module.exports = {
             for (let ticket_type of ticketsType) {
                 for (let ticket of allTickets[ticket_type].results) {
                     ticket.ticket_priority = (ticket.ticket_priority == undefined) ? " N/A" : ticket.ticket_priority;
-                    $("#allTicketsDiv").append("<div class='col-sm-12 col-md-6 col-lg-3'><div class='pricing-table yellow'><div class=pt-header><div class=plan-pricing><div class=pricing style=font-size:1.5em>" + ticket.subject + "</div><div class=pricing-type> Reportes Asociados: 0 </div></div></div><div class=pt-body><h4>" + ticket.type + " - " + ticket.project + "</h4><ul class=plan-detail><li><b>Region :</b> " + ticket.region + " - " + ticket.city + "<li><b>Prioridad : </b>" + ticket.ticket_priority + "<li><b>Estado : </b>" + ticket.status + "<li><b>Ticket Id:<br></b>CM-" + ticket.orderid + "</ul></div><div class=pt-footer><button id='doReport_" + cont + "' class='btn btn-warning'type=button>Realizar Reporte</button></div></div></div>");
+                    $("#allTicketsDiv").append("<div class='col-sm-12 col-md-6 col-lg-6'><div class='pricing-table yellow'><div class=pt-header><div class=plan-pricing><div class=pricing style=font-size:1.5em>" + ticket.subject + "</div><div class=pricing-type> Reportes Asociados: 0 </div></div></div><div class=pt-body><h4>" + ticket.type + " - " + ticket.project + "</h4><ul class=plan-detail><li><b>Region :</b> " + ticket.region + " - " + ticket.city + "<li><b>Prioridad : </b>" + ticket.ticket_priority + "<li><b>Estado : </b>" + ticket.status + "<li><b>Ticket Id:<br></b>CM-" + ticket.orderid + "</ul></div><div class=pt-footer><button id='doReport_" + cont + "' class='btn btn-warning'type=button>Realizar Reporte</button></div></div></div>");
                     $("#doReport_" + cont).on("click", {
                         val:
                         {
@@ -1084,7 +1086,7 @@ module.exports = {
             let comments = [];
             let status = (answer.completed) ? "SM-Status002" : "SM-Status001";
             workers.getCurrentTime.then(function (currentTimeResponse) {
-                comments.push({ "author": username, "comment": "El reporte ha sido creado exitosamente en el sistema", "time": currentTimeResponse, "status": status })
+                comments.push({ "author": username, "comment": "El reporte ha sido creado exitosamente en el sistema", "time": JSON.parse(currentTimeResponse).result.localDateTime, "status": status })
                 var answersArr = JSON.parse(answer.userAnswer);
                 var answerText = answersArr.filter(function (e, index) {
                     console.log((answerText == undefined) ? "" : answerText.length)
@@ -1103,9 +1105,8 @@ module.exports = {
                     }
                 });
                 console.log(answerText);
-                console.log(typeof(answerText));
-                answerText = {"test":true};
-                return reference.saveAnswerByChunks(id_reportResponse, answerText);
+                console.log(typeof (answerText));
+                return reference.saveAnswerByChunks(answerText, id_reportResponse);
             }).then(function () {
                 console.log("Report was updated");
                 if (answer.completed) {
@@ -1114,15 +1115,16 @@ module.exports = {
                 else {
                     reference.showIncompleteModal();
                 }
+                reference.bootstrapPage('page-021');
             });
         });
     },
     showCompleteModal: () => {
-        $("#notEmptyFields").modal({ backdrop: 'static', keyboard: false });
+        $("#notEmptyFields").modal('show');
     },
     showIncompleteModal: (emptyFields) => {
         $("#emptyFieldsText").text(emptyFields);
-        $("#emptyFields").modal({ backdrop: 'static', keyboard: false });
+        $("#emptyFields").modal('show');
     },
     saveDatamodel: function (answer, status, comment, project, region, site, supplier, ticket, template, workClient) {
 
@@ -1153,7 +1155,7 @@ module.exports = {
                 data: {
                     "answer": JSON.stringify(answer),
                     "status": status,
-                    "comment": JSON.stringify(comment),
+                    "comments": JSON.stringify(comment),
                     "project": project,
                     "region": region,
                     "site_id": site,
@@ -1164,6 +1166,7 @@ module.exports = {
                 },
                 success: function (data) {
                     console.log(data);
+                    reports.reportSelected = { "id_report": data.id_report };
                     resolve(data.id_report);
                 }
             });
@@ -1183,6 +1186,64 @@ module.exports = {
                 }
             });
         });
+    },
+    changeDataReport: function () {
+        let reportSelected = reports.reportSelected;
+        let allReports = reports.allReports;
+
+        console.log(allReports);
+
+        var reportFiltered = allReports.filter(function (report) {
+            if (report.id_report == reportSelected.id_report) {
+                return report;
+            }
+        });
+
+        reportFiltered = reportFiltered[0];
+        reportFiltered.completed_date = (reportFiltered.completed_date == undefined) ? "" : reportFiltered.completed_date;
+        reportFiltered.approval_date = (reportFiltered.approval_date == undefined) ? "" : reportFiltered.approval_date;
+        reportFiltered.rejected_date = (reportFiltered.rejected_date == undefined) ? "" : reportFiltered.rejected_date;
+        reportFiltered.approver = (reportFiltered.approver == undefined) ? "" : reportFiltered.approver;
+        $("#templateName").text(templates.templateSelected.template_name);
+        $("#reportStatus").text(reportFiltered.status_name);
+        $("#reportCompletedDate").html("<b>Completed Date : </b> " + reportFiltered.completed_date);
+        $("#reportApprovalDate").html("<b>Approval Date : </b>" + reportFiltered.approval_date);
+        $("#reportRejectedDate").html("<b>Rejected Date : </b>" + reportFiltered.rejected_date);
+        $("#reportId").html("<b>Id Report: </b>" + reportFiltered.id_report);
+        $("#reportTicketId").html("<b>Id Ticket: </b>" + reportFiltered.ticket_id);
+        $("#reportTicketCustomer").html("<b>Id Ticket Cliente: </b>" + reportFiltered.work_client);
+        $("#reportProject").html("<b>Project: </b>" + reportFiltered.project);
+        $("#reportRegion").html("<b>Region: </b>" + reportFiltered.region);
+        $("#reportSiteId").html("<b>Id Site: </b>" + reportFiltered.site_id);
+        $("#reportSiteName").html("<b>Site Name: </b>" + reportFiltered.site_name);
+        $("#reportApprover").html("<b>Approver: </b>" + reportFiltered.approver);
+        $("#reportAuthor").html("<b>Author: </b>" + reportFiltered.author);
+        $("#ticketBackground").addClass(reportFiltered.status_background);
+    
+        let class_background_comment = "";
+        let status = "";
+        $("#showComments").html("");
+        for (let comment of reportFiltered.comments) {
+            switch (comment.status) {
+                case "SM-Status001":
+                    status = "DRAFT";
+                    class_background_comment = "list-group-item list-group-item-warning";
+                    break;
+                case "SM-Status002":
+                    status = "COMPLETED";
+                    class_background_comment = "list-group-item list-group-item-info";
+                    break;
+                case "SM-Status003":
+                    status = "APPROVE";
+                    class_background_comment = "list-group-item list-group-item-success";
+                    break;
+                case "SM-Status004":
+                    status = "REJECTED";
+                    class_background_comment = "list-group-item list-group-item-danger";
+                    break;
+            }
+            $("#showComments").append("<li class='" + class_background_comment + "'><span class='badge'>" + comment.time + "<br>" + status + "</span>" + comment.comment + "<br>" + comment.author + "</li>");
+        }
     }
 }
 
@@ -1195,6 +1256,7 @@ module.exports = {
     allReports: "",
     allTickets:"",
     userGroup: "",
+    reportSelected :"",
     loadStatistic: function (userGroup) {
         let reference = this;
         reference.userGroup = userGroup;
@@ -1315,7 +1377,7 @@ module.exports = {
 /***/ (function(module, exports) {
 
 module.exports = {
-    "imgTo64": (input, img) => {
+    "imgTo64": function (input, img)  {
         if (input.files && input.files[0]) {
             var reader = new FileReader();
             reader.onload = (e) => {
@@ -1324,7 +1386,7 @@ module.exports = {
             reader.readAsDataURL(input.files[0]);
         }
     },
-    "showTable": (tableId) => {
+    "showTable": function (tableId) {
         let reference = this;
         let tableValues = JSON.parse($("#" + tableId + "Value").val());
         //console.log("Show table in action", tableValues);
@@ -1365,7 +1427,7 @@ module.exports = {
         });
 
     },
-    "addToTable": (tableId, values, indix) => {
+    "addToTable": function (tableId, values, indix) {
         let reference = this;
         //console.log("Add to table in action" + values);
         let tableValues = $("#" + tableId + "Value").val();
@@ -1416,7 +1478,7 @@ module.exports = {
 
         });
     },
-    "executeEngine": (template) => {
+    "executeEngine": function (template){
         let reference = this;
         //Variable to generate a id for RadioButtons
         var id_gen = 0;
@@ -2242,7 +2304,7 @@ module.exports = {
             });
         });
     },
-    "validateField": (type, selector) => {
+    "validateField": function (type, selector){
 
         switch (type) {
 
@@ -2296,7 +2358,7 @@ module.exports = {
 
         }
     },
-    "saveAnswer": () => {
+    "saveAnswer": function (){
         var allReqComplete = false;
         var arrayAllReqComplete = [];
         allInputsFilled = [];
@@ -2356,7 +2418,7 @@ module.exports = {
 
         return response;
     },
-    "matchAnswers": (allInputsAnswer) => {
+    "matchAnswers": function (allInputsAnswer){
         let reference = this;
         allInputsAnswer.forEach((value, index) => {
 

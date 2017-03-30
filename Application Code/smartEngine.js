@@ -1,5 +1,5 @@
 module.exports = {
-    "imgTo64": (input, img) => {
+    "imgTo64": function (input, img)  {
         if (input.files && input.files[0]) {
             var reader = new FileReader();
             reader.onload = (e) => {
@@ -8,7 +8,7 @@ module.exports = {
             reader.readAsDataURL(input.files[0]);
         }
     },
-    "showTable": (tableId) => {
+    "showTable": function (tableId) {
         let reference = this;
         let tableValues = JSON.parse($("#" + tableId + "Value").val());
         //console.log("Show table in action", tableValues);
@@ -49,7 +49,7 @@ module.exports = {
         });
 
     },
-    "addToTable": (tableId, values, indix) => {
+    "addToTable": function (tableId, values, indix) {
         let reference = this;
         //console.log("Add to table in action" + values);
         let tableValues = $("#" + tableId + "Value").val();
@@ -100,7 +100,7 @@ module.exports = {
 
         });
     },
-    "executeEngine": (template) => {
+    "executeEngine": function (template){
         let reference = this;
         //Variable to generate a id for RadioButtons
         var id_gen = 0;
@@ -926,7 +926,7 @@ module.exports = {
             });
         });
     },
-    "validateField": (type, selector) => {
+    "validateField": function (type, selector){
 
         switch (type) {
 
@@ -980,7 +980,7 @@ module.exports = {
 
         }
     },
-    "saveAnswer": () => {
+    "saveAnswer": function (){
         var allReqComplete = false;
         var arrayAllReqComplete = [];
         allInputsFilled = [];
@@ -1040,7 +1040,7 @@ module.exports = {
 
         return response;
     },
-    "matchAnswers": (allInputsAnswer) => {
+    "matchAnswers": function (allInputsAnswer){
         let reference = this;
         allInputsAnswer.forEach((value, index) => {
 
