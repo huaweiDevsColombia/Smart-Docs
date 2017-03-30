@@ -344,17 +344,29 @@ module.exports = {
             let status = (answer.completed) ? "SM-Status002" : "SM-Status001";
             workers.getCurrentTime.then(function (currentTimeResponse) {
                 comments.push({ "author": username, "comment": "El reporte ha sido creado exitosamente en el sistema", "time": currentTimeResponse, "status": status })
-                var answerText = answer.userAnswer.filter(function (e, index) {
-                    console.log((a != undefined) ? "" : a.length)
-                    if (e.type == 'text') {
+                var answersArr = JSON.parse(answer.userAnswer);
+                var answerText = answersArr.filter(function (e, index) {
+                    console.log((answerText == undefined) ? "" : answerText.length)
+                    if (e.type == 'date') {
                         return e;
                     }
                 });
                 return reference.saveDatamodel(answerText, status, comments, tickets.ticketSelected.project, tickets.ticketSelected.region,
                     tickets.ticketSelected.site_id, tickets.ticketSelected.supplier, tickets.ticketSelected.ticket_id, templates.templateSelected.id_template, tickets.ticketSelected.work_client)
+            }).then(function (id_reportResponse) {
+                var answerArr = JSON.parse(answer.userAnswer);
+                var answerText = answerArr.filter(function (e, index) {
+                    console.log((answerText == undefined) ? "" : answerText.length)
+                    if (e.type == 'text') {
+                        return e;
+                    }
+                });
+                console.log(answerText);
+                console.log(typeof(answerText));
+                answerText = {"test":true};
+                return reference.saveAnswerByChunks(id_reportResponse, answerText);
             }).then(function () {
-
-
+                console.log("Report was updated");
                 if (answer.completed) {
                     reference.showCompleteModal();
                 }
@@ -411,7 +423,7 @@ module.exports = {
                 },
                 success: function (data) {
                     console.log(data);
-                    resolve();
+                    resolve(data.id_report);
                 }
             });
         });
@@ -419,9 +431,9 @@ module.exports = {
     saveAnswerByChunks: function (answer, idReport) {
         return new Promise(function (resolve, reject) {
             MessageProcessor.process({
-                serviceId: "co_sm_report_update_chunk",
+                serviceId: "co_sm_report_update_chunks",
                 data: {
-                    "id_report":idReport,
+                    "id_report": idReport,
                     "answer": answer
                 },
                 success: function (data) {
