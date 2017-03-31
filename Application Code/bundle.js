@@ -1082,6 +1082,7 @@ module.exports = {
     loadEventSaveReport: function () {
         let reference = this;
         $("#btnSave").click(() => {
+            let id_reportResponse = "";
             let answer = smartEngine.saveAnswer();
             let comments = [];
             let status = (answer.completed) ? "SM-Status002" : "SM-Status001";
@@ -1096,7 +1097,8 @@ module.exports = {
                 });
                 return reference.saveDatamodel(answerText, status, comments, tickets.ticketSelected.project, tickets.ticketSelected.region,
                     tickets.ticketSelected.site_id, tickets.ticketSelected.supplier, tickets.ticketSelected.ticket_id, templates.templateSelected.id_template, tickets.ticketSelected.work_client)
-            }).then(function (id_reportResponse) {
+            }).then(function (id_reportRes) {
+                id_reportResponse = id_reportRes;
                 var answerArr = JSON.parse(answer.userAnswer);
                 var answerText = answerArr.filter(function (e, index) {
                     console.log((answerText == undefined) ? "" : answerText.length)
@@ -1104,10 +1106,24 @@ module.exports = {
                         return e;
                     }
                 });
-                console.log(answerText);
-                console.log(typeof (answerText));
                 return reference.saveAnswerByChunks(answerText, id_reportResponse);
             }).then(function () {
+                var answerArr = JSON.parse(answer.userAnswer);
+                var answerImage1Label = answerArr.filter(function (e, index) {
+                    if (e.type == 'image1Label') {
+                        return e;
+                    }
+                });
+                return reference.saveAnswerByChunksImages(answerImage1Label, id_reportResponse);
+            })/*.then(function () {
+                var answerArr = JSON.parse(answer.userAnswer);
+                var answerImage2Labels = answerArr.filter(function (e, index) {
+                    if (e.type == 'image2Labels') {
+                        return e;
+                    }
+                });
+                return reference.saveAnswerByChunksImages(answerImage2Labels, id_reportResponse);
+            })*/.then(function () {
                 console.log("Report was updated");
                 if (answer.completed) {
                     reference.showCompleteModal();
@@ -1153,7 +1169,7 @@ module.exports = {
             MessageProcessor.process({
                 serviceId: "co_sm_report_create",
                 data: {
-                    "answer": JSON.stringify(answer),
+                    "answer": "[" + JSON.stringify(answer) + "]",
                     "status": status,
                     "comments": JSON.stringify(comment),
                     "project": project,
@@ -1178,13 +1194,25 @@ module.exports = {
                 serviceId: "co_sm_report_update_chunks",
                 data: {
                     "id_report": idReport,
-                    "answer": answer
+                    "answer": JSON.stringify(answer)
                 },
                 success: function (data) {
                     console.log(data);
                     resolve();
                 }
             });
+        });
+    },
+    saveAnswerByChunksImages: function (answer, idReport) {
+        let reference = this;
+        return new Promise(function (resolve, reject) {
+            while (answer.length > 0) {
+                reference.saveAnswerByChunks(answer.splice(0, 10), idReport).
+                    then(function () {
+                       reference.saveAnswerByChunksImages(answer,idReport); 
+                        resolve();
+                    });
+            }
         });
     },
     changeDataReport: function () {
@@ -1219,7 +1247,7 @@ module.exports = {
         $("#reportApprover").html("<b>Approver: </b>" + reportFiltered.approver);
         $("#reportAuthor").html("<b>Author: </b>" + reportFiltered.author);
         $("#ticketBackground").addClass(reportFiltered.status_background);
-    
+
         let class_background_comment = "";
         let status = "";
         $("#showComments").html("");
