@@ -1,13 +1,15 @@
 self.addEventListener('message', function (e) 
 {
+    var responseWebJson;
     var response = [];
+
     var promise = get(e.data.batchIdWeb,e.data.attachmentIdWeb);
 
     promise.then(function(jsonWebResponse){
-        response.push({jsonWebResponse:jsonWebResponse});
+       responseWebJson = jsonWebResponse;
         return get(e.data.batchIdPdf,e.data.attachmentIdPdf);
     }).then(function (jsonPdfResponse){
-        response.push({jsonPdfResponse:jsonPdfResponse});
+        response.push({jsonWeb:responseWebJson,jsonPdf:jsonPdfResponse});
         self.postMessage(response);
         self.close();
     });
