@@ -950,6 +950,12 @@ module.exports = {
                         reference.loadEventSaveReport();
                     });
 
+                if(reports.reportSelected.id_report != undefined){
+                    reports.loadReport().then(function(){
+                        console.log("Load Report: " + reports.reportResponse);
+                    });
+                }   
+
                 break;
             //My Reports    
             case "page-014":
@@ -1086,44 +1092,120 @@ module.exports = {
             let answer = smartEngine.saveAnswer();
             let comments = [];
             let status = (answer.completed) ? "SM-Status002" : "SM-Status001";
+            let idReport;
+
+            var answerDate;
+            var answerText;
+            var answerTextArea;
+            var answerNumber;
+            var answerSelect;
+            var answerMultiSelect;
+            var answerList;
+            var answerTable;
+            var answerImage1Label;
+            var answerImage2Labels;
+
             workers.getCurrentTime.then(function (currentTimeResponse) {
                 comments.push({ "author": username, "comment": "El reporte ha sido creado exitosamente en el sistema", "time": JSON.parse(currentTimeResponse).result.localDateTime, "status": status })
                 var answersArr = JSON.parse(answer.userAnswer);
-                var answerText = answersArr.filter(function (e, index) {
-                    console.log((answerText == undefined) ? "" : answerText.length)
+                answerDate = answersArr.filter(function (e, index) {
                     if (e.type == 'date') {
                         return e;
                     }
                 });
-                return reference.saveDatamodel(answerText, status, comments, tickets.ticketSelected.project, tickets.ticketSelected.region,
-                    tickets.ticketSelected.site_id, tickets.ticketSelected.supplier, tickets.ticketSelected.ticket_id, templates.templateSelected.id_template, tickets.ticketSelected.work_client)
-            }).then(function (id_reportRes) {
-                id_reportResponse = id_reportRes;
-                var answerArr = JSON.parse(answer.userAnswer);
-                var answerText = answerArr.filter(function (e, index) {
+                answerDate = (answerDate.length == 0) ? JSON.stringify(answerDate) : "[" + JSON.stringify(answerDate) + "]";
+                answerText = answersArr.filter(function (e, index) {
                     console.log((answerText == undefined) ? "" : answerText.length)
                     if (e.type == 'text') {
                         return e;
                     }
                 });
-                return reference.saveAnswerByChunks(answerText, id_reportResponse);
-            }).then(function () {
-                var answerArr = JSON.parse(answer.userAnswer);
-                var answerImage1Label = answerArr.filter(function (e, index) {
+                answerText = (answerText.length == 0) ? JSON.stringify(answerText) : "[" + JSON.stringify(answerText) + "]";
+                answerTextArea = answersArr.filter(function (e, index) {
+                    console.log((answerText == undefined) ? "" : answerText.length)
+                    if (e.type == 'textArea') {
+                        return e;
+                    }
+                });
+                answerTextArea = (answerTextArea.length == 0) ? JSON.stringify(answerTextArea) : "[" + JSON.stringify(answerTextArea) + "]";
+                answerNumber = answersArr.filter(function (e, index) {
+                    if (e.type == 'number') {
+                        return e;
+                    }
+                });
+                answerNumber = (answerNumber.length == 0) ? JSON.stringify(answerNumber) : "[" + JSON.stringify(answerNumber) + "]";
+                answerSelect = answersArr.filter(function (e, index) {
+                    if (e.type == 'select') {
+                        return e;
+                    }
+                });
+                answerSelect = (answerSelect.length == 0) ? JSON.stringify(answerSelect) : "[" + JSON.stringify(answerSelect) + "]";
+                answerMultiSelect = answersArr.filter(function (e, index) {
+                    console.log((answerText == undefined) ? "" : answerText.length)
+                    if (e.type == 'multiSelect') {
+                        return e;
+                    }
+                });
+                answerMultiSelect = (answerMultiSelect.length == 0) ? JSON.stringify(answerMultiSelect) : "[" + JSON.stringify(answerMultiSelect) + "]";
+                answerList = answersArr.filter(function (e, index) {
+                    if (e.type == 'list') {
+                        return e;
+                    }
+                });
+                answerList = (answerList.length == 0) ? JSON.stringify(answerList) : "[" + JSON.stringify(answerList) + "]";
+                answerTable = answersArr.filter(function (e, index) {
+                    if (e.type == 'table') {
+                        return e;
+                    }
+                });
+                answerTable = (answerTable.length == 0) ? JSON.stringify(answerTable) : "[" + JSON.stringify(answerTable) + "]";
+                answerImage1Label = answersArr.filter(function (e, index) {
                     if (e.type == 'image1Label') {
                         return e;
                     }
                 });
-                return reference.saveAnswerByChunksImages(answerImage1Label, id_reportResponse);
-            })/*.then(function () {
-                var answerArr = JSON.parse(answer.userAnswer);
-                var answerImage2Labels = answerArr.filter(function (e, index) {
+                answerImage1Label = (answerImage1Label.length == 0) ? JSON.stringify(answerImage1Label) : "[" + JSON.stringify(answerImage1Label) + "]";
+                answerImage1Label = JSON.parse(answerImage1Label);
+                answerImage1Label = answerImage1Label[0];
+                answerImage2Labels = answersArr.filter(function (e, index) {
                     if (e.type == 'image2Labels') {
                         return e;
                     }
                 });
-                return reference.saveAnswerByChunksImages(answerImage2Labels, id_reportResponse);
-            })*/.then(function () {
+                answerImage2Labels = (answerImage2Labels.length == 0) ? JSON.stringify(answerImage2Labels) : "[" + JSON.stringify(answerImage2Labels) + "]";
+                answerImage2Labels = (JSON.parse(answerImage2Labels).length == 0) ? JSON.parse(answerImage2Labels) : "[" + JSON.parse(answerImage2Labels)[0] + "]";
+                console.log("Creating the Report");
+                return reference.saveDatamodel(answerDate, status, comments, tickets.ticketSelected.project, tickets.ticketSelected.region,
+                    tickets.ticketSelected.site_id, tickets.ticketSelected.supplier, tickets.ticketSelected.ticket_id, templates.templateSelected.id_template, tickets.ticketSelected.work_client)
+            }).then(function (idReportRes) {
+                idReport = idReportRes;
+                console.log("Saving Text Fields");
+                return reference.saveAnswerByChunks(answerText, idReport);
+            }).then(function () {
+                console.log("Saving TextArea Fields");
+                return reference.saveAnswerByChunks(answerTextArea, idReport);
+            }).then(function () {
+                console.log("Saving Number Fields");
+                return reference.saveAnswerByChunks(answerNumber, idReport);
+            }).then(function () {
+                console.log("Saving Select Fields");
+                return reference.saveAnswerByChunks(answerSelect, idReport);
+            }).then(function () {
+                console.log("Saving MultiSelect Fields");
+                return reference.saveAnswerByChunks(answerMultiSelect, idReport);
+            }).then(function () {
+                console.log("Saving List Fields");
+                return reference.saveAnswerByChunks(answerList, idReport);
+            }).then(function () {
+                console.log("Saving Table Fields");
+                return reference.saveAnswerByChunks(answerTable, idReport);
+            }).then(function () {
+                console.log("Saving Image1Label Fields");
+                return reference.saveAnswerByChunksImages(answerImage1Label, idReport);
+            }).then(function () {
+                console.log("Saving Image2Labels Fields");
+                return reference.saveAnswerByChunksImages(answerImage2Labels, idReport);
+            }).then(function () {
                 console.log("Report was updated");
                 if (answer.completed) {
                     reference.showCompleteModal();
@@ -1169,7 +1251,7 @@ module.exports = {
             MessageProcessor.process({
                 serviceId: "co_sm_report_create",
                 data: {
-                    "answer": "[" + JSON.stringify(answer) + "]",
+                    "answer": answer,
                     "status": status,
                     "comments": JSON.stringify(comment),
                     "project": project,
@@ -1194,7 +1276,7 @@ module.exports = {
                 serviceId: "co_sm_report_update_chunks",
                 data: {
                     "id_report": idReport,
-                    "answer": JSON.stringify(answer)
+                    "answer": answer
                 },
                 success: function (data) {
                     console.log(data);
@@ -1206,27 +1288,30 @@ module.exports = {
     saveAnswerByChunksImages: function (answer, idReport) {
         let reference = this;
         return new Promise(function (resolve, reject) {
-            while (answer.length > 0) {
-                reference.saveAnswerByChunks(answer.splice(0, 10), idReport).
-                    then(function () {
-                       reference.saveAnswerByChunksImages(answer,idReport); 
-                        resolve();
-                    });
-            }
+            reference.saveAnswerByChunks("[" + JSON.stringify(answer.splice(0, 10)) + "]", idReport).
+                then(function () {
+                    if (answer.length >= 10) {
+                        reference.saveAnswerByChunksImages(answer, idReport);
+                    }
+                    else {
+                        reference.saveAnswerByChunks("[" + JSON.stringify(answer) + "]", idReport);
+                    }
+                });
+            resolve();
         });
     },
     changeDataReport: function () {
+        let reference = this;
+        reference.enableButtonsDetailReport();
         let reportSelected = reports.reportSelected;
         let allReports = reports.allReports;
-
         console.log(allReports);
-
         var reportFiltered = allReports.filter(function (report) {
             if (report.id_report == reportSelected.id_report) {
                 return report;
             }
         });
-
+        console.log(reportFiltered);
         reportFiltered = reportFiltered[0];
         reportFiltered.completed_date = (reportFiltered.completed_date == undefined) ? "" : reportFiltered.completed_date;
         reportFiltered.approval_date = (reportFiltered.approval_date == undefined) ? "" : reportFiltered.approval_date;
@@ -1272,6 +1357,12 @@ module.exports = {
             }
             $("#showComments").append("<li class='" + class_background_comment + "'><span class='badge'>" + comment.time + "<br>" + status + "</span>" + comment.comment + "<br>" + comment.author + "</li>");
         }
+    },
+    enableButtonsDetailReport: function(){
+        let reference = this;
+        $("#detail_ticket_edit").click(function(){
+            reference.bootstrapPage('page-005');
+        });
     }
 }
 
@@ -1282,9 +1373,10 @@ module.exports = {
 let workers = __webpack_require__(0);
 module.exports = {
     allReports: "",
-    allTickets:"",
+    allTickets: "",
     userGroup: "",
-    reportSelected :"",
+    reportSelected: "",
+    reportResponse: "",
     loadStatistic: function (userGroup) {
         let reference = this;
         reference.userGroup = userGroup;
@@ -1297,6 +1389,22 @@ module.exports = {
             });
         });
     },
+    loadReport: function (idReport) {
+        let reference = this;
+        return new Promise(function (resolve, reject) {
+            MessageProcessor.process({
+                serviceId: "co_sm_report_get",
+                data: {
+                    "id_report": reference.reportSelected.idReport
+                },
+                success: function (data) {
+                    console.log(data.result);
+                    reference.reportResponse = data.result;
+                    resolve();
+                }
+            });
+        });
+    },
     fillMyReports: function () {
         let reference = this;
         //Save the reference of one report to don't add again
@@ -1304,99 +1412,99 @@ module.exports = {
 
         let reportsFiltered = reference.allReports.filter(function (report) {
             console.log(wrapReports.indexOf(report.ticket_id));
-            if(wrapReports.indexOf(report.ticket_id) == -1){
+            if (wrapReports.indexOf(report.ticket_id) == -1) {
                 wrapReports.push(report.ticket_id);
                 return report;
             }
         });
 
-        console.log("Wrap Reports: " , reportsFiltered)
-        
-       /*
-        let cont = 0;
-        for (let recordsContainer of reports) {
-            for (let records of recordsContainer.results) {
+        console.log("Wrap Reports: ", reportsFiltered)
 
-                $("#" + table + " > tbody").append("<tr class=" + records.class_sm + "><td style='cursor:pointer' id='" + item_name + cont + "'>" + records.ticket_id + "</td><td>" + records.template_name + "</td><td>" + records.site_id + "</td><td>" + records.site_name + "</td><td>" + records.work_client + "</td><td>" + records.project + "</td><td>" + records.region + "</td><td style='text-align:-webkit-center'>" + records.status + "</td><td>" + records.creation_date + "</td><td>" + records.author + "</td><td>" + records.id_report + "</td><td><input id='" + item_name + cont + "Details' type='image' name='image' src='https://cdn2.iconfinder.com/data/icons/flat-ui-icons-24-px/24/eye-24-20.png'></td></tr>");
-
-                $('#' + item_name + cont).add('#' + item_name + cont + "Details").on("click",
-                    {
-                        "approval_date": records.approval_date,
-                        "approver": records.approver,
-                        "author": records.author,
-                        "comment": records.comment,
-                        "completed_date": records.completed_date,
-                        "creation_date": records.creation_date,
-                        "file": records.file,
-                        "file_location": records.file_location,
-                        "id_report": records.id_report,
-                        "last_modification": records.last_modification,
-                        "modified_by": records.modified_by,
-                        "project": records.project,
-                        "region": records.region,
-                        "rejected_date": records.rejected_date,
-                        "site_id": records.site_id,
-                        "site_name": records.site_name,
-                        "status": records.status,
-                        "status_id": records.status_id,
-                        "supplier": records.supplier,
-                        "ticket_id": records.ticket_id,
-                        "web_template": records.template_name,
-                        "web_template_location": records.web_template_location,
-                        "web_template_form": records.web_template_form,
-                        "work_client": records.work_client,
-                        "class_sm": records.class_sm
-                    }
-                    , function (event) {
-                        let ticket_selected = {
-                            "approval_date": (event.data.approval_date == undefined) ? "" : event.data.approval_date,
-                            "approver": (event.data.approver == undefined) ? "" : event.data.approver,
-                            "author": (event.data.author == undefined) ? "" : event.data.author,
-                            "comment": (event.data.comment == undefined) ? [] : event.data.comment,
-                            "completed_date": (event.data.completed_date == undefined) ? "" : event.data.completed_date,
-                            "creation_date": (event.data.creation_date == undefined) ? "" : event.data.creation_date,
-                            "file": (event.data.file == undefined) ? "" : event.data.file,
-                            "file_location": (event.data.file_location == undefined) ? "" : event.data.file_location,
-                            "id_report": (event.data.id_report == undefined) ? "" : event.data.id_report,
-                            "last_modification": (event.data.last_modification == undefined) ? "" : event.data.last_modification,
-                            "modified_by": (event.data.modified_by == undefined) ? "" : event.data.modified_by,
-                            "project": (event.data.project == undefined) ? "" : event.data.project,
-                            "region": (event.data.region == undefined) ? "" : event.data.region,
-                            "rejected_date": (event.data.rejected_date == undefined) ? "" : event.data.rejected_date,
-                            "site_id": (event.data.site_id == undefined) ? "" : event.data.site_id,
-                            "site_name": (event.data.site_name == undefined) ? "" : event.data.site_name,
-                            "status": (event.data.status == undefined) ? "" : event.data.status,
-                            "status_id": (event.data.status_id == undefined) ? "" : event.data.status_id,
-                            "supplier": (event.data.supplier == undefined) ? "" : event.data.supplier,
-                            "ticket_id": (event.data.ticket_id == undefined) ? "" : event.data.ticket_id,
-                            "web_template": (event.data.web_template == undefined) ? "" : event.data.web_template,
-                            "web_template_location": (event.data.web_template_location == undefined) ? "" : event.data.web_template_location,
-                            "web_template_form": (event.data.web_template_form == undefined) ? "" : event.data.web_template_form,
-                            "work_client": (event.data.work_client == undefined) ? "" : event.data.work_client,
-                            "class_sm": (event.data.class_sm == undefined) ? "" : event.data.class_sm
-                        };
-
-                    })
-                cont += 1;
-            }
-
-        }
-            */
+        /*
+         let cont = 0;
+         for (let recordsContainer of reports) {
+             for (let records of recordsContainer.results) {
+ 
+                 $("#" + table + " > tbody").append("<tr class=" + records.class_sm + "><td style='cursor:pointer' id='" + item_name + cont + "'>" + records.ticket_id + "</td><td>" + records.template_name + "</td><td>" + records.site_id + "</td><td>" + records.site_name + "</td><td>" + records.work_client + "</td><td>" + records.project + "</td><td>" + records.region + "</td><td style='text-align:-webkit-center'>" + records.status + "</td><td>" + records.creation_date + "</td><td>" + records.author + "</td><td>" + records.id_report + "</td><td><input id='" + item_name + cont + "Details' type='image' name='image' src='https://cdn2.iconfinder.com/data/icons/flat-ui-icons-24-px/24/eye-24-20.png'></td></tr>");
+ 
+                 $('#' + item_name + cont).add('#' + item_name + cont + "Details").on("click",
+                     {
+                         "approval_date": records.approval_date,
+                         "approver": records.approver,
+                         "author": records.author,
+                         "comment": records.comment,
+                         "completed_date": records.completed_date,
+                         "creation_date": records.creation_date,
+                         "file": records.file,
+                         "file_location": records.file_location,
+                         "id_report": records.id_report,
+                         "last_modification": records.last_modification,
+                         "modified_by": records.modified_by,
+                         "project": records.project,
+                         "region": records.region,
+                         "rejected_date": records.rejected_date,
+                         "site_id": records.site_id,
+                         "site_name": records.site_name,
+                         "status": records.status,
+                         "status_id": records.status_id,
+                         "supplier": records.supplier,
+                         "ticket_id": records.ticket_id,
+                         "web_template": records.template_name,
+                         "web_template_location": records.web_template_location,
+                         "web_template_form": records.web_template_form,
+                         "work_client": records.work_client,
+                         "class_sm": records.class_sm
+                     }
+                     , function (event) {
+                         let ticket_selected = {
+                             "approval_date": (event.data.approval_date == undefined) ? "" : event.data.approval_date,
+                             "approver": (event.data.approver == undefined) ? "" : event.data.approver,
+                             "author": (event.data.author == undefined) ? "" : event.data.author,
+                             "comment": (event.data.comment == undefined) ? [] : event.data.comment,
+                             "completed_date": (event.data.completed_date == undefined) ? "" : event.data.completed_date,
+                             "creation_date": (event.data.creation_date == undefined) ? "" : event.data.creation_date,
+                             "file": (event.data.file == undefined) ? "" : event.data.file,
+                             "file_location": (event.data.file_location == undefined) ? "" : event.data.file_location,
+                             "id_report": (event.data.id_report == undefined) ? "" : event.data.id_report,
+                             "last_modification": (event.data.last_modification == undefined) ? "" : event.data.last_modification,
+                             "modified_by": (event.data.modified_by == undefined) ? "" : event.data.modified_by,
+                             "project": (event.data.project == undefined) ? "" : event.data.project,
+                             "region": (event.data.region == undefined) ? "" : event.data.region,
+                             "rejected_date": (event.data.rejected_date == undefined) ? "" : event.data.rejected_date,
+                             "site_id": (event.data.site_id == undefined) ? "" : event.data.site_id,
+                             "site_name": (event.data.site_name == undefined) ? "" : event.data.site_name,
+                             "status": (event.data.status == undefined) ? "" : event.data.status,
+                             "status_id": (event.data.status_id == undefined) ? "" : event.data.status_id,
+                             "supplier": (event.data.supplier == undefined) ? "" : event.data.supplier,
+                             "ticket_id": (event.data.ticket_id == undefined) ? "" : event.data.ticket_id,
+                             "web_template": (event.data.web_template == undefined) ? "" : event.data.web_template,
+                             "web_template_location": (event.data.web_template_location == undefined) ? "" : event.data.web_template_location,
+                             "web_template_form": (event.data.web_template_form == undefined) ? "" : event.data.web_template_form,
+                             "work_client": (event.data.work_client == undefined) ? "" : event.data.work_client,
+                             "class_sm": (event.data.class_sm == undefined) ? "" : event.data.class_sm
+                         };
+ 
+                     })
+                 cont += 1;
+             }
+ 
+         }
+             */
     },
-    "saveAnswerRespond":"",
-    "saveAnswer": function(answer,status,comment,project,region,site,supplier,ticket,template,workClient){
-            let reference = this;
-            return new Promise(function(resolve,reject){
-                workers.saveAnswer(answer,status,comment,project,region,site,supplier,ticket,template,workClient)
-                .then(function(saveAnswerRespond){
+    "saveAnswerRespond": "",
+    "saveAnswer": function (answer, status, comment, project, region, site, supplier, ticket, template, workClient) {
+        let reference = this;
+        return new Promise(function (resolve, reject) {
+            workers.saveAnswer(answer, status, comment, project, region, site, supplier, ticket, template, workClient)
+                .then(function (saveAnswerRespond) {
                     reference.saveAnswerRespond = saveAnswerRespond;
                     console.log(reference.saveAnswerRespond);
                     resolve();
                 })
-                .catch(function (error){
+                .catch(function (error) {
                     reject(error);
                 });
-                });
+        });
     }
 }
 

@@ -209,6 +209,12 @@ module.exports = {
                         reference.loadEventSaveReport();
                     });
 
+                if(reports.reportSelected.id_report != undefined){
+                    reports.loadReport().then(function(){
+                        console.log("Load Report: " + reports.reportResponse);
+                    });
+                }   
+
                 break;
             //My Reports    
             case "page-014":
@@ -345,44 +351,118 @@ module.exports = {
             let answer = smartEngine.saveAnswer();
             let comments = [];
             let status = (answer.completed) ? "SM-Status002" : "SM-Status001";
+            let idReport;
+
+            var answerDate;
+            var answerText;
+            var answerTextArea;
+            var answerNumber;
+            var answerSelect;
+            var answerMultiSelect;
+            var answerList;
+            var answerTable;
+            var answerImage1Label;
+            var answerImage2Labels;
+
             workers.getCurrentTime.then(function (currentTimeResponse) {
                 comments.push({ "author": username, "comment": "El reporte ha sido creado exitosamente en el sistema", "time": JSON.parse(currentTimeResponse).result.localDateTime, "status": status })
                 var answersArr = JSON.parse(answer.userAnswer);
-                var answerText = answersArr.filter(function (e, index) {
-                    console.log((answerText == undefined) ? "" : answerText.length)
+                answerDate = answersArr.filter(function (e, index) {
                     if (e.type == 'date') {
                         return e;
                     }
                 });
-                return reference.saveDatamodel(answerText, status, comments, tickets.ticketSelected.project, tickets.ticketSelected.region,
-                    tickets.ticketSelected.site_id, tickets.ticketSelected.supplier, tickets.ticketSelected.ticket_id, templates.templateSelected.id_template, tickets.ticketSelected.work_client)
-            }).then(function (id_reportRes) {
-                id_reportResponse = id_reportRes;
-                var answerArr = JSON.parse(answer.userAnswer);
-                var answerText = answerArr.filter(function (e, index) {
-                    console.log((answerText == undefined) ? "" : answerText.length)
+                answerDate = (answerDate.length == 0) ? JSON.stringify(answerDate) : "[" + JSON.stringify(answerDate) + "]";
+                answerText = answersArr.filter(function (e, index) {
                     if (e.type == 'text') {
                         return e;
                     }
                 });
-                return reference.saveAnswerByChunks(answerText, id_reportResponse);
-            }).then(function () {
-                var answerArr = JSON.parse(answer.userAnswer);
-                var answerImage1Label = answerArr.filter(function (e, index) {
+                answerText = (answerText.length == 0) ? JSON.stringify(answerText) : "[" + JSON.stringify(answerText) + "]";
+                answerTextArea = answersArr.filter(function (e, index) {
+                    if (e.type == 'textArea') {
+                        return e;
+                    }
+                });
+                answerTextArea = (answerTextArea.length == 0) ? JSON.stringify(answerTextArea) : "[" + JSON.stringify(answerTextArea) + "]";
+                answerNumber = answersArr.filter(function (e, index) {
+                    if (e.type == 'number') {
+                        return e;
+                    }
+                });
+                answerNumber = (answerNumber.length == 0) ? JSON.stringify(answerNumber) : "[" + JSON.stringify(answerNumber) + "]";
+                answerSelect = answersArr.filter(function (e, index) {
+                    if (e.type == 'select') {
+                        return e;
+                    }
+                });
+                answerSelect = (answerSelect.length == 0) ? JSON.stringify(answerSelect) : "[" + JSON.stringify(answerSelect) + "]";
+                answerMultiSelect = answersArr.filter(function (e, index) {
+                    console.log((answerText == undefined) ? "" : answerText.length)
+                    if (e.type == 'multiSelect') {
+                        return e;
+                    }
+                });
+                answerMultiSelect = (answerMultiSelect.length == 0) ? JSON.stringify(answerMultiSelect) : "[" + JSON.stringify(answerMultiSelect) + "]";
+                answerList = answersArr.filter(function (e, index) {
+                    if (e.type == 'list') {
+                        return e;
+                    }
+                });
+                answerList = (answerList.length == 0) ? JSON.stringify(answerList) : "[" + JSON.stringify(answerList) + "]";
+                answerTable = answersArr.filter(function (e, index) {
+                    if (e.type == 'table') {
+                        return e;
+                    }
+                });
+                answerTable = (answerTable.length == 0) ? JSON.stringify(answerTable) : "[" + JSON.stringify(answerTable) + "]";
+                answerImage1Label = answersArr.filter(function (e, index) {
                     if (e.type == 'image1Label') {
                         return e;
                     }
                 });
-                return reference.saveAnswerByChunksImages(answerImage1Label, id_reportResponse);
-            })/*.then(function () {
-                var answerArr = JSON.parse(answer.userAnswer);
-                var answerImage2Labels = answerArr.filter(function (e, index) {
+                answerImage1Label = (answerImage1Label.length == 0) ? JSON.stringify(answerImage1Label) : "[" + JSON.stringify(answerImage1Label) + "]";
+                answerImage1Label = JSON.parse(answerImage1Label);
+                answerImage1Label = answerImage1Label[0];
+                answerImage2Labels = answersArr.filter(function (e, index) {
                     if (e.type == 'image2Labels') {
                         return e;
                     }
                 });
-                return reference.saveAnswerByChunksImages(answerImage2Labels, id_reportResponse);
-            })*/.then(function () {
+                answerImage2Labels = (answerImage2Labels.length == 0) ? JSON.stringify(answerImage2Labels) : "[" + JSON.stringify(answerImage2Labels) + "]";
+                answerImage2Labels = (JSON.parse(answerImage2Labels).length == 0) ? JSON.parse(answerImage2Labels) : "[" + JSON.parse(answerImage2Labels)[0] + "]";
+                console.log("Creating the Report");
+                return reference.saveDatamodel(answerDate, status, comments, tickets.ticketSelected.project, tickets.ticketSelected.region,
+                    tickets.ticketSelected.site_id, tickets.ticketSelected.supplier, tickets.ticketSelected.ticket_id, templates.templateSelected.id_template, tickets.ticketSelected.work_client)
+            }).then(function (idReportRes) {
+                idReport = idReportRes;
+                console.log("Saving Text Fields");
+                return reference.saveAnswerByChunks(answerText, idReport);
+            }).then(function () {
+                console.log("Saving TextArea Fields");
+                return reference.saveAnswerByChunks(answerTextArea, idReport);
+            }).then(function () {
+                console.log("Saving Number Fields");
+                return reference.saveAnswerByChunks(answerNumber, idReport);
+            }).then(function () {
+                console.log("Saving Select Fields");
+                return reference.saveAnswerByChunks(answerSelect, idReport);
+            }).then(function () {
+                console.log("Saving MultiSelect Fields");
+                return reference.saveAnswerByChunks(answerMultiSelect, idReport);
+            }).then(function () {
+                console.log("Saving List Fields");
+                return reference.saveAnswerByChunks(answerList, idReport);
+            }).then(function () {
+                console.log("Saving Table Fields");
+                return reference.saveAnswerByChunks(answerTable, idReport);
+            }).then(function () {
+                console.log("Saving Image1Label Fields");
+                return reference.saveAnswerByChunksImages(answerImage1Label, idReport);
+            }).then(function () {
+                console.log("Saving Image2Labels Fields");
+                return reference.saveAnswerByChunksImages(answerImage2Labels, idReport);
+            }).then(function () {
                 console.log("Report was updated");
                 if (answer.completed) {
                     reference.showCompleteModal();
@@ -428,7 +508,7 @@ module.exports = {
             MessageProcessor.process({
                 serviceId: "co_sm_report_create",
                 data: {
-                    "answer": "[" + JSON.stringify(answer) + "]",
+                    "answer": answer,
                     "status": status,
                     "comments": JSON.stringify(comment),
                     "project": project,
@@ -453,7 +533,7 @@ module.exports = {
                 serviceId: "co_sm_report_update_chunks",
                 data: {
                     "id_report": idReport,
-                    "answer": JSON.stringify(answer)
+                    "answer": answer
                 },
                 success: function (data) {
                     console.log(data);
@@ -465,27 +545,30 @@ module.exports = {
     saveAnswerByChunksImages: function (answer, idReport) {
         let reference = this;
         return new Promise(function (resolve, reject) {
-            while (answer.length > 0) {
-                reference.saveAnswerByChunks(answer.splice(0, 10), idReport).
-                    then(function () {
-                       reference.saveAnswerByChunksImages(answer,idReport); 
-                        resolve();
-                    });
-            }
+            reference.saveAnswerByChunks("[" + JSON.stringify(answer.splice(0, 10)) + "]", idReport).
+                then(function () {
+                    if (answer.length >= 10) {
+                        reference.saveAnswerByChunksImages(answer, idReport);
+                    }
+                    else {
+                        reference.saveAnswerByChunks("[" + JSON.stringify(answer) + "]", idReport);
+                    }
+                });
+            resolve();
         });
     },
     changeDataReport: function () {
+        let reference = this;
+        reference.enableButtonsDetailReport();
         let reportSelected = reports.reportSelected;
         let allReports = reports.allReports;
-
         console.log(allReports);
-
         var reportFiltered = allReports.filter(function (report) {
             if (report.id_report == reportSelected.id_report) {
                 return report;
             }
         });
-
+        console.log(reportFiltered);
         reportFiltered = reportFiltered[0];
         reportFiltered.completed_date = (reportFiltered.completed_date == undefined) ? "" : reportFiltered.completed_date;
         reportFiltered.approval_date = (reportFiltered.approval_date == undefined) ? "" : reportFiltered.approval_date;
@@ -531,5 +614,11 @@ module.exports = {
             }
             $("#showComments").append("<li class='" + class_background_comment + "'><span class='badge'>" + comment.time + "<br>" + status + "</span>" + comment.comment + "<br>" + comment.author + "</li>");
         }
+    },
+    enableButtonsDetailReport: function(){
+        let reference = this;
+        $("#detail_ticket_edit").click(function(){
+            reference.bootstrapPage('page-005');
+        });
     }
 }
