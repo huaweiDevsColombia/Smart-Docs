@@ -209,11 +209,11 @@ module.exports = {
                         reference.loadEventSaveReport();
                     });
 
-                if(reports.reportSelected.id_report != undefined){
-                    reports.loadReport().then(function(){
+                if (reports.reportSelected.id_report != undefined) {
+                    reports.loadReport().then(function () {
                         console.log("Load Report: " + reports.reportResponse);
                     });
-                }   
+                }
 
                 break;
             //My Reports    
@@ -353,126 +353,145 @@ module.exports = {
             let status = (answer.completed) ? "SM-Status002" : "SM-Status001";
             let idReport;
 
-            var answerDate;
-            var answerText;
-            var answerTextArea;
-            var answerNumber;
-            var answerSelect;
-            var answerMultiSelect;
-            var answerList;
-            var answerTable;
-            var answerImage1Label;
-            var answerImage2Labels;
+            let answerDate;
+            let answerDateTime;
+            let answerTime;
+            let answerWeek;
+            let answerMonth;
+            let answerText;
+            let answerTextArea;
+            let answerNumber;
+            let answerRadio;
+            let answerCheckbox;
+            let answerSelect;
+            let answerMultiSelect;
+            let answerList;
+            let answerTable;
+            let answerImages;
+            let answerImages_1;
+            let answerImages_2;
+            let answerImages_3;
+            let answerImages_4;
 
             workers.getCurrentTime.then(function (currentTimeResponse) {
                 comments.push({ "author": username, "comment": "El reporte ha sido creado exitosamente en el sistema", "time": JSON.parse(currentTimeResponse).result.localDateTime, "status": status })
                 var answersArr = JSON.parse(answer.userAnswer);
-                answerDate = answersArr.filter(function (e, index) {
-                    if (e.type == 'date') {
-                        return e;
-                    }
-                });
-                answerDate = (answerDate.length == 0) ? JSON.stringify(answerDate) : "[" + JSON.stringify(answerDate) + "]";
-                answerText = answersArr.filter(function (e, index) {
-                    if (e.type == 'text') {
-                        return e;
-                    }
-                });
-                answerText = (answerText.length == 0) ? JSON.stringify(answerText) : "[" + JSON.stringify(answerText) + "]";
-                answerTextArea = answersArr.filter(function (e, index) {
-                    if (e.type == 'textArea') {
-                        return e;
-                    }
-                });
-                answerTextArea = (answerTextArea.length == 0) ? JSON.stringify(answerTextArea) : "[" + JSON.stringify(answerTextArea) + "]";
-                answerNumber = answersArr.filter(function (e, index) {
-                    if (e.type == 'number') {
-                        return e;
-                    }
-                });
-                answerNumber = (answerNumber.length == 0) ? JSON.stringify(answerNumber) : "[" + JSON.stringify(answerNumber) + "]";
-                answerSelect = answersArr.filter(function (e, index) {
-                    if (e.type == 'select') {
-                        return e;
-                    }
-                });
-                answerSelect = (answerSelect.length == 0) ? JSON.stringify(answerSelect) : "[" + JSON.stringify(answerSelect) + "]";
-                answerMultiSelect = answersArr.filter(function (e, index) {
-                    console.log((answerText == undefined) ? "" : answerText.length)
-                    if (e.type == 'multiSelect') {
-                        return e;
-                    }
-                });
-                answerMultiSelect = (answerMultiSelect.length == 0) ? JSON.stringify(answerMultiSelect) : "[" + JSON.stringify(answerMultiSelect) + "]";
-                answerList = answersArr.filter(function (e, index) {
-                    if (e.type == 'list') {
-                        return e;
-                    }
-                });
-                answerList = (answerList.length == 0) ? JSON.stringify(answerList) : "[" + JSON.stringify(answerList) + "]";
-                answerTable = answersArr.filter(function (e, index) {
-                    if (e.type == 'table') {
-                        return e;
-                    }
-                });
-                answerTable = (answerTable.length == 0) ? JSON.stringify(answerTable) : "[" + JSON.stringify(answerTable) + "]";
-                answerImage1Label = answersArr.filter(function (e, index) {
-                    if (e.type == 'image1Label') {
-                        return e;
-                    }
-                });
-                answerImage1Label = (answerImage1Label.length == 0) ? JSON.stringify(answerImage1Label) : "[" + JSON.stringify(answerImage1Label) + "]";
-                answerImage1Label = JSON.parse(answerImage1Label);
-                answerImage1Label = answerImage1Label[0];
-                answerImage2Labels = answersArr.filter(function (e, index) {
-                    if (e.type == 'image2Labels') {
-                        return e;
-                    }
-                });
-                answerImage2Labels = (answerImage2Labels.length == 0) ? JSON.stringify(answerImage2Labels) : "[" + JSON.stringify(answerImage2Labels) + "]";
-                answerImage2Labels = (JSON.parse(answerImage2Labels).length == 0) ? JSON.parse(answerImage2Labels) : "[" + JSON.parse(answerImage2Labels)[0] + "]";
+                reference.userAnswer = answersArr;
+
+                answerDate = reference.filterByAnswerType('date');
+                answerDateTime = reference.filterByAnswerType('datetime');
+                answerTime = reference.filterByAnswerType('time');
+                answerWeek = reference.filterByAnswerType('week');
+                answerMonth = reference.filterByAnswerType('month');
+                answerText = reference.filterByAnswerType('text');
+                answerTextArea = reference.filterByAnswerType('textArea');
+                answerNumber = reference.filterByAnswerType('number');
+                answerTime = reference.filterByAnswerType('time');
+                answerRadio = reference.filterByAnswerType('radio');
+                answerCheckbox = reference.filterByAnswerType('checkbox');
+                answerSelect = reference.filterByAnswerType('select');
+                answerMultiSelect = reference.filterByAnswerType('multiSelect');
+                answerList = reference.filterByAnswerType('list');
+                answerTable = reference.filterByAnswerType('table');
+                answerImages = reference.filterByAnswerTypeImage();
+
+                answerImages_1 = answerImages.splice(0, 20);
+                answerImages_2 = answerImages.splice(0, 20);
+                answerImages_3 = answerImages.splice(0, 20);
+                answerImages_4 = answerImages.splice(0, 20);
+
                 console.log("Creating the Report");
-                return reference.saveDatamodel(answerDate, status, comments, tickets.ticketSelected.project, tickets.ticketSelected.region,
+                return reference.saveDatamodel(status, comments, tickets.ticketSelected.project, tickets.ticketSelected.region,
                     tickets.ticketSelected.site_id, tickets.ticketSelected.supplier, tickets.ticketSelected.ticket_id, templates.templateSelected.id_template, tickets.ticketSelected.work_client)
+
             }).then(function (idReportRes) {
                 idReport = idReportRes;
-                console.log("Saving Text Fields");
-                return reference.saveAnswerByChunks(answerText, idReport);
-            }).then(function () {
-                console.log("Saving TextArea Fields");
-                return reference.saveAnswerByChunks(answerTextArea, idReport);
-            }).then(function () {
-                console.log("Saving Number Fields");
-                return reference.saveAnswerByChunks(answerNumber, idReport);
-            }).then(function () {
-                console.log("Saving Select Fields");
-                return reference.saveAnswerByChunks(answerSelect, idReport);
-            }).then(function () {
-                console.log("Saving MultiSelect Fields");
-                return reference.saveAnswerByChunks(answerMultiSelect, idReport);
-            }).then(function () {
-                console.log("Saving List Fields");
-                return reference.saveAnswerByChunks(answerList, idReport);
-            }).then(function () {
-                console.log("Saving Table Fields");
-                return reference.saveAnswerByChunks(answerTable, idReport);
-            }).then(function () {
-                console.log("Saving Image1Label Fields");
-                return reference.saveAnswerByChunksImages(answerImage1Label, idReport);
-            }).then(function () {
-                console.log("Saving Image2Labels Fields");
-                return reference.saveAnswerByChunksImages(answerImage2Labels, idReport);
-            }).then(function () {
-                console.log("Report was updated");
-                if (answer.completed) {
+                let saveAnswerDate = reference.saveAnswer("date_answer", answerDate, idReport);
+                let saveAnswerDateTime = reference.saveAnswer("datetime_answer", answerDateTime, idReport);
+                let saveAnswerTime = reference.saveAnswer("time_answer", answerTime, idReport);
+                let saveAnswerWeek = reference.saveAnswer("week_answer", answerWeek, idReport);
+                let saveAnswerMonth = reference.saveAnswer("month_answer", answerMonth, idReport);
+                let saveAnswerText = reference.saveAnswer("text_answer", answerText, idReport);
+                let saveAnswerRadio = reference.saveAnswer("radio_answer", answerRadio, idReport);
+                let saveAnswerCheckBox = reference.saveAnswer("radio_answer", answerCheckbox, idReport);
+                let saveAnswerSelect = reference.saveAnswer("select_answer", answerSelect, idReport);
+                let saveAnswerMultiSelect = reference.saveAnswer("multiselect_answer", answerMultiSelect, idReport);
+                let saveAnswerList = reference.saveAnswer("list_answer", answerList, idReport);
+                let saveAnswerTable = reference.saveAnswer("table_answer", answerTable, idReport);
+                let saveAnswerImage_1 = reference.saveAnswer("image_answer_1", "[" + JSON.stringify(answerImages_1) + "]", idReport);
+                let saveAnswerImage_2 = reference.saveAnswer("image_answer_2", "[" + JSON.stringify(answerImages_2) + "]", idReport);
+                let saveAnswerImage_3 = reference.saveAnswer("image_answer_3", "[" + JSON.stringify(answerImages_3) + "]", idReport);
+                let saveAnswerImage_4 = reference.saveAnswer("image_answer_4", "[" + JSON.stringify(answerImages_4) + "]", idReport);
+
+                Promise.all([saveAnswerDate, saveAnswerDateTime, saveAnswerTime, saveAnswerWeek, saveAnswerMonth, saveAnswerText, saveAnswerRadio, answerCheckbox, saveAnswerSelect, saveAnswerMultiSelect, saveAnswerList, saveAnswerTable, saveAnswerImage_1 , saveAnswerImage_2, saveAnswerImage_3, saveAnswerImage_4 ]).then(values => {
                     reference.showCompleteModal();
-                }
-                else {
-                    reference.showIncompleteModal();
-                }
-                reference.bootstrapPage('page-021');
+                });
             });
+
+            /*.then(function (idReportRes) {
+                    idReport = idReportRes;
+                    console.log("Saving Text Fields");
+                    return reference.saveAnswerByChunks(answerText, idReport);
+                }).then(function () {
+                    console.log("Saving TextArea Fields");
+                    return reference.saveAnswerByChunks(answerTextArea, idReport);
+                }).then(function () {
+                    console.log("Saving Number Fields");
+                    return reference.saveAnswerByChunks(answerNumber, idReport);
+                }).then(function () {
+                    console.log("Saving Select Fields");
+                    return reference.saveAnswerByChunks(answerSelect, idReport);
+                }).then(function () {
+                    console.log("Saving MultiSelect Fields");
+                    return reference.saveAnswerByChunks(answerMultiSelect, idReport);
+                }).then(function () {
+                    console.log("Saving List Fields");
+                    return reference.saveAnswerByChunks(answerList, idReport);
+                }).then(function () {
+                    console.log("Saving Table Fields");
+                    return reference.saveAnswerByChunks(answerTable, idReport);
+                }).then(function () {
+                    console.log("Saving Image1Label Fields");
+                    return reference.saveAnswerByChunksImages(answerImage1Label, idReport);
+                }).then(function () {
+                    console.log("Saving Image2Labels Fields");
+                    return reference.saveAnswerByChunksImages(answerImage2Labels, idReport);
+                }).then(function () {
+                    console.log("Report was updated");
+                    if (answer.completed) {
+                        reference.showCompleteModal();
+                    }
+                    else {
+                        reference.showIncompleteModal();
+                    }
+                    reference.bootstrapPage('page-021');
+                });
+                */
+
         });
+    },
+    userAnswer: "",
+    filterByAnswerType: function (type) {
+        let reference = this;
+        var answerFiltered = reference.userAnswer.filter(function (e, index) {
+            if (e.type == type) {
+                //reference.userAnswer.splice(index, 1);
+                return e;
+            }
+        });
+        return (answerFiltered.length == 0) ? JSON.stringify(answerFiltered) : "[" + JSON.stringify(answerFiltered) + "]";
+
+    },
+    filterByAnswerTypeImage: function () {
+        let reference = this;
+        var answerFiltered = reference.userAnswer.filter(function (e, index) {
+            if (e.type == 'image1Label' || e.type == "image2Labels") {
+                //reference.userAnswer.splice(index, 1);
+                return e;
+            }
+        });
+        return answerFiltered;
+
     },
     showCompleteModal: () => {
         $("#notEmptyFields").modal('show');
@@ -481,7 +500,7 @@ module.exports = {
         $("#emptyFieldsText").text(emptyFields);
         $("#emptyFields").modal('show');
     },
-    saveDatamodel: function (answer, status, comment, project, region, site, supplier, ticket, template, workClient) {
+    saveDatamodel: function (status, comment, project, region, site, supplier, ticket, template, workClient) {
 
         return new Promise(function (resolve, reject) {
             /*
@@ -508,7 +527,6 @@ module.exports = {
             MessageProcessor.process({
                 serviceId: "co_sm_report_create",
                 data: {
-                    "answer": answer,
                     "status": status,
                     "comments": JSON.stringify(comment),
                     "project": project,
@@ -523,6 +541,21 @@ module.exports = {
                     console.log(data);
                     reports.reportSelected = { "id_report": data.id_report };
                     resolve(data.id_report);
+                }
+            });
+        });
+    },
+    saveAnswer: function (type, answer, idReport) {
+        return new Promise(function (resolve, reject) {
+            let data = {};
+            data["id_report"] = idReport;
+            data[type] = answer;
+            MessageProcessor.process({
+                serviceId: "co_sm_report_update",
+                data: data,
+                success: function (data) {
+                    console.log(data);
+                    resolve();
                 }
             });
         });
@@ -615,9 +648,9 @@ module.exports = {
             $("#showComments").append("<li class='" + class_background_comment + "'><span class='badge'>" + comment.time + "<br>" + status + "</span>" + comment.comment + "<br>" + comment.author + "</li>");
         }
     },
-    enableButtonsDetailReport: function(){
+    enableButtonsDetailReport: function () {
         let reference = this;
-        $("#detail_ticket_edit").click(function(){
+        $("#detail_ticket_edit").click(function () {
             reference.bootstrapPage('page-005');
         });
     }
