@@ -224,9 +224,13 @@ module.exports = {
             //My Reports    
             case "page-014":
                 reports.loadStatistic(reference.userGroup).then(function () {
-                    reports.fillMyReports();
+                    reference.fillDataTableMyReports(reports.fillMyReports());
                     $('#allReportsNavTab a:first').tab('show');
                 });
+                break;
+            // My Reports Related
+            case "page-024":
+                  reference.fillBoxesReportsRelated(reports.fillMyReportsRelated());
                 break;
             //Detail Report    
             case "page-021":
@@ -234,9 +238,6 @@ module.exports = {
                     reference.changeDataReport();
                 });
                 break;
-            //Upload File
-            case "page-013":
-
         }
     },
     changeBoxStatistic: function (allReports) {
@@ -682,5 +683,34 @@ module.exports = {
         $("#detail_ticket_edit").click(function () {
             reference.bootstrapPage('page-005');
         });
+    },
+    fillDataTableMyReports: function (reportsFiltered) {
+        let reference = this;
+        console.log("Wrap Reports: ", reportsFiltered)
+        let cont = 0;
+        for (let report of reportsFiltered) {
+            $("#dataTableAllReport > tbody").append("<tr><td style='cursor:pointer' id='allReports" + cont + "'>" + report.ticket_id + "</td><td>" + 0 + "</td><td>" + report.site_id + "</td><td>" + report.site_name + "</td><td>" + report.project + "</td><td>" + report.region + "</td><td style='text-align:-webkit-center'>" + report.work_client + "</td><td><input id='allReports" + cont + "Details' type='image' name='image' src='https://cdn2.iconfinder.com/data/icons/flat-ui-icons-24-px/24/eye-24-20.png'></td></tr>");
+            $('#allReports' + cont).add('#allReports' + cont + "Details").on("click", { "id_ticket": report.ticket_id }
+                , function (event) {
+                    reports.reportSelected = { "ticket_id": event.data.id_ticket };
+                    reference.bootstrapPage('page-024');
+                });
+        }
+    },
+    fillBoxesReportsRelated: function (reportsFiltered) {
+        let reference = this;
+        let cont = 0;
+        for (let report of reportsFiltered) {
+            $("#allReportsRelatedDiv").append("<div class='col-sm-12 col-md-6 col-lg-6'><div class='pricing-table " + report.status_background + "'><div class=pt-header><div class=plan-pricing><div class=pricing style=font-size:1.5em>" + report.web_template + "</div><div class=pricing-type> Ultima Modificacion:" + report.web_template + "</div></div></div><div class=pt-body><h4>" + report.status_name + "</h4><ul class=plan-detail><li><b>Autor :</b> " + report.author + "<li><b>Ultima Modificacion : </b>" + report.modified_by + "<li><b>Report Id:<br></b>" + report.id_report + "</ul></div><div class=pt-footer><button id='viewReport_" + cont + "' class='btn btn-" + report.status_class + "'type=button>Ver Detalles</button></div></div></div>");
+            $("#viewReport_" + cont).on("click", {
+                val: { "id_report": report.id_report, }
+            }, function (event) {
+                reports.reportSelected = { "ticket_id": reference.reportSelected.ticket_id, "id_report": event.data.id_report };
+                reference.bootstrapPage('page-005');
+
+            });
+            cont++;
+        }
     }
+
 }

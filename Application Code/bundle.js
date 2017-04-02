@@ -439,308 +439,7 @@ function getTemplates(project) {
 /***/ (function(module, exports, __webpack_require__) {
 
 let workers = __webpack_require__(0);
-
-module.exports = {
-    allTickets: "",
-    loadTickets: function () {
-        let reference = this;
-        return new Promise(function (resolve, reject) {
-            workers.getTickets().then(function (data) {
-                reference.allTickets = JSON.parse(data)[0];
-                resolve();
-            }).catch(function (error) {
-                reject(error);
-            });
-        });
-    },
-    ticketSelected:""
-}
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports) {
-
-module.exports = {
-    /**
- * Load JS hierarchically - loadHighJS
- * bootstrap  
- */
-    "loadHighJS":function () {
-    return new Promise(function (resolve, reject) {
-        let bootstrap = $.ajax({
-            method: "GET",
-            dataType: "script",
-            url: "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
-        });
-        $.when(bootstrap).done(function (bootstrapResponse) {
-            resolve();
-        }).fail(function (error) {
-            reject(error);
-        });
-    });
-},
-/**
- * Load JS hierarchically - loadMediumJS
- * Boostrap Switch - JqueryMinHeight - Jquery Datatables
- */
-    "loadMediumJS": function loadMediumJS() {
-    return new Promise(function (resolve, reject) {
-        let bootstrapSwitch = $.ajax({
-            method: "GET",
-            dataType: "script",
-            url: "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.4/js/bootstrap-switch.min.js"
-        });
-        let jqueryMinHeight = $.ajax({
-            method: "GET",
-            dataType: "script",
-            url: "https://cdnjs.cloudflare.com/ajax/libs/jquery.matchHeight/0.7.2/jquery.matchHeight-min.js"
-        });
-        let jqueryDataTables = $.ajax({
-            method: "GET",
-            dataType: "script",
-            url: "https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"
-        });
-        let pdfmake = $.ajax({
-            method: "GET",
-            dataType: "script",
-            url: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.26/pdfmake.min.js"
-        });
-        $.when(bootstrapSwitch, jqueryMinHeight, jqueryDataTables, pdfmake)
-            .done(function (bootstrapSwitchResponse, jqueryMinHeightResponse, jqueryDataTablesResponse, pdfmakeResponse) {
-                resolve();
-            }).fail(function (error) {
-                reject(error);
-            });
-    });
-},
-/**
- * Load JS hierarchically - LoadLowJS
- * Bootstrap Datatables - buttonsDatatble - vs_fonts
- */
-    "loadLowJS":function () {
-    return new Promise(function (resolve, reject) {
-        let bootstrapDataTables = $.ajax({
-            method: "GET",
-            dataType: "script",
-            url: "https://cdn.datatables.net/1.10.13/js/dataTables.bootstrap.min.js"
-        });
-        let vs_fonts = $.ajax({
-            method: "GET",
-            dataType: "script",
-            url: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.26/vfs_fonts.js"
-        });
-        $.when(vs_fonts)
-            .done(function ( vs_fontsResponse) {
-                resolve();
-            }).fail(function (error) {
-                reject(error);
-            });
-    });
-},
-    "loadLow2JS":function(){
-     return new Promise(function (resolve, reject) {
-        let buttonsDataTables = $.ajax({
-            method: "GET",
-            dataType: "script",
-            url: "https://cdn.datatables.net/buttons/1.2.4/js/dataTables.buttons.min.js"
-        });
-        let jszip = $.ajax({
-            method: "GET",
-            dataType: "script",
-            url: "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"
-        });
-        let buttonsHTML5 = $.ajax({
-            method: "GET",
-            dataType: "script",
-            url: "https://cdn.datatables.net/buttons/1.2.4/js/buttons.html5.min.js"
-        });
-
-        $.when(buttonsDataTables, jszip, buttonsHTML5)
-            .done(function (buttonsDataTablesResponse, jszipResponse, buttonsHTML5) {
-                resolve();
-            }).fail(function (error) {
-                reject(error);
-            });
-    });
-},
-/**
- * Load Custom JS - OWS JS Datamodel
- * Smart Engine - Application
- */
-    "loadcustomJS":function(){
-    return new Promise(function(resolve,reject){
-        let smart_Engine = $.ajax({
-                method: "GET",
-                dataType: "script",
-                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=d63a70c5-afde-4275-840a-9c1de5003be3&attachmentId=88381a7d-39ae-4221-9813-f4855faae131"
-            });
-            let app = $.ajax({
-                method: "GET",
-                dataType: "script",
-                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=5b674633-91a7-4b71-ba90-88431847ae47&attachmentId=655573"
-            });
-            $.when(smart_Engine, app)
-                .done(function (smart_EngineResponse, appResponse) {
-                    resolve();
-                }).fail(function (error) {
-                    reject(error);
-                });
-    });
-}
-}
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports) {
-
-/**
- * Load Fonts from Google Apis
- * Family = Lato & Family = Roboto
- */
-function loadFonts() {
-    return new Promise(function (resolve, reject) {
-        let latoFonts = $.ajax({
-            method: "GET",
-            url: "https://fonts.googleapis.com/css?family=Lato"
-        });
-        let robotoFonts = $.ajax({
-            method: "GET",
-            url: "https://fonts.googleapis.com/css?family=Roboto"
-        });
-        $.when(latoFonts, robotoFonts).done(function (latoFontsResponse, robotoFontsResponse) {
-            $('<style />').text(latoFontsResponse).appendTo($('head'));
-            $('<style />').text(robotoFontsResponse).appendTo($('head'));
-            resolve();
-            console.log("loadFontsLibs has Loaded");
-        }).fail(function (error) {
-            console.log("loadFontsLibs has Failed");
-            reject(error);
-        })
-    });
-}
-/**
- * Load Icons from fontAwesome
- */
-function loadIcons() {
-    return new Promise(function (resolve, reject) {
-        let fontAwesome = $.ajax({
-            method: "GET",
-            dataType: "script",
-            url: "https://use.fontawesome.com/4e0d3cfdd0.js"
-        });
-        $.when(fontAwesome).done(function (fontAwesomeResponse) {
-            resolve();
-            console.log("loadIconLibs has Loaded");
-        }).fail(function (error) {
-            reject(error);
-            console.log("loadIconLibs has Failed");
-        });
-    });
-}
-/**
- * Load CSS Libs like Bootstrap, Datatables , Animate, DataButtons...
- */
-function loadCSS() {
-    return new Promise(function (resolve, reject) {
-        let bootstrap = $.ajax({
-            method: "GET",
-            url: "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-        });
-        let animate = $.ajax({
-            method: "GET",
-            url: "https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css"
-        });
-        let select2 = $.ajax({
-            method: "GET",
-            url: "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css"
-        });
-        let buttonsDataTables = $.ajax({
-            method: "GET",
-            url: "https://cdn.datatables.net/buttons/1.2.4/css/buttons.dataTables.min.css"
-        });
-        let bootstrapDataTables = $.ajax({
-            method: "GET",
-            url: "https://cdn.datatables.net/1.10.13/css/dataTables.bootstrap.min.css"
-        });
-        let jqueryDataTables = $.ajax({
-            method: "GET",
-            url: "https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css"
-        });
-
-        $.when(bootstrap, animate, select2, buttonsDataTables, bootstrapDataTables, jqueryDataTables)
-            .done(function (bootstrapRespond, animateRespond, select2Respond, buttonsDataTablesRespond, bootstrapDataTablesRespond, jqueryDataTablesRespond) {
-
-                $('<style />').text(bootstrapRespond).appendTo($('head'));
-                $('<style />').text(animateRespond).appendTo($('head'));
-                $('<style />').text(select2Respond).appendTo($('head'));
-                $('<style />').text(buttonsDataTablesRespond).appendTo($('head'));
-                //$('<style />').text(bootstrapDataTablesRespond).appendTo($('head'));
-                $('<style />').text(jqueryDataTablesRespond).appendTo($('head'));
-                resolve();
-                console.log("loadCssLibs has Loaded");
-            }).fail(function (error) {
-                reject(error);
-                console.log("loadCssLibs has failed");
-            });
-    });
-}
-/**
- * Load Custom Libs from OWS CSS Datamodel 
- */
-function loadCustomLibs(){
-    return new Promise(function(resolve,reject){
-        let style = $.ajax({
-                method: "GET",
-                url: "https://100l-app.teleows.com/servicecreator/pageruntime/pageScript.action?appName=CO_SMART_DOCS&name=style%20&type=css"
-            });
-            let flat_blue = $.ajax({
-                method: "GET",
-                url: "https://100l-app.teleows.com/servicecreator/pageruntime/pageScript.action?appName=CO_SMART_DOCS&name=flat%20blue&type=css"
-            });
-            $.when(style, flat_blue).done(function (styleResponse, flat_blueResponse) {
-                $('<style />').text(styleResponse).appendTo($('head'));
-                $('<style />').text(flat_blueResponse).appendTo($('head'));
-                resolve();
-                console.log("loadCustomLibs has Loaded");
-            }).fail(function (error) {
-                console.log("loadCustomLibs has Failed");
-                reject(error);
-            });
-    });
-}
-module.exports = {
-    "loadFonts": loadFonts(),
-    "loadIcons": loadIcons(),
-    "loadCSS":loadCSS(),
-    "loadCustomCss":loadCustomLibs()
-}
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports) {
-
-module.exports = {
-    addMessageLoder: function (selector,location) {
-        $(location).addClass("loader");
-        $(location).append("<div id='loader' class='loader-container text-center color-white'><div><i style='color:white' class='fa fa-spinner fa-pulse fa-3x'></i></div><div style='color:white'><h4>Smart Docs <br> <small> Cargando Recursos <div id='"+selector+"'> </div> </small> <br><small>... Se esta preparando para ti ...</small></h4><h5>Desarollado por: Huawei Colombia  <br> OSS IT Team </h5></div></div>");
-    },
-    changeMessageLoader: function (selector, msg) {
-        console.log("Selector: "+ selector);
-        console.log("Message: " + msg);
-        $("#" + selector).text(msg);
-    },
-    removeMessageLoader: function (location){
-        $("#loader").remove();
-        $(location).removeClass("loader");
-    }
-}
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-let workers = __webpack_require__(0);
-let tickets = __webpack_require__(1);
+let tickets = __webpack_require__(2);
 let reports = __webpack_require__(6);
 let templates = __webpack_require__(8);
 let smartEngine = __webpack_require__(7);
@@ -965,9 +664,13 @@ module.exports = {
             //My Reports    
             case "page-014":
                 reports.loadStatistic(reference.userGroup).then(function () {
-                    reports.fillMyReports();
+                    reference.fillDataTableMyReports(reports.fillMyReports());
                     $('#allReportsNavTab a:first').tab('show');
                 });
+                break;
+            // My Reports Related
+            case "page-024":
+                  reference.fillBoxesReportsRelated(reports.fillMyReportsRelated());
                 break;
             //Detail Report    
             case "page-021":
@@ -975,9 +678,6 @@ module.exports = {
                     reference.changeDataReport();
                 });
                 break;
-            //Upload File
-            case "page-013":
-
         }
     },
     changeBoxStatistic: function (allReports) {
@@ -1423,6 +1123,336 @@ module.exports = {
         $("#detail_ticket_edit").click(function () {
             reference.bootstrapPage('page-005');
         });
+    },
+    fillDataTableMyReports: function (reportsFiltered) {
+        let reference = this;
+        console.log("Wrap Reports: ", reportsFiltered)
+        let cont = 0;
+        for (let report of reportsFiltered) {
+            $("#dataTableAllReport > tbody").append("<tr><td style='cursor:pointer' id='allReports" + cont + "'>" + report.ticket_id + "</td><td>" + 0 + "</td><td>" + report.site_id + "</td><td>" + report.site_name + "</td><td>" + report.project + "</td><td>" + report.region + "</td><td style='text-align:-webkit-center'>" + report.work_client + "</td><td><input id='allReports" + cont + "Details' type='image' name='image' src='https://cdn2.iconfinder.com/data/icons/flat-ui-icons-24-px/24/eye-24-20.png'></td></tr>");
+            $('#allReports' + cont).add('#allReports' + cont + "Details").on("click", { "id_ticket": report.ticket_id }
+                , function (event) {
+                    reports.reportSelected = { "ticket_id": event.data.id_ticket };
+                    reference.bootstrapPage('page-024');
+                });
+        }
+    },
+    fillBoxesReportsRelated: function (reportsFiltered) {
+        let reference = this;
+        let cont = 0;
+        for (let report of reportsFiltered) {
+            $("#allReportsRelatedDiv").append("<div class='col-sm-12 col-md-6 col-lg-6'><div class='pricing-table " + report.status_background + "'><div class=pt-header><div class=plan-pricing><div class=pricing style=font-size:1.5em>" + report.web_template + "</div><div class=pricing-type> Ultima Modificacion:" + report.web_template + "</div></div></div><div class=pt-body><h4>" + report.status_name + "</h4><ul class=plan-detail><li><b>Autor :</b> " + report.author + "<li><b>Ultima Modificacion : </b>" + report.modified_by + "<li><b>Report Id:<br></b>" + report.id_report + "</ul></div><div class=pt-footer><button id='viewReport_" + cont + "' class='btn btn-" + report.status_class + "'type=button>Ver Detalles</button></div></div></div>");
+            $("#viewReport_" + cont).on("click", {
+                val: { "id_report": report.id_report, }
+            }, function (event) {
+                reports.reportSelected = { "ticket_id": reference.reportSelected.ticket_id, "id_report": event.data.id_report };
+                reference.bootstrapPage('page-005');
+
+            });
+            cont++;
+        }
+    }
+
+}
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+let workers = __webpack_require__(0);
+
+module.exports = {
+    allTickets: "",
+    loadTickets: function () {
+        let reference = this;
+        return new Promise(function (resolve, reject) {
+            workers.getTickets().then(function (data) {
+                reference.allTickets = JSON.parse(data)[0];
+                resolve();
+            }).catch(function (error) {
+                reject(error);
+            });
+        });
+    },
+    ticketSelected:""
+}
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports) {
+
+module.exports = {
+    /**
+ * Load JS hierarchically - loadHighJS
+ * bootstrap  
+ */
+    "loadHighJS":function () {
+    return new Promise(function (resolve, reject) {
+        let bootstrap = $.ajax({
+            method: "GET",
+            dataType: "script",
+            url: "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+        });
+        $.when(bootstrap).done(function (bootstrapResponse) {
+            resolve();
+        }).fail(function (error) {
+            reject(error);
+        });
+    });
+},
+/**
+ * Load JS hierarchically - loadMediumJS
+ * Boostrap Switch - JqueryMinHeight - Jquery Datatables
+ */
+    "loadMediumJS": function loadMediumJS() {
+    return new Promise(function (resolve, reject) {
+        let bootstrapSwitch = $.ajax({
+            method: "GET",
+            dataType: "script",
+            url: "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.4/js/bootstrap-switch.min.js"
+        });
+        let jqueryMinHeight = $.ajax({
+            method: "GET",
+            dataType: "script",
+            url: "https://cdnjs.cloudflare.com/ajax/libs/jquery.matchHeight/0.7.2/jquery.matchHeight-min.js"
+        });
+        let jqueryDataTables = $.ajax({
+            method: "GET",
+            dataType: "script",
+            url: "https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"
+        });
+        let pdfmake = $.ajax({
+            method: "GET",
+            dataType: "script",
+            url: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.26/pdfmake.min.js"
+        });
+        $.when(bootstrapSwitch, jqueryMinHeight, jqueryDataTables, pdfmake)
+            .done(function (bootstrapSwitchResponse, jqueryMinHeightResponse, jqueryDataTablesResponse, pdfmakeResponse) {
+                resolve();
+            }).fail(function (error) {
+                reject(error);
+            });
+    });
+},
+/**
+ * Load JS hierarchically - LoadLowJS
+ * Bootstrap Datatables - buttonsDatatble - vs_fonts
+ */
+    "loadLowJS":function () {
+    return new Promise(function (resolve, reject) {
+        let bootstrapDataTables = $.ajax({
+            method: "GET",
+            dataType: "script",
+            url: "https://cdn.datatables.net/1.10.13/js/dataTables.bootstrap.min.js"
+        });
+        let vs_fonts = $.ajax({
+            method: "GET",
+            dataType: "script",
+            url: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.26/vfs_fonts.js"
+        });
+        $.when(vs_fonts)
+            .done(function ( vs_fontsResponse) {
+                resolve();
+            }).fail(function (error) {
+                reject(error);
+            });
+    });
+},
+    "loadLow2JS":function(){
+     return new Promise(function (resolve, reject) {
+        let buttonsDataTables = $.ajax({
+            method: "GET",
+            dataType: "script",
+            url: "https://cdn.datatables.net/buttons/1.2.4/js/dataTables.buttons.min.js"
+        });
+        let jszip = $.ajax({
+            method: "GET",
+            dataType: "script",
+            url: "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"
+        });
+        let buttonsHTML5 = $.ajax({
+            method: "GET",
+            dataType: "script",
+            url: "https://cdn.datatables.net/buttons/1.2.4/js/buttons.html5.min.js"
+        });
+
+        $.when(buttonsDataTables, jszip, buttonsHTML5)
+            .done(function (buttonsDataTablesResponse, jszipResponse, buttonsHTML5) {
+                resolve();
+            }).fail(function (error) {
+                reject(error);
+            });
+    });
+},
+/**
+ * Load Custom JS - OWS JS Datamodel
+ * Smart Engine - Application
+ */
+    "loadcustomJS":function(){
+    return new Promise(function(resolve,reject){
+        let smart_Engine = $.ajax({
+                method: "GET",
+                dataType: "script",
+                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=d63a70c5-afde-4275-840a-9c1de5003be3&attachmentId=88381a7d-39ae-4221-9813-f4855faae131"
+            });
+            let app = $.ajax({
+                method: "GET",
+                dataType: "script",
+                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=5b674633-91a7-4b71-ba90-88431847ae47&attachmentId=655573"
+            });
+            $.when(smart_Engine, app)
+                .done(function (smart_EngineResponse, appResponse) {
+                    resolve();
+                }).fail(function (error) {
+                    reject(error);
+                });
+    });
+}
+}
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports) {
+
+/**
+ * Load Fonts from Google Apis
+ * Family = Lato & Family = Roboto
+ */
+function loadFonts() {
+    return new Promise(function (resolve, reject) {
+        let latoFonts = $.ajax({
+            method: "GET",
+            url: "https://fonts.googleapis.com/css?family=Lato"
+        });
+        let robotoFonts = $.ajax({
+            method: "GET",
+            url: "https://fonts.googleapis.com/css?family=Roboto"
+        });
+        $.when(latoFonts, robotoFonts).done(function (latoFontsResponse, robotoFontsResponse) {
+            $('<style />').text(latoFontsResponse).appendTo($('head'));
+            $('<style />').text(robotoFontsResponse).appendTo($('head'));
+            resolve();
+            console.log("loadFontsLibs has Loaded");
+        }).fail(function (error) {
+            console.log("loadFontsLibs has Failed");
+            reject(error);
+        })
+    });
+}
+/**
+ * Load Icons from fontAwesome
+ */
+function loadIcons() {
+    return new Promise(function (resolve, reject) {
+        let fontAwesome = $.ajax({
+            method: "GET",
+            dataType: "script",
+            url: "https://use.fontawesome.com/4e0d3cfdd0.js"
+        });
+        $.when(fontAwesome).done(function (fontAwesomeResponse) {
+            resolve();
+            console.log("loadIconLibs has Loaded");
+        }).fail(function (error) {
+            reject(error);
+            console.log("loadIconLibs has Failed");
+        });
+    });
+}
+/**
+ * Load CSS Libs like Bootstrap, Datatables , Animate, DataButtons...
+ */
+function loadCSS() {
+    return new Promise(function (resolve, reject) {
+        let bootstrap = $.ajax({
+            method: "GET",
+            url: "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+        });
+        let animate = $.ajax({
+            method: "GET",
+            url: "https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css"
+        });
+        let select2 = $.ajax({
+            method: "GET",
+            url: "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css"
+        });
+        let buttonsDataTables = $.ajax({
+            method: "GET",
+            url: "https://cdn.datatables.net/buttons/1.2.4/css/buttons.dataTables.min.css"
+        });
+        let bootstrapDataTables = $.ajax({
+            method: "GET",
+            url: "https://cdn.datatables.net/1.10.13/css/dataTables.bootstrap.min.css"
+        });
+        let jqueryDataTables = $.ajax({
+            method: "GET",
+            url: "https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css"
+        });
+
+        $.when(bootstrap, animate, select2, buttonsDataTables, bootstrapDataTables, jqueryDataTables)
+            .done(function (bootstrapRespond, animateRespond, select2Respond, buttonsDataTablesRespond, bootstrapDataTablesRespond, jqueryDataTablesRespond) {
+
+                $('<style />').text(bootstrapRespond).appendTo($('head'));
+                $('<style />').text(animateRespond).appendTo($('head'));
+                $('<style />').text(select2Respond).appendTo($('head'));
+                $('<style />').text(buttonsDataTablesRespond).appendTo($('head'));
+                //$('<style />').text(bootstrapDataTablesRespond).appendTo($('head'));
+                $('<style />').text(jqueryDataTablesRespond).appendTo($('head'));
+                resolve();
+                console.log("loadCssLibs has Loaded");
+            }).fail(function (error) {
+                reject(error);
+                console.log("loadCssLibs has failed");
+            });
+    });
+}
+/**
+ * Load Custom Libs from OWS CSS Datamodel 
+ */
+function loadCustomLibs(){
+    return new Promise(function(resolve,reject){
+        let style = $.ajax({
+                method: "GET",
+                url: "https://100l-app.teleows.com/servicecreator/pageruntime/pageScript.action?appName=CO_SMART_DOCS&name=style%20&type=css"
+            });
+            let flat_blue = $.ajax({
+                method: "GET",
+                url: "https://100l-app.teleows.com/servicecreator/pageruntime/pageScript.action?appName=CO_SMART_DOCS&name=flat%20blue&type=css"
+            });
+            $.when(style, flat_blue).done(function (styleResponse, flat_blueResponse) {
+                $('<style />').text(styleResponse).appendTo($('head'));
+                $('<style />').text(flat_blueResponse).appendTo($('head'));
+                resolve();
+                console.log("loadCustomLibs has Loaded");
+            }).fail(function (error) {
+                console.log("loadCustomLibs has Failed");
+                reject(error);
+            });
+    });
+}
+module.exports = {
+    "loadFonts": loadFonts(),
+    "loadIcons": loadIcons(),
+    "loadCSS":loadCSS(),
+    "loadCustomCss":loadCustomLibs()
+}
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports) {
+
+module.exports = {
+    addMessageLoder: function (selector,location) {
+        $(location).addClass("loader");
+        $(location).append("<div id='loader' class='loader-container text-center color-white'><div><i style='color:white' class='fa fa-spinner fa-pulse fa-3x'></i></div><div style='color:white'><h4>Smart Docs <br> <small> Cargando Recursos <div id='"+selector+"'> </div> </small> <br><small>... Se esta preparando para ti ...</small></h4><h5>Desarollado por: Huawei Colombia  <br> OSS IT Team </h5></div></div>");
+    },
+    changeMessageLoader: function (selector, msg) {
+        console.log("Selector: "+ selector);
+        console.log("Message: " + msg);
+        $("#" + selector).text(msg);
+    },
+    removeMessageLoader: function (location){
+        $("#loader").remove();
+        $(location).removeClass("loader");
     }
 }
 
@@ -1431,6 +1461,8 @@ module.exports = {
 /***/ (function(module, exports, __webpack_require__) {
 
 let workers = __webpack_require__(0);
+let page = __webpack_require__(1);
+
 module.exports = {
     allReports: "",
     allTickets: "",
@@ -1502,87 +1534,19 @@ module.exports = {
                 return report;
             }
         });
+        return reportsFiltered;
+    },
+    fillMyReportsRelated: function () {
+        let reference = this;
+        //Save the reference of one report to don't add again
+        let wrapReports = [];
 
-        console.log("Wrap Reports: ", reportsFiltered)
-        let cont = 0;
-        for (let report of reportsFiltered) {
-            $("#dataTableAllReport > tbody").append("<tr><td style='cursor:pointer' id='allReports" + cont + "'>" + report.ticket_id + "</td><td>" + 0 + "</td><td>" + report.site_id + "</td><td>" + report.site_name + "</td><td>" + report.project + "</td><td>" + report.region + "</td><td style='text-align:-webkit-center'>" + report.work_client + "</td><td><input id='allReports" + cont + "Details' type='image' name='image' src='https://cdn2.iconfinder.com/data/icons/flat-ui-icons-24-px/24/eye-24-20.png'></td></tr>");
-            $('#allReports' + cont).add('#allReports' + cont + "Details").on("click", { "id_report": report.ticket_id }
-                , function (event) {
-                    let ticket_selected = { "id_report": event.data.id_report };
-                    console.log(ticket_selected);
-                });
-        }
-        /*
-         let cont = 0;
-         for (let recordsContainer of reports) {
-             for (let records of recordsContainer.results) {
- 
-                 $("#" + table + " > tbody").append("<tr class=" + records.class_sm + "><td style='cursor:pointer' id='" + item_name + cont + "'>" + records.ticket_id + "</td><td>" + records.template_name + "</td><td>" + records.site_id + "</td><td>" + records.site_name + "</td><td>" + records.work_client + "</td><td>" + records.project + "</td><td>" + records.region + "</td><td style='text-align:-webkit-center'>" + records.status + "</td><td>" + records.creation_date + "</td><td>" + records.author + "</td><td>" + records.id_report + "</td><td><input id='" + item_name + cont + "Details' type='image' name='image' src='https://cdn2.iconfinder.com/data/icons/flat-ui-icons-24-px/24/eye-24-20.png'></td></tr>");
- 
-                 $('#' + item_name + cont).add('#' + item_name + cont + "Details").on("click",
-                     {
-                         "approval_date": records.approval_date,
-                         "approver": records.approver,
-                         "author": records.author,
-                         "comment": records.comment,
-                         "completed_date": records.completed_date,
-                         "creation_date": records.creation_date,
-                         "file": records.file,
-                         "file_location": records.file_location,
-                         "id_report": records.id_report,
-                         "last_modification": records.last_modification,
-                         "modified_by": records.modified_by,
-                         "project": records.project,
-                         "region": records.region,
-                         "rejected_date": records.rejected_date,
-                         "site_id": records.site_id,
-                         "site_name": records.site_name,
-                         "status": records.status,
-                         "status_id": records.status_id,
-                         "supplier": records.supplier,
-                         "ticket_id": records.ticket_id,
-                         "web_template": records.template_name,
-                         "web_template_location": records.web_template_location,
-                         "web_template_form": records.web_template_form,
-                         "work_client": records.work_client,
-                         "class_sm": records.class_sm
-                     }
-                     , function (event) {
-                         let ticket_selected = {
-                             "approval_date": (event.data.approval_date == undefined) ? "" : event.data.approval_date,
-                             "approver": (event.data.approver == undefined) ? "" : event.data.approver,
-                             "author": (event.data.author == undefined) ? "" : event.data.author,
-                             "comment": (event.data.comment == undefined) ? [] : event.data.comment,
-                             "completed_date": (event.data.completed_date == undefined) ? "" : event.data.completed_date,
-                             "creation_date": (event.data.creation_date == undefined) ? "" : event.data.creation_date,
-                             "file": (event.data.file == undefined) ? "" : event.data.file,
-                             "file_location": (event.data.file_location == undefined) ? "" : event.data.file_location,
-                             "id_report": (event.data.id_report == undefined) ? "" : event.data.id_report,
-                             "last_modification": (event.data.last_modification == undefined) ? "" : event.data.last_modification,
-                             "modified_by": (event.data.modified_by == undefined) ? "" : event.data.modified_by,
-                             "project": (event.data.project == undefined) ? "" : event.data.project,
-                             "region": (event.data.region == undefined) ? "" : event.data.region,
-                             "rejected_date": (event.data.rejected_date == undefined) ? "" : event.data.rejected_date,
-                             "site_id": (event.data.site_id == undefined) ? "" : event.data.site_id,
-                             "site_name": (event.data.site_name == undefined) ? "" : event.data.site_name,
-                             "status": (event.data.status == undefined) ? "" : event.data.status,
-                             "status_id": (event.data.status_id == undefined) ? "" : event.data.status_id,
-                             "supplier": (event.data.supplier == undefined) ? "" : event.data.supplier,
-                             "ticket_id": (event.data.ticket_id == undefined) ? "" : event.data.ticket_id,
-                             "web_template": (event.data.web_template == undefined) ? "" : event.data.web_template,
-                             "web_template_location": (event.data.web_template_location == undefined) ? "" : event.data.web_template_location,
-                             "web_template_form": (event.data.web_template_form == undefined) ? "" : event.data.web_template_form,
-                             "work_client": (event.data.work_client == undefined) ? "" : event.data.work_client,
-                             "class_sm": (event.data.class_sm == undefined) ? "" : event.data.class_sm
-                         };
- 
-                     })
-                 cont += 1;
-             }
- 
-         }
-             */
+        let reportsFiltered = reference.allReports.filter(function (report) {
+            if (report.ticket_id == reference.reportSelected.ticket_id) {
+                return report;
+            }
+        });    
+        return reportsFiltered;
     }
 }
 
@@ -2664,7 +2628,7 @@ module.exports = {
 /***/ (function(module, exports, __webpack_require__) {
 
 let workers = __webpack_require__ (0);
-let tickets = __webpack_require__ (1);
+let tickets = __webpack_require__ (2);
 module.exports ={
     allTemplates: "",
     templateSelected : "",
@@ -2703,10 +2667,10 @@ module.exports ={
 
 $(function () {
     let workers = __webpack_require__(0);
-    let cssLibs = __webpack_require__(3);
-    let jsLibs = __webpack_require__(2);
-    let message = __webpack_require__(4);
-    let pages = __webpack_require__(5);
+    let cssLibs = __webpack_require__(4);
+    let jsLibs = __webpack_require__(3);
+    let message = __webpack_require__(5);
+    let pages = __webpack_require__(1);
 
     let smart = {
         onInit: function () {
