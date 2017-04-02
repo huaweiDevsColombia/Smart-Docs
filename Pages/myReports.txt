@@ -1,0 +1,62 @@
+<div class="side-body">
+    <div class="row " id="mainPage">
+        <div class="col-xs-12">
+            <div class="card">
+                <!--
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="title">Mis Reportes</div>
+                    </div>
+                </div>
+                -->
+                <div class="card-body">
+                    <!--Tabs-->
+                    <div role="tabpanel">
+                        <!-- Nav tabs -->
+                        <ul class="nav nav-tabs" id='allReportsNavTab' role="tablist">
+                            <li role="presentation" class="active"><a href="#allTab" role="tab" data-toggle="tab" aria-expanded="true">Todos</a></li>
+                        </ul>
+                        <!-- Tab panes -->
+                        <div class="tab-content">
+                            <div role="tabpanel" class="tab-pane active" id="allTab">
+                                <div class="table-responsive">
+                                    <h3 class="pull-right">Total Reportes : <small id="totalAll"></small></h3>
+                                    <table class="table table-hover" cellspacing="0" width="100%" id="dataTableAllReport">
+                                    <thead>
+                                    <tr>
+                                        <th>ID Ticket SDM</th>
+                                        <th># Reportes </th>
+                                        <th>ID Sitio</th>
+                                        <th>Nombre Sitio</th>
+                                        <th>Proyecto</th>
+                                        <th>Region</th>
+                                        <th>ID Ticket Cliente</th>
+                                        <th>&nbsp</th>
+                                    </tr>
+                                    </thead>
+                                    <tfoot>
+                                    <tr>
+                                        <th>ID Ticket SDM</th>
+                                        <th># Reportes </th>
+                                        <th>ID Sitio</th>
+                                        <th>Nombre Sitio</th>
+                                        <th>Proyecto</th>
+                                        <th>Region</th>
+                                        <th>ID Ticket Cliente</th>
+                                        <th>&nbsp</th>
+                                    </tr>
+                                    </tfoot>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+</div>
