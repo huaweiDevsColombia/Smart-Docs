@@ -20,15 +20,40 @@ module.exports = {
     loadReport: function (idReport) {
         let reference = this;
         return new Promise(function (resolve, reject) {
+            let idReport = reference.reportSelected.id_report;
+            let getAnswerDate = reference.getAnswer("date_answer", idReport);
+            let getAnswerDateTime = reference.getAnswer("datetime_answer", idReport);
+            let getAnswerTime = reference.getAnswer("time_answer", idReport);
+            let getAnswerWeek = reference.getAnswer("week_answer", idReport);
+            let getAnswerMonth = reference.getAnswer("month_answer", idReport);
+            let getAnswerText = reference.getAnswer("text_answer", idReport);
+            let getAnswerRadio = reference.getAnswer("radio_answer", idReport);
+            let getAnswerCheckbox = reference.getAnswer("radio_answer", idReport);
+            let getAnswerSelect = reference.getAnswer("select_answer", idReport);
+            let getAnswerMultiSelect = reference.getAnswer("multiselect_answer", idReport);
+            let getAnswerList = reference.getAnswer("list_answer", idReport);
+            let getAnswerTable = reference.getAnswer("table_answer", idReport);
+            let getAnswerImage_1 = reference.getAnswer("image_answer_1", idReport);
+            let getAnswerImage_2 = reference.getAnswer("image_answer_2", idReport);
+            let getAnswerImage_3 = reference.getAnswer("image_answer_3", idReport);
+            let getAnswerImage_4 = reference.getAnswer("image_answer_4", idReport);
+
+            Promise.all([getAnswerDate, getAnswerDateTime, getAnswerTime, getAnswerWeek, getAnswerMonth, getAnswerText, getAnswerRadio, getAnswerCheckbox, getAnswerSelect, getAnswerMultiSelect, getAnswerList, getAnswerTable, getAnswerImage_1, getAnswerImage_2, getAnswerImage_3, getAnswerImage_4]).then(values => {
+                console.log("Promise Resolve", values);
+                reference.reportResponse = values;
+                resolve();
+            });
+        });
+    },
+    getAnswer: function (service, idReport) {
+        return new Promise(function (resolve, reject) {
+            let data = {};
+            data["id_report"] = idReport;
             MessageProcessor.process({
-                serviceId: "co_sm_report_get",
-                data: {
-                    "id_report": reference.reportSelected.idReport
-                },
+                serviceId: "co_sm_report_get_" + service,
+                data: data,
                 success: function (data) {
-                    console.log(data.result);
-                    reference.reportResponse = data.result;
-                    resolve();
+                    resolve(data.result[service]);
                 }
             });
         });
@@ -47,7 +72,15 @@ module.exports = {
         });
 
         console.log("Wrap Reports: ", reportsFiltered)
-
+        let cont = 0;
+        for (let report of reportsFiltered) {
+            $("#dataTableAllReport > tbody").append("<tr><td style='cursor:pointer' id='allReports" + cont + "'>" + report.ticket_id + "</td><td>" + 0 + "</td><td>" + report.site_id + "</td><td>" + report.site_name + "</td><td>" + report.project + "</td><td>" + report.region + "</td><td style='text-align:-webkit-center'>" + report.work_client + "</td><td><input id='allReports" + cont + "Details' type='image' name='image' src='https://cdn2.iconfinder.com/data/icons/flat-ui-icons-24-px/24/eye-24-20.png'></td></tr>");
+            $('#allReports' + cont).add('#allReports' + cont + "Details").on("click", { "id_report": report.ticket_id }
+                , function (event) {
+                    let ticket_selected = { "id_report": event.data.id_report };
+                    console.log(ticket_selected);
+                });
+        }
         /*
          let cont = 0;
          for (let recordsContainer of reports) {
@@ -118,20 +151,5 @@ module.exports = {
  
          }
              */
-    },
-    "saveAnswerRespond": "",
-    "saveAnswer": function (answer, status, comment, project, region, site, supplier, ticket, template, workClient) {
-        let reference = this;
-        return new Promise(function (resolve, reject) {
-            workers.saveAnswer(answer, status, comment, project, region, site, supplier, ticket, template, workClient)
-                .then(function (saveAnswerRespond) {
-                    reference.saveAnswerRespond = saveAnswerRespond;
-                    console.log(reference.saveAnswerRespond);
-                    resolve();
-                })
-                .catch(function (error) {
-                    reject(error);
-                });
-        });
     }
 }
