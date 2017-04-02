@@ -206,19 +206,27 @@ module.exports = {
                     templateSelected.template_pdf.attachment[0].batchId,
                     templateSelected.template_pdf.attachment[0].attachmentId).then(function () {
                         smartEngine.executeEngine(templates.template[0].jsonWeb);
+                        $('#templateNavTabs a:first').tab('show');
                         reference.loadEventSaveReport();
                     });
-
                 if (reports.reportSelected.id_report != undefined) {
                     reports.loadReport().then(function () {
-                        console.log("Load Report: " + reports.reportResponse);
+                        console.log("Load Report: ", reports.reportResponse);
+                        for (let reportAnswer of reports.reportResponse) {
+                            if (reportAnswer.length > 0) {
+                                console.log(reportAnswer[0]);
+                                smartEngine.matchAnswers(reportAnswer[0]);
+                            }
+                        }
                     });
                 }
-
                 break;
             //My Reports    
             case "page-014":
-                reports.fillMyReports();
+                reports.loadStatistic(reference.userGroup).then(function () {
+                    reports.fillMyReports();
+                    $('#allReportsNavTab a:first').tab('show');
+                });
                 break;
             //Detail Report    
             case "page-021":
@@ -298,7 +306,7 @@ module.exports = {
             for (let ticket_type of ticketsType) {
                 for (let ticket of allTickets[ticket_type].results) {
                     ticket.ticket_priority = (ticket.ticket_priority == undefined) ? " N/A" : ticket.ticket_priority;
-                    $("#allTicketsDiv").append("<div class='col-sm-12 col-md-6 col-lg-6'><div class='pricing-table yellow'><div class=pt-header><div class=plan-pricing><div class=pricing style=font-size:1.5em>" + ticket.subject + "</div><div class=pricing-type> Reportes Asociados: 0 </div></div></div><div class=pt-body><h4>" + ticket.type + " - " + ticket.project + "</h4><ul class=plan-detail><li><b>Region :</b> " + ticket.region + " - " + ticket.city + "<li><b>Prioridad : </b>" + ticket.ticket_priority + "<li><b>Estado : </b>" + ticket.status + "<li><b>Ticket Id:<br></b>CM-" + ticket.orderid + "</ul></div><div class=pt-footer><button id='doReport_" + cont + "' class='btn btn-warning'type=button>Realizar Reporte</button></div></div></div>");
+                    $("#allTicketsDiv").append("<div class='col-sm-12 col-md-6 col-lg-6'><div class='pricing-table'><div class=pt-header style='background-color:#dbdbdb'><div class=plan-pricing><div class=pricing style=font-size:1.5em>" + ticket.subject + "</div><div class=pricing-type> Reportes Asociados: 0 </div></div></div><div class=pt-body style='background-color:#aeaeae'><h4>" + ticket.type + " - " + ticket.project + "</h4><ul class=plan-detail><li><b>Region :</b> " + ticket.region + " - " + ticket.city + "<li><b>Prioridad : </b>" + ticket.ticket_priority + "<li><b>Estado : </b>" + ticket.status + "<li><b>Ticket Id:<br></b>CM-" + ticket.orderid + "</ul></div><div class=pt-footer><button id='doReport_" + cont + "' class='btn btn-primary'type=button>Seleccionar Plantilla</button></div></div></div>");
                     $("#doReport_" + cont).on("click", {
                         val:
                         {
@@ -347,12 +355,12 @@ module.exports = {
     loadEventSaveReport: function () {
         let reference = this;
         $("#btnSave").click(() => {
+
             let id_reportResponse = "";
             let answer = smartEngine.saveAnswer();
             let comments = [];
             let status = (answer.completed) ? "SM-Status002" : "SM-Status001";
             let idReport;
-
             let answerDate;
             let answerDateTime;
             let answerTime;
@@ -373,101 +381,122 @@ module.exports = {
             let answerImages_3;
             let answerImages_4;
 
-            workers.getCurrentTime.then(function (currentTimeResponse) {
-                comments.push({ "author": username, "comment": "El reporte ha sido creado exitosamente en el sistema", "time": JSON.parse(currentTimeResponse).result.localDateTime, "status": status })
-                var answersArr = JSON.parse(answer.userAnswer);
-                reference.userAnswer = answersArr;
+            if (reports.reportSelected.id_report) {
+                console.log("El reporte ya existe");
+                workers.getCurrentTime.then(function (currentTimeResponse) {
+                    comments.push({ "author": username, "comment": "El reporte ha sido creado exitosamente en el sistema", "time": JSON.parse(currentTimeResponse).result.localDateTime, "status": status })
+                    var answersArr = JSON.parse(answer.userAnswer);
+                    reference.userAnswer = answersArr;
+                    answerDate = reference.filterByAnswerType('date');
+                    answerDateTime = reference.filterByAnswerType('datetime');
+                    answerTime = reference.filterByAnswerType('time');
+                    answerWeek = reference.filterByAnswerType('week');
+                    answerMonth = reference.filterByAnswerType('month');
+                    answerText = reference.filterByAnswerType('text');
+                    answerTextArea = reference.filterByAnswerType('textArea');
+                    answerNumber = reference.filterByAnswerType('number');
+                    answerTime = reference.filterByAnswerType('time');
+                    answerRadio = reference.filterByAnswerType('radio');
+                    answerCheckbox = reference.filterByAnswerType('checkbox');
+                    answerSelect = reference.filterByAnswerType('select');
+                    answerMultiSelect = reference.filterByAnswerType('multiSelect');
+                    answerList = reference.filterByAnswerType('list');
+                    answerTable = reference.filterByAnswerType('table');
+                    answerImages = reference.filterByAnswerTypeImage();
 
-                answerDate = reference.filterByAnswerType('date');
-                answerDateTime = reference.filterByAnswerType('datetime');
-                answerTime = reference.filterByAnswerType('time');
-                answerWeek = reference.filterByAnswerType('week');
-                answerMonth = reference.filterByAnswerType('month');
-                answerText = reference.filterByAnswerType('text');
-                answerTextArea = reference.filterByAnswerType('textArea');
-                answerNumber = reference.filterByAnswerType('number');
-                answerTime = reference.filterByAnswerType('time');
-                answerRadio = reference.filterByAnswerType('radio');
-                answerCheckbox = reference.filterByAnswerType('checkbox');
-                answerSelect = reference.filterByAnswerType('select');
-                answerMultiSelect = reference.filterByAnswerType('multiSelect');
-                answerList = reference.filterByAnswerType('list');
-                answerTable = reference.filterByAnswerType('table');
-                answerImages = reference.filterByAnswerTypeImage();
+                    answerImages_1 = answerImages.splice(0, 20);
+                    answerImages_2 = answerImages.splice(0, 20);
+                    answerImages_3 = answerImages.splice(0, 20);
+                    answerImages_4 = answerImages.splice(0, 20);
 
-                answerImages_1 = answerImages.splice(0, 20);
-                answerImages_2 = answerImages.splice(0, 20);
-                answerImages_3 = answerImages.splice(0, 20);
-                answerImages_4 = answerImages.splice(0, 20);
+                    console.log("Creating the Report");
+                    idReport = reports.reportSelected.id_report;
+                    let saveAnswerDate = reference.saveAnswer("date_answer", answerDate, idReport);
+                    let saveAnswerDateTime = reference.saveAnswer("datetime_answer", answerDateTime, idReport);
+                    let saveAnswerTime = reference.saveAnswer("time_answer", answerTime, idReport);
+                    let saveAnswerWeek = reference.saveAnswer("week_answer", answerWeek, idReport);
+                    let saveAnswerMonth = reference.saveAnswer("month_answer", answerMonth, idReport);
+                    let saveAnswerText = reference.saveAnswer("text_answer", answerText, idReport);
+                    let saveAnswerRadio = reference.saveAnswer("radio_answer", answerRadio, idReport);
+                    let saveAnswerCheckBox = reference.saveAnswer("radio_answer", answerCheckbox, idReport);
+                    let saveAnswerSelect = reference.saveAnswer("select_answer", answerSelect, idReport);
+                    let saveAnswerMultiSelect = reference.saveAnswer("multiselect_answer", answerMultiSelect, idReport);
+                    let saveAnswerList = reference.saveAnswer("list_answer", answerList, idReport);
+                    let saveAnswerTable = reference.saveAnswer("table_answer", answerTable, idReport);
+                    let saveAnswerImage_1 = reference.saveAnswer("image_answer_1", "[" + JSON.stringify(answerImages_1) + "]", idReport);
+                    let saveAnswerImage_2 = reference.saveAnswer("image_answer_2", "[" + JSON.stringify(answerImages_2) + "]", idReport);
+                    let saveAnswerImage_3 = reference.saveAnswer("image_answer_3", "[" + JSON.stringify(answerImages_3) + "]", idReport);
+                    let saveAnswerImage_4 = reference.saveAnswer("image_answer_4", "[" + JSON.stringify(answerImages_4) + "]", idReport);
 
-                console.log("Creating the Report");
-                return reference.saveDatamodel(status, comments, tickets.ticketSelected.project, tickets.ticketSelected.region,
-                    tickets.ticketSelected.site_id, tickets.ticketSelected.supplier, tickets.ticketSelected.ticket_id, templates.templateSelected.id_template, tickets.ticketSelected.work_client)
+                    Promise.all([saveAnswerDate, saveAnswerDateTime, saveAnswerTime, saveAnswerWeek, saveAnswerMonth, saveAnswerText, saveAnswerRadio, answerCheckbox, saveAnswerSelect, saveAnswerMultiSelect, saveAnswerList, saveAnswerTable, saveAnswerImage_1, saveAnswerImage_2, saveAnswerImage_3, saveAnswerImage_4]).then(values => {
+                        reference.bootstrapPage('page-021');
+                    });
+                })
+            }
+            else {
+                workers.getCurrentTime.then(function (currentTimeResponse) {
+                    comments.push({ "author": username, "comment": "El reporte ha sido creado exitosamente en el sistema", "time": JSON.parse(currentTimeResponse).result.localDateTime, "status": status })
+                    var answersArr = JSON.parse(answer.userAnswer);
+                    reference.userAnswer = answersArr;
+                    answerDate = reference.filterByAnswerType('date');
+                    answerDateTime = reference.filterByAnswerType('datetime');
+                    answerTime = reference.filterByAnswerType('time');
+                    answerWeek = reference.filterByAnswerType('week');
+                    answerMonth = reference.filterByAnswerType('month');
+                    answerText = reference.filterByAnswerType('text');
+                    answerTextArea = reference.filterByAnswerType('textArea');
+                    answerNumber = reference.filterByAnswerType('number');
+                    answerTime = reference.filterByAnswerType('time');
+                    answerRadio = reference.filterByAnswerType('radio');
+                    answerCheckbox = reference.filterByAnswerType('checkbox');
+                    answerSelect = reference.filterByAnswerType('select');
+                    answerMultiSelect = reference.filterByAnswerType('multiSelect');
+                    answerList = reference.filterByAnswerType('list');
+                    answerTable = reference.filterByAnswerType('table');
+                    answerImages = reference.filterByAnswerTypeImage();
 
-            }).then(function (idReportRes) {
-                idReport = idReportRes;
-                let saveAnswerDate = reference.saveAnswer("date_answer", answerDate, idReport);
-                let saveAnswerDateTime = reference.saveAnswer("datetime_answer", answerDateTime, idReport);
-                let saveAnswerTime = reference.saveAnswer("time_answer", answerTime, idReport);
-                let saveAnswerWeek = reference.saveAnswer("week_answer", answerWeek, idReport);
-                let saveAnswerMonth = reference.saveAnswer("month_answer", answerMonth, idReport);
-                let saveAnswerText = reference.saveAnswer("text_answer", answerText, idReport);
-                let saveAnswerRadio = reference.saveAnswer("radio_answer", answerRadio, idReport);
-                let saveAnswerCheckBox = reference.saveAnswer("radio_answer", answerCheckbox, idReport);
-                let saveAnswerSelect = reference.saveAnswer("select_answer", answerSelect, idReport);
-                let saveAnswerMultiSelect = reference.saveAnswer("multiselect_answer", answerMultiSelect, idReport);
-                let saveAnswerList = reference.saveAnswer("list_answer", answerList, idReport);
-                let saveAnswerTable = reference.saveAnswer("table_answer", answerTable, idReport);
-                let saveAnswerImage_1 = reference.saveAnswer("image_answer_1", "[" + JSON.stringify(answerImages_1) + "]", idReport);
-                let saveAnswerImage_2 = reference.saveAnswer("image_answer_2", "[" + JSON.stringify(answerImages_2) + "]", idReport);
-                let saveAnswerImage_3 = reference.saveAnswer("image_answer_3", "[" + JSON.stringify(answerImages_3) + "]", idReport);
-                let saveAnswerImage_4 = reference.saveAnswer("image_answer_4", "[" + JSON.stringify(answerImages_4) + "]", idReport);
+                    answerImages_1 = answerImages.splice(0, 20);
+                    answerImages_2 = answerImages.splice(0, 20);
+                    answerImages_3 = answerImages.splice(0, 20);
+                    answerImages_4 = answerImages.splice(0, 20);
 
-                Promise.all([saveAnswerDate, saveAnswerDateTime, saveAnswerTime, saveAnswerWeek, saveAnswerMonth, saveAnswerText, saveAnswerRadio, answerCheckbox, saveAnswerSelect, saveAnswerMultiSelect, saveAnswerList, saveAnswerTable, saveAnswerImage_1 , saveAnswerImage_2, saveAnswerImage_3, saveAnswerImage_4 ]).then(values => {
-                    reference.showCompleteModal();
-                });
-            });
+                    console.log("Creating the Report");
+                    return reference.saveDatamodel(status, comments, tickets.ticketSelected.project, tickets.ticketSelected.region,
+                        tickets.ticketSelected.site_id, tickets.ticketSelected.supplier, tickets.ticketSelected.ticket_id, templates.templateSelected.id_template, tickets.ticketSelected.work_client)
 
-            /*.then(function (idReportRes) {
+                }).then(function (idReportRes) {
+                    reports.reportSelected = { "id_report": idReportRes };
                     idReport = idReportRes;
-                    console.log("Saving Text Fields");
-                    return reference.saveAnswerByChunks(answerText, idReport);
-                }).then(function () {
-                    console.log("Saving TextArea Fields");
-                    return reference.saveAnswerByChunks(answerTextArea, idReport);
-                }).then(function () {
-                    console.log("Saving Number Fields");
-                    return reference.saveAnswerByChunks(answerNumber, idReport);
-                }).then(function () {
-                    console.log("Saving Select Fields");
-                    return reference.saveAnswerByChunks(answerSelect, idReport);
-                }).then(function () {
-                    console.log("Saving MultiSelect Fields");
-                    return reference.saveAnswerByChunks(answerMultiSelect, idReport);
-                }).then(function () {
-                    console.log("Saving List Fields");
-                    return reference.saveAnswerByChunks(answerList, idReport);
-                }).then(function () {
-                    console.log("Saving Table Fields");
-                    return reference.saveAnswerByChunks(answerTable, idReport);
-                }).then(function () {
-                    console.log("Saving Image1Label Fields");
-                    return reference.saveAnswerByChunksImages(answerImage1Label, idReport);
-                }).then(function () {
-                    console.log("Saving Image2Labels Fields");
-                    return reference.saveAnswerByChunksImages(answerImage2Labels, idReport);
-                }).then(function () {
-                    console.log("Report was updated");
-                    if (answer.completed) {
-                        reference.showCompleteModal();
-                    }
-                    else {
-                        reference.showIncompleteModal();
-                    }
-                    reference.bootstrapPage('page-021');
-                });
-                */
+                    let saveAnswerDate = reference.saveAnswer("date_answer", answerDate, idReport);
+                    let saveAnswerDateTime = reference.saveAnswer("datetime_answer", answerDateTime, idReport);
+                    let saveAnswerTime = reference.saveAnswer("time_answer", answerTime, idReport);
+                    let saveAnswerWeek = reference.saveAnswer("week_answer", answerWeek, idReport);
+                    let saveAnswerMonth = reference.saveAnswer("month_answer", answerMonth, idReport);
+                    let saveAnswerText = reference.saveAnswer("text_answer", answerText, idReport);
+                    let saveAnswerRadio = reference.saveAnswer("radio_answer", answerRadio, idReport);
+                    let saveAnswerCheckBox = reference.saveAnswer("radio_answer", answerCheckbox, idReport);
+                    let saveAnswerSelect = reference.saveAnswer("select_answer", answerSelect, idReport);
+                    let saveAnswerMultiSelect = reference.saveAnswer("multiselect_answer", answerMultiSelect, idReport);
+                    let saveAnswerList = reference.saveAnswer("list_answer", answerList, idReport);
+                    let saveAnswerTable = reference.saveAnswer("table_answer", answerTable, idReport);
+                    let saveAnswerImage_1 = reference.saveAnswer("image_answer_1", "[" + JSON.stringify(answerImages_1) + "]", idReport);
+                    let saveAnswerImage_2 = reference.saveAnswer("image_answer_2", "[" + JSON.stringify(answerImages_2) + "]", idReport);
+                    let saveAnswerImage_3 = reference.saveAnswer("image_answer_3", "[" + JSON.stringify(answerImages_3) + "]", idReport);
+                    let saveAnswerImage_4 = reference.saveAnswer("image_answer_4", "[" + JSON.stringify(answerImages_4) + "]", idReport);
 
+                    Promise.all([saveAnswerDate, saveAnswerDateTime, saveAnswerTime, saveAnswerWeek, saveAnswerMonth, saveAnswerText, saveAnswerRadio, answerCheckbox, saveAnswerSelect, saveAnswerMultiSelect, saveAnswerList, saveAnswerTable, saveAnswerImage_1, saveAnswerImage_2, saveAnswerImage_3, saveAnswerImage_4]).then(values => {
+                        /*reference.showCompleteModal();
+                        if (answer.completed) {
+                            reference.showCompleteModal();
+                        }
+                        else {
+                            reference.showIncompleteModal();
+                        }
+                        */
+                        reference.bootstrapPage('page-021');
+                    });
+                });
+            }
         });
     },
     userAnswer: "",
