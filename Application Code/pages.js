@@ -226,6 +226,7 @@ module.exports = {
                         reference.loadEventSaveReport();
                         message.removeMessageLoader("#mainContent2");
                     });
+                    console.log("Loading Report From DataModel");
                 if (reports.reportSelected.id_report != undefined) {
                     message.addMessageLoder("loaderMessage", "#mainContent2");
                     message.changeMessageLoader("loaderMessage", "Cargando Reporte");
@@ -681,7 +682,7 @@ module.exports = {
         reportFiltered.approval_date = (reportFiltered.approval_date == undefined) ? "" : reportFiltered.approval_date;
         reportFiltered.rejected_date = (reportFiltered.rejected_date == undefined) ? "" : reportFiltered.rejected_date;
         reportFiltered.approver = (reportFiltered.approver == undefined) ? "" : reportFiltered.approver;
-        $("#templateName").text(templates.templateSelected.template_name);
+        $("#templateName").text(reportFiltered.web_template_name);
         $("#reportStatus").text(reportFiltered.status_name);
         $("#reportCompletedDate").html("<b>Completed Date : </b> " + reportFiltered.completed_date);
         $("#reportApprovalDate").html("<b>Approval Date : </b>" + reportFiltered.approval_date);
@@ -728,6 +729,12 @@ module.exports = {
         $("#detail_ticket_edit").click(function () {
             reference.bootstrapPage('page-005');
         });
+        $("#detail_ticket_approve").click(function(){
+            reference.launchApproveModal();
+        });
+        $("#detail_ticket_reject").click(function(){
+            reference.launchRejectModal();
+        });
     },
     fillDataTableMyReports: function (reportsFiltered) {
         let reference = this;
@@ -751,16 +758,55 @@ module.exports = {
         message.changeMessageLoader("loaderMessage", "Filtrando Reportes Relacionados");
         let cont = 0;
         for (let report of reportsFiltered) {
-            $("#allReportsRelatedDiv").append("<div class='col-sm-12 col-md-6 col-lg-6'><div class='pricing-table " + report.status_background + "'><div class=pt-header><div class=plan-pricing><div class=pricing style=font-size:1.5em>" + report.web_template + "</div><div class=pricing-type> Ultima Modificacion:" + report.web_template + "</div></div></div><div class=pt-body><h4>" + report.status_name + "</h4><ul class=plan-detail><li><b>Autor :</b> " + report.author + "<li><b>Ultima Modificacion : </b>" + report.modified_by + "<li><b>Report Id:<br></b>" + report.id_report + "</ul></div><div class=pt-footer><button id='viewReport_" + cont + "' class='btn btn-" + report.status_class + "'type=button>Ver Detalles</button></div></div></div>");
+            $("#allReportsRelatedDiv").append("<div class='col-sm-12 col-md-6 col-lg-6'><div class='pricing-table " + report.status_background + "'><div class=pt-header><div class=plan-pricing><div class=pricing style=font-size:1.5em>" + report.web_template_name + "</div><div class=pricing-type> Ultima Modificacion:" + report.last_modification + "</div></div></div><div class=pt-body><h4>" + report.status_name + "</h4><ul class=plan-detail><li><b>Autor :</b> " + report.author + "<li><b>Ultima Modificacion : </b>" + report.modified_by + "<li><b>Report Id:<br></b>" + report.id_report + "</ul></div><div class=pt-footer><button id='viewReport_" + cont + "' class='btn btn-" + report.status_class + "'type=button>Ver Detalles</button></div></div></div>");
             $("#viewReport_" + cont).on("click", {
-                val: { "id_report": report.id_report, }
+                "id_report": report.id_report
             }, function (event) {
                 reports.reportSelected = { "ticket_id": reports.reportSelected.ticket_id, "id_report": event.data.id_report };
-                reference.bootstrapPage('page-005');
+                reference.bootstrapPage('page-021');
 
             });
             cont++;
         }
+        $("#sdmTicket").text(reports.reportSelected.ticket_id);
         message.removeMessageLoader("#mainContent2");
-    }
+    },
+    launchApproveModal: function () {
+            let reference = this;
+            $("#approve_report_modal").remove();
+            $("body").append("<div class='fade modal modal-success'aria-hidden=true aria-labelledby=myModalLabel1 id=approve_report_modal role=dialog style=display:block tabindex=-1><div class=modal-dialog><div class=modal-content><div class=modal-header><h4 class=modal-title id=myModalLabel13>Aprobar Reporte </h4></div><div class=modal-body> <label> Deja un comentario </label> <input id='approve_report_comment' type='text' class='form-control' placeholder='El comentario minimo debe ser de 5 caracteres'><br><p style='text-align: center'><b>Nota:</b> Este comentario sera visible en la seccion de Historia del Reporte</p></div><div class='modal-footer'><input type='button' id='approve_report_btn' disabled=true class='btn btn-success' data-dismiss='modal' value='Aprobar'></div></div></div></div>");
+            $("#approve_report_modal").modal('show');
+            $("#approve_report_comment").on('input', function () {
+                let comment_size = $("#approve_report_comment").val().length;
+                if (comment_size > 4) {
+                    $("#approve_report_btn").attr("disabled", false);
+                }
+                else {
+                    $("#approve_report_btn").attr("disabled", true);
+                }
+            });
+
+            $("#approve_report_btn").click(function () {
+                $('#approve_report_modal').modal('hide');
+            });
+        },
+        launchRejectModal: function () {
+            let reference = this;
+            $("#reject_report_modal").remove();
+            $("body").append("<div class='fade modal modal-danger'aria-hidden=true aria-labelledby=myModalLabel1 id=reject_report_modal role=dialog style=display:block tabindex=-1><div class=modal-dialog><div class=modal-content><div class=modal-header><h4 class=modal-title id=myModalLabel13>Rechazar Reporte </h4></div><div class=modal-body> <label> Deja un comentario </label> <input id='reject_report_comment' type='text' class='form-control' placeholder='El comentario minimo debe ser de 5 caracteres'><br><p style='text-align: center'><b>Nota:</b> Este comentario sera visible en la seccion de Historia del Reporte</p></div><div class='modal-footer'><input type='button' id='reject_report_btn' disabled=true class='btn btn-danger' data-dismiss='modal' value='Rechazar'></div></div></div></div>");
+            $("#reject_report_modal").modal('show');
+            $("#reject_report_comment").on('input', function () {
+                let comment_size = $("#reject_report_comment").val().length;
+                if (comment_size > 4) {
+                    $("#reject_report_btn").attr("disabled", false);
+                }
+                else {
+                    $("#reject_report_btn").attr("disabled", true);
+                }
+            });
+
+            $("#approve_report_btn").click(function () {
+                $('#approve_report_modal').modal('hide');
+            });
+        }
 }
