@@ -436,13 +436,34 @@ function getTemplates(project) {
 
 /***/ }),
 /* 1 */
+/***/ (function(module, exports) {
+
+module.exports = {
+    addMessageLoder: function (selector,location) {
+        $(location).addClass("loader");
+        $(location).append("<div id='loader' class='loader-container text-center color-white'><div><i style='color:white' class='fa fa-spinner fa-pulse fa-3x'></i></div><div style='color:white'><h4>Smart Docs <br> <small> Cargando Recursos <div id='"+selector+"'> </div> </small> <br><small>... Se esta preparando para ti ...</small></h4><h5>Desarollado por: Huawei Colombia  <br> OSS IT Team </h5></div></div>");
+    },
+    changeMessageLoader: function (selector, msg) {
+        console.log("Selector: "+ selector);
+        console.log("Message: " + msg);
+        $("#" + selector).text(msg);
+    },
+    removeMessageLoader: function (location){
+        $("#loader").remove();
+        $(location).removeClass("loader");
+    }
+}
+
+/***/ }),
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 let workers = __webpack_require__(0);
-let tickets = __webpack_require__(2);
+let tickets = __webpack_require__(3);
 let reports = __webpack_require__(6);
 let templates = __webpack_require__(8);
 let smartEngine = __webpack_require__(7);
+let message = __webpack_require__(1);
 
 module.exports = {
     loadAllPages: function () {
@@ -616,7 +637,11 @@ module.exports = {
         switch (page_id) {
             //Home Page
             case "page-004":
+                $("#pageName").text("Inicio");
+                message.addMessageLoder("loaderMessage", "#mainContent2");
+                message.changeMessageLoader("loaderMessage", "Consultando Reportes en @OWS Datamodel");
                 reports.loadStatistic(reference.userGroup).then(function () {
+                    message.removeMessageLoader("#mainContent2");
                     reference.changeBoxStatistic(reports.allReports);
                 });
                 //reference.loadStatistic("", "statisticTotal");
@@ -627,29 +652,43 @@ module.exports = {
                 break;
             //All Tickets Page    
             case "page-008":
+                $("#pageName").text("Mis Tareas");
+                message.addMessageLoder("loaderMessage", "#mainContent2");
+                message.changeMessageLoader("loaderMessage", "Consultando Tickets en @OWS SDM Application");
                 tickets.loadTickets().then(function () {
+                    message.removeMessageLoader("#mainContent2");
                     reference.changeTicketsPage(tickets.allTickets);
                 });
                 break;
             //All Templates Page    
             case "page-007":
+                $("#pageName").text("Plantillas");
+                message.addMessageLoder("loaderMessage", "#mainContent2");
+                message.changeMessageLoader("loaderMessage", "Consultando Plantillas en @OWS Datamodel");
                 templates.loadTemplates(tickets.ticketSelected.project).then(function () {
+                    message.removeMessageLoader("#mainContent2");
                     reference.changeTemplatesPage(templates.allTemplates);
                 });
                 break;
             //New Report Page
             case "page-005":
+                $("#pageName").text("Edicion Reporte");
                 let templateSelected = templates.templateSelected;
-
+                message.addMessageLoder("loaderMessage", "#mainContent2");
+                message.changeMessageLoader("loaderMessage", "Consultando Plantilla en @OWS Datamodel");
                 templates.loadTemplate(templateSelected.template_web.attachment[0].batchId,
                     templateSelected.template_web.attachment[0].attachmentId,
                     templateSelected.template_pdf.attachment[0].batchId,
                     templateSelected.template_pdf.attachment[0].attachmentId).then(function () {
+                        message.changeMessageLoader("loaderMessage", "Generando Plantilla");
                         smartEngine.executeEngine(templates.template[0].jsonWeb);
                         $('#templateNavTabs a:first').tab('show');
                         reference.loadEventSaveReport();
+                        message.removeMessageLoader("#mainContent2");
                     });
                 if (reports.reportSelected.id_report != undefined) {
+                    message.addMessageLoder("loaderMessage", "#mainContent2");
+                    message.changeMessageLoader("loaderMessage", "Cargando Reporte");
                     reports.loadReport().then(function () {
                         console.log("Load Report: ", reports.reportResponse);
                         for (let reportAnswer of reports.reportResponse) {
@@ -659,22 +698,32 @@ module.exports = {
                             }
                         }
                     });
+                    message.removeMessageLoader("#mainContent2");
                 }
                 break;
             //My Reports    
             case "page-014":
+                $("#pageName").text("Mis Reportes");
+                message.addMessageLoder("loaderMessage", "#mainContent2");
+                message.changeMessageLoader("loaderMessage", "Consultando Reportes en @OWS Datamodel");
                 reports.loadStatistic(reference.userGroup).then(function () {
+                    message.removeMessageLoader("#mainContent2");
                     reference.fillDataTableMyReports(reports.fillMyReports());
                     $('#allReportsNavTab a:first').tab('show');
                 });
                 break;
             // My Reports Related
             case "page-024":
-                  reference.fillBoxesReportsRelated(reports.fillMyReportsRelated());
+                $("#pageName").text("Reportes Relacionados");
+                reference.fillBoxesReportsRelated(reports.fillMyReportsRelated());
                 break;
             //Detail Report    
             case "page-021":
+                $("#pageName").text("Detalle del Reporte");
+                message.addMessageLoder("loaderMessage", "#mainContent2");
+                message.changeMessageLoader("loaderMessage", "Consultando Reporte en @OWS Datamodel");
                 reports.loadStatistic(reference.userGroup).then(function () {
+                    message.removeMessageLoader("#mainContent2");
                     reference.changeDataReport();
                 });
                 break;
@@ -682,6 +731,8 @@ module.exports = {
     },
     changeBoxStatistic: function (allReports) {
         let reference = this;
+        message.addMessageLoder("loaderMessage", "#mainContent2");
+        message.changeMessageLoader("loaderMessage", "Cargando Estadisticas");
         let statusFME = [
             { status: "SM-Status002", selector: "statisticCompleted", labelSel: "labelStatisticCompleted", label: "Reportes Completados (SOLO YO)" },
             { status: "SM-Status003", selector: "statisticApproved", labelSel: "labelStatisticApproved", label: "Reportes Aprobados (SOLO YO)" },
@@ -723,9 +774,12 @@ module.exports = {
                 }
                 break;
         }
+        message.removeMessageLoader("#mainContent2");
     },
     changeTicketsPage: function (allTickets) {
         let reference = this;
+        message.addMessageLoder("loaderMessage", "#mainContent2");
+        message.changeMessageLoader("loaderMessage", "Cargando Tickets");
         let PMLength = (allTickets.PM != undefined) ? allTickets.PM.total : 0;
         let CMLength = (allTickets.CM != undefined) ? allTickets.CM.total : 0;
         let PMLLength = (allTickets.PLM != undefined) ? allTickets.PLM.total : 0;
@@ -769,9 +823,12 @@ module.exports = {
                 }
             }
         }
+        message.removeMessageLoader("#mainContent2");
     },
     changeTemplatesPage: function (allTemplates) {
         let reference = this;
+        message.addMessageLoder("loaderMessage", "#mainContent2");
+        message.changeMessageLoader("loaderMessage", "Cargando Plantillas");
         let attachmentId;
         let batchId;
         let cont = 0;
@@ -792,6 +849,7 @@ module.exports = {
                 cont += 1;
             }
         }
+        message.removeMessageLoader("#mainContent2");
     },
     loadEventSaveReport: function () {
         let reference = this;
@@ -901,12 +959,15 @@ module.exports = {
                     answerImages_3 = answerImages.splice(0, 20);
                     answerImages_4 = answerImages.splice(0, 20);
 
+                    message.addMessageLoder("loaderMessage", "#mainContent2");
+                    message.changeMessageLoader("loaderMessage", "Guardando Relacion del Reporte con Ticket");
                     console.log("Creating the Report");
                     return reference.saveDatamodel(status, comments, tickets.ticketSelected.project, tickets.ticketSelected.region,
                         tickets.ticketSelected.site_id, tickets.ticketSelected.supplier, tickets.ticketSelected.ticket_id, templates.templateSelected.id_template, tickets.ticketSelected.work_client)
 
                 }).then(function (idReportRes) {
                     reports.reportSelected = { "id_report": idReportRes };
+                    message.changeMessageLoader("loaderMessage", "Guardando Reporte");
                     idReport = idReportRes;
                     let saveAnswerDate = reference.saveAnswer("date_answer", answerDate, idReport);
                     let saveAnswerDateTime = reference.saveAnswer("datetime_answer", answerDateTime, idReport);
@@ -934,6 +995,7 @@ module.exports = {
                             reference.showIncompleteModal();
                         }
                         */
+                        message.removeMessageLoader("#mainContent2");
                         reference.bootstrapPage('page-021');
                     });
                 });
@@ -1062,6 +1124,8 @@ module.exports = {
     },
     changeDataReport: function () {
         let reference = this;
+        message.addMessageLoder("loaderMessage", "#mainContent2");
+        message.changeMessageLoader("loaderMessage", "Cargando Detalles del Reporte");
         reference.enableButtonsDetailReport();
         let reportSelected = reports.reportSelected;
         let allReports = reports.allReports;
@@ -1117,6 +1181,7 @@ module.exports = {
             }
             $("#showComments").append("<li class='" + class_background_comment + "'><span class='badge'>" + comment.time + "<br>" + status + "</span>" + comment.comment + "<br>" + comment.author + "</li>");
         }
+        message.removeMessageLoader("#mainContent2");
     },
     enableButtonsDetailReport: function () {
         let reference = this;
@@ -1126,6 +1191,8 @@ module.exports = {
     },
     fillDataTableMyReports: function (reportsFiltered) {
         let reference = this;
+        message.addMessageLoder("loaderMessage", "#mainContent2");
+        message.changeMessageLoader("loaderMessage", "Filtrando Reportes por Ticket de SDM");
         console.log("Wrap Reports: ", reportsFiltered)
         let cont = 0;
         for (let report of reportsFiltered) {
@@ -1136,27 +1203,30 @@ module.exports = {
                     reference.bootstrapPage('page-024');
                 });
         }
+        message.removeMessageLoader("#mainContent2");
     },
     fillBoxesReportsRelated: function (reportsFiltered) {
         let reference = this;
+        message.addMessageLoder("loaderMessage", "#mainContent2");
+        message.changeMessageLoader("loaderMessage", "Filtrando Reportes Relacionados");
         let cont = 0;
         for (let report of reportsFiltered) {
             $("#allReportsRelatedDiv").append("<div class='col-sm-12 col-md-6 col-lg-6'><div class='pricing-table " + report.status_background + "'><div class=pt-header><div class=plan-pricing><div class=pricing style=font-size:1.5em>" + report.web_template + "</div><div class=pricing-type> Ultima Modificacion:" + report.web_template + "</div></div></div><div class=pt-body><h4>" + report.status_name + "</h4><ul class=plan-detail><li><b>Autor :</b> " + report.author + "<li><b>Ultima Modificacion : </b>" + report.modified_by + "<li><b>Report Id:<br></b>" + report.id_report + "</ul></div><div class=pt-footer><button id='viewReport_" + cont + "' class='btn btn-" + report.status_class + "'type=button>Ver Detalles</button></div></div></div>");
             $("#viewReport_" + cont).on("click", {
                 val: { "id_report": report.id_report, }
             }, function (event) {
-                reports.reportSelected = { "ticket_id": reference.reportSelected.ticket_id, "id_report": event.data.id_report };
+                reports.reportSelected = { "ticket_id": reports.reportSelected.ticket_id, "id_report": event.data.id_report };
                 reference.bootstrapPage('page-005');
 
             });
             cont++;
         }
+        message.removeMessageLoader("#mainContent2");
     }
-
 }
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 let workers = __webpack_require__(0);
@@ -1178,7 +1248,7 @@ module.exports = {
 }
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -1311,7 +1381,7 @@ module.exports = {
 }
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports) {
 
 /**
@@ -1437,31 +1507,11 @@ module.exports = {
 }
 
 /***/ }),
-/* 5 */
-/***/ (function(module, exports) {
-
-module.exports = {
-    addMessageLoder: function (selector,location) {
-        $(location).addClass("loader");
-        $(location).append("<div id='loader' class='loader-container text-center color-white'><div><i style='color:white' class='fa fa-spinner fa-pulse fa-3x'></i></div><div style='color:white'><h4>Smart Docs <br> <small> Cargando Recursos <div id='"+selector+"'> </div> </small> <br><small>... Se esta preparando para ti ...</small></h4><h5>Desarollado por: Huawei Colombia  <br> OSS IT Team </h5></div></div>");
-    },
-    changeMessageLoader: function (selector, msg) {
-        console.log("Selector: "+ selector);
-        console.log("Message: " + msg);
-        $("#" + selector).text(msg);
-    },
-    removeMessageLoader: function (location){
-        $("#loader").remove();
-        $(location).removeClass("loader");
-    }
-}
-
-/***/ }),
 /* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 let workers = __webpack_require__(0);
-let page = __webpack_require__(1);
+let page = __webpack_require__(2);
 
 module.exports = {
     allReports: "",
@@ -2628,7 +2678,7 @@ module.exports = {
 /***/ (function(module, exports, __webpack_require__) {
 
 let workers = __webpack_require__ (0);
-let tickets = __webpack_require__ (2);
+let tickets = __webpack_require__ (3);
 module.exports ={
     allTemplates: "",
     templateSelected : "",
@@ -2667,10 +2717,10 @@ module.exports ={
 
 $(function () {
     let workers = __webpack_require__(0);
-    let cssLibs = __webpack_require__(4);
-    let jsLibs = __webpack_require__(3);
-    let message = __webpack_require__(5);
-    let pages = __webpack_require__(1);
+    let cssLibs = __webpack_require__(5);
+    let jsLibs = __webpack_require__(4);
+    let message = __webpack_require__(1);
+    let pages = __webpack_require__(2);
 
     let smart = {
         onInit: function () {
@@ -2714,37 +2764,37 @@ $(function () {
                 console.log("JS Low Libs were loaded");
                 message.changeMessageLoader("pageLoaderContent", "JS Low Libs were loaded");
                 return jsLibs.loadLow2JS();
-            }).then(function(){
+            }).then(function () {
                 console.log("JS Low 2 were loaded");
                 message.changeMessageLoader("pageLoaderContent", "Js Low 2  were loaded");
                 return jsLibs.loadcustomJS();
             })
-            .then(function () {
-                console.log("JS Load custom were loaded");
-                message.changeMessageLoader("pageLoaderContent", "JS Load custom were loaded");
-                return pages.loadAllPages();
-            }).then(function (data) {
-                message.changeMessageLoader("pageLoaderContent", "Pages were loaded");
-                pages.bootstrapMenu("page-022").then(function () {
-                    return workers.getUserGroups;
+                .then(function () {
+                    console.log("JS Load custom were loaded");
+                    message.changeMessageLoader("pageLoaderContent", "JS Load custom were loaded");
+                    return pages.loadAllPages();
                 }).then(function (data) {
-                    message.changeMessageLoader("pageLoaderContent", "User Groups was loaded");
-                    let userGroups = JSON.parse(data).results;
-                    let userGroupsEdited = []
-                    for (let group of userGroups) {
-                        userGroupsEdited.push({ group_id: group.group_id, group_fullname: group.group_fullname });
-                    }
-                    reference.userGroups = userGroupsEdited;
-                    console.log("User Groups: " + reference.userGroups);
-                    return workers.getUserInformation;
+                    message.changeMessageLoader("pageLoaderContent", "Pages were loaded");
+                    pages.bootstrapMenu("page-022").then(function () {
+                        return workers.getUserGroups;
+                    }).then(function (data) {
+                        message.changeMessageLoader("pageLoaderContent", "User Groups was loaded");
+                        let userGroups = JSON.parse(data).results;
+                        let userGroupsEdited = []
+                        for (let group of userGroups) {
+                            userGroupsEdited.push({ group_id: group.group_id, group_fullname: group.group_fullname });
+                        }
+                        reference.userGroups = userGroupsEdited;
+                        console.log("User Groups: " + reference.userGroups);
+                        return workers.getUserInformation;
+                    })
+                        .then(function (data) {
+                            message.changeMessageLoader("pageLoaderContent", "User Information was loaded");
+                            reference.userInformation = JSON.parse(data).result;
+                            pages.showUserInformationNav(reference.userInformation);
+                            reference.grantPermissions(reference.userGroups);
+                        });
                 })
-                    .then(function (data) {
-                        message.changeMessageLoader("pageLoaderContent", "User Information was loaded");
-                        reference.userInformation = JSON.parse(data).result;
-                        pages.showUserInformationNav(reference.userInformation);
-                        reference.grantPermissions(reference.userGroups);
-                    });
-            })
                 .catch(function (error) {
                     console.log(error);
                     message.changeMessageLoader("pageLoaderContent", "Ha ocurrido un error: " + JSON.stringify(error));
@@ -2878,6 +2928,7 @@ $(function () {
         },
         launchSelectGroupModal: function (groups_to_select) {
             let reference = this;
+            $(".app-container").attr("style", "display:none");
             let list = "";
             for (let group of groups_to_select) {
                 list += "<li id='" + group + "' value='" + group + "'class='list-group-item col-md-6'> <b>" + group + "</b> <input class='form-control' name='groupSelected' value='" + group + "' type='radio' checked='checked'></li>";
@@ -2886,12 +2937,14 @@ $(function () {
             $("body").append("<div class='fade modal modal-danger'aria-hidden=true aria-labelledby=myModalLabel1 id=groupError role=dialog style=display:block tabindex=-1><div class=modal-dialog><div class=modal-content><div class=modal-header><h4 class=modal-title id=myModalLabel13>Selecciona el tipo de usuario </h4></div><div class=modal-body><img src='https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=f17f55c8-66ba-4d50-a9d1-04ef3cd111b0&attachmentId=671658' style=margin-left:auto;margin-right:auto;display:block width=150px><h4 style=text-align:center> El usuario tienes grupos varios grupos asociados, selecciona un rol.</h4><h5 style=text-align:center>Grupos Asociados:<br> <ul class='list-group' id='listGroups'></ul></h5><div class='text-center'><button class='btn btn-default' id='btnAccessToSmart'> Ingresar a Smart Docs </button></div></div></div></div></div>");
             $("#listGroups").append(list);
             $("#btnAccessToSmart").click(function () {
+                $(".app-container").removeAttr("style");
                 let groupSelected = $("input[name='groupSelected']:checked").val();
                 console.log("Group Selected :" + groupSelected);
                 reference.userGroup = groupSelected;
                 $("#userGroup").text(groupSelected);
                 $("#groupError").modal('hide');
                 reference.openSmatApp();
+                pages.loadResources('page-004');
             });
             $("#groupError").modal({ backdrop: 'static', keyboard: false });
         },
