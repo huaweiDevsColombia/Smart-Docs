@@ -1,7 +1,7 @@
 self.addEventListener('message', function (e) {
     var params = "&start=0&limit=1000&dir=ASC&sort=id_template&template_project=" + e.data.project;
     
-    var promise = get("co_sm_web_template_getList", e.data.username, "100l", params);
+    var promise = get("co_sm_template_getList", e.data.username, "100l", params);
     promise.then(function (templatesRespond) {
         self.postMessage(templatesRespond);
         self.close()

@@ -14,8 +14,6 @@ function readURL(input, img) {
         }
         reader.readAsDataURL(input.files[0]);
         //$("#"+tableId+"Value").val(arrayStr);
-
-
     }
 }
 
@@ -973,7 +971,7 @@ function executeEngine(template) {
 
                                 $("#" + valueSubPanelEle.id + "Event").on('change', function () {
                                     console.log("The Image changes");
-                                    readURL(this, '' + valueSubPanelEle.id)
+                                    reference.readURL(this, '' + valueSubPanelEle.id)
                                 });
 
                                 break;
@@ -992,7 +990,7 @@ function executeEngine(template) {
 
                                 $("#" + valueSubPanelEle.id + "Event").on('change', function () {
                                     console.log("The Image changes");
-                                    readURL(this, '' + valueSubPanelEle.id)
+                                    reference.readURL(this, '' + valueSubPanelEle.id)
                                 });
 
                                 break;
