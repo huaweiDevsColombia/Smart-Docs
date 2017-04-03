@@ -1,0 +1,256 @@
+<nav class="navbar navbar-default navbar-fixed-top navbar-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-expand-toggle">
+                <i class="fa fa-bars icon"></i>
+            </button>
+            <ol class="breadcrumb navbar-breadcrumb">
+                <li class="active" id="pageName"></li>
+            </ol>
+            <button type="button" class="navbar-right-expand-toggle pull-right visible-xs">
+                <i class="fa fa-th icon"></i>
+            </button>
+        </div>
+        <ul class="nav navbar-nav navbar-right">
+            <button type="button" class="navbar-right-expand-toggle pull-right visible-xs">
+                <i class="fa fa-times icon"></i>
+            </button>
+            <li class="dropdown">
+                <a href="" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-user"></i> Tipo de Usuario: <b id="userGroup"></b> </a>
+                <ul class="dropdown-menu animated fadeInDown">
+                    <li class="title" id="explainUserGroup">
+                    </li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a href="" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-bug"></i></a>
+                <ul class="dropdown-menu animated fadeInDown">
+                    <li class="title">
+                        ¿ Encontraste un problema ?  <span class="badge pull-right">0</span>
+                    </li>
+                    <li class="message noPage" style="cursor: pointer">
+                        Notificalo ahora
+                    </li>
+                </ul>
+            </li>
+            <li class="dropdown profile">
+                <a href="" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" id="userFullname">_<span class="caret"></span></a>
+                <ul class="dropdown-menu animated fadeInDown">
+                    <li class="profile-img">
+                        <img src="https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=6296cedb-8b8b-4d71-8b18-2985a3cc43e6&attachmentId=666870" class="profile-img">
+                    </li>
+                    <li>
+                        <div class="profile-info">
+                            <h4 class="username" id="userAccount"></h4>
+                            <p id="userRol"></p>
+                            <p id="userEmail"></p>
+                            <div class="btn-group margin-bottom-2x" role="group">
+                                <button  id="btnMyProfile"type="button" class="btn btn-default"><i class="fa fa-user"></i> Mi Perfil</button>
+                                <a id="btnlogOut" href="javascript:window.open('','_self').close();" class="btn btn-default"><i class="fa fa-sign-out"></i> Salir App</a>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="side-menu sidebar-inverse">
+    <div class="side-menu sidebar-inverse">
+        <nav class="navbar navbar-default" role="navigation">
+            <div class="side-menu-container">
+                <div class="navbar-header" style='background-color: #353d47'>
+                    <a class="navbar-brand" href="">
+                        <div class="icon fa fa fa-connectdevelop"></div>
+                        <div class="title">Smart Docs @OWS</div>
+                    </a>
+                    <button type="button" class="navbar-expand-toggle pull-right visible-xs">
+                        <i class="fa fa-times icon"></i>
+                    </button>
+                </div>
+                <ul class="nav navbar-nav">
+                    <li id="itemInicio" style="cursor: pointer">
+                        <a>
+                            <span class="icon fa fa-tachometer"></span><span class="title">Inicio</span>
+                        </a>
+                    </li>
+                    <li id="itemTareas" style="cursor: pointer">
+                        <a>
+                            <span class="icon fa fa-flag"></span><span class="title">Mis Tareas</span>
+                        </a>
+                    </li>
+                    <li id="itemReportes" style="cursor: pointer">
+                        <a>
+                            <span class="icon fa fa-fire"></span><span class="title">Mis Reportes</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a id="itemTemplates" style="cursor: pointer">
+                            <span class="icon fa fa-book"></span><span class="title">Plantillas</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a>
+                            <span class="icon fa fa-user-secret"></span><span class="title">Usuarios</span>
+                        </a>
+                    </li>
+                    <li id="itemDeveloper" style="cursor: pointer">
+                        <a>
+                            <span class="icon fa fa-asterisk"></span><span class="title">Developer Zone</span>
+                        </a>
+                    </li>
+                    <li id="itemTesting" style="cursor: pointer">
+                        <a>
+                            <span class="icon fa fa-file-code-o"></span><span class="title">Testing Zone</span>
+                        </a>
+                    </li>
+                    <li id="itemCreator" style="cursor: pointer">
+                        <a>
+                            <span class="icon fa fa-code-fork"></span><span class="title">Template Creator</span>
+                        </a>
+                    </li>
+                    <li id="itemFaq" class="noPage" style="cursor: pointer">
+                        <a>
+                            <span class="icon fa fa-question"></span><span class="title">FAQ</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </nav>
+    </div>            </div>
+<!-- Main Content -->
+<div id="mainContent" class="container-fluid">
+    <div id="mainContent2">
+         </div>
+</div>
+<footer class="app-footer">
+    <div class="wrapper">
+        <span class="pull-right">Smart Version 2.1 <a href=""><i class="fa fa-long-arrow-up"></i></a></span> © 2017 Created By : Sebastian Guevara OSS IT Huawei Colombia Member.
+    </div>
+</footer>
+
+<div class="modal fade modal-warning" id="pageNotFound" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">Pagina en Desarollo </h4>
+            </div>
+            <div class="modal-body">
+                <img style="margin-left: auto;margin-right: auto;display: block;" src="https://cdn4.iconfinder.com/data/icons/web-development-5/500/developer-api-coding-screen-256.png" width="150px">
+                <h4 style="text-align: center">Esta pagina se encuentra en desarollo.</h4>
+                <h5 style="text-align: center">Nuestros desarolladores estan trabajando fuertemente cada dia para ofrecerte nuevas caracteristicas. </h5>
+            </div>
+            <div class="modal-footer">
+                <input type="button" id="btnLoEntiendo" class="btn btn-warning" data-dismiss="modal" value="Lo entiendo">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade modal-danger" id="deleteReport" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true" style="display: none; ">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel5">Eliminar Reporte</h4>
+            </div>
+            <div class="modal-body">
+                <img style="margin-left: auto;margin-right: auto;display: block;" src="https://cdn0.iconfinder.com/data/icons/shift-free/32/Error-256.png" width="150px">
+                <h4 style="text-align: center">¿Esta seguro de eliminar el reporte?</h4>
+                <h5 style="text-align: center">Esta accion no se podra deshacer y se perdera todo el progeso. <br>Smart te recomienda editar el reporte en vez de eliminarlo.</h5>
+            </div>
+            <div class="modal-footer">
+                <input type="button" class="btn btn-default" data-dismiss="modal" value="Cerrar">
+                <input type="button" id="btnDeleteReport" class="btn btn-danger"  value="Eliminar">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade modal-info" id="emptyFields" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel7">Algunos campos no fueron completados</h4>
+            </div>
+            <div class="modal-body">
+                <img style="margin-left: auto;margin-right: auto;display: block;" src="https://cdn2.iconfinder.com/data/icons/circle-icons-1/64/chat-256.png" width="150px">
+                <h4 style="text-align: center">Todos los campos obligatorios no fueron completados</h4>
+                <h5 style="text-align: center" id="emptyFieldsText"></h5>
+            </div>
+            <div class="modal-footer">
+                <input id="btnsaveReportEmpty" type="button" class="btn btn-info" value="Guardar el reporte">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade modal-info " id="notEmptyFields" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel8">Todos los campos fueron completados</h4>
+            </div>
+            <div class="modal-body">
+                <img style="margin-left: auto;margin-right: auto;display: block;" src="https://cdn3.iconfinder.com/data/icons/flat-actions-icons-9/512/Tick_Mark-256.png" width="150px">
+                <h4 style="text-align: center">Todos los campos obligatorios fueron completados. Sigue la instrucciones para guardar el reporte</h4>
+            </div>
+            <div class="modal-footer">
+                <input id="btnsaveReportNotEmpty"type="button" class="btn btn-info" value="Guardar el reporte">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade modal-danger" id="error404" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel9">Oppps ha ocurrido un error</h4>
+            </div>
+            <div class="modal-body">
+                <img style="margin-left: auto;margin-right: auto;display: block;" src="https://cdn0.iconfinder.com/data/icons/shift-free/32/Error-256.png" width="150px">
+                <h4 style="text-align: center">Error 404</h4>
+                <h5 style="text-align: center">Ha ocurrido una nueva actualizacion, por favor vuelve a ingresar a Smart Docs.</h5>
+            </div>
+            <div class="modal-footer">
+                <input type="button" id="btnRestartSmart" class="btn btn-danger" data-dismiss="modal" value="Volver a Ingresar">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade modal-danger" id="invalidOpt" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel13">La opcion seleccionada es invalida...</h4>
+            </div>
+            <div class="modal-body">
+                <img style="margin-left: auto;margin-right: auto;display: block;" src="https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=f17f55c8-66ba-4d50-a9d1-04ef3cd111b0&attachmentId=671658" width="150px">
+                <h5 style="text-align: center">Asegúrate de que hayas seleccionado una opcion valida !</h5>
+            </div>
+            <div class="modal-footer">
+               <input type="button" class="btn btn-danger" data-dismiss="modal" value="Revisar Opciones">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade modal-danger" id="invalidTable" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel13">Campos Incompletos</h4>
+            </div>
+            <div class="modal-body">
+                <img style="margin-left: auto;margin-right: auto;display: block;" src="https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=f17f55c8-66ba-4d50-a9d1-04ef3cd111b0&attachmentId=671658" width="150px">
+                <h5 style="text-align: center">Asegúrate de completar todos los campos antes de agregar un registro !</h5>
+            </div>
+            <div class="modal-footer">
+               <input type="button" class="btn btn-danger" data-dismiss="modal" value="Revisar Campos">
+            </div>
+        </div>
+    </div>
+</div>
