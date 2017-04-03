@@ -76,13 +76,41 @@ module.exports = {
             });
         });
     },
+    reziseOWSFileInputs: function () {
+        /* Form Upload OWS */
+        $("#mainContent").append($("#formUploadTemplates"));
+        $("#formUploadTemplates").css("margin", "0 auto");
+        $("#formUploadTemplates").css("width", "250px");
+        //$(".e_btn_gary > a").remove();
+        $("#web_template_file_UploadBtn_bifFile").html("<button id='btnEnviarWeb' class='btn btn-primary'>Agregar WEB Template (SOLO .JSON)</button>");
+        $("#pdf_template_file_UploadBtn_bifFile").html("<button id='btnEnviarPdf' class='btn btn-primary'>Agregar PDF Template (SOLO .JSON)</button>");
+        $("#web_template_file_UploadBtn_bifFile > span").remove();
+        $("#pdf_template_file_UploadBtn_bifFile > span").remove();
+        $("#web_template_file_div > span").remove();
+        $("#pdf_template_file_div > span").remove();
+        $("#ext-gen2UploadBtn").remove();
+        $("#ext-gen2UploadBtn").remove();
+        $("#formUploadTemplates").hide();
+    },
+    showOWSFileInputs: function () {
+        $("#templatesDiv").append($("#formUploadTemplates"));
+        $("#formUploadTemplates").show();
+    },
+    removeOWSFileInputs: function () {
+        $("#mainContent").append($("#formUploadTemplates"));
+        $("#formUploadTemplates").hide();
+    },
     changeMenuContent: function (pageCode) {
+        let reference = this;
         $('body').append("<div class='app-container'><div class='row content-container'></div> </div>");
         $('body').addClass("flat-blue");
         $("head").append("<meta name='viewport' content='width=device-width, user-scalable=no'>");
         $('.content-container').append(pageCode);
+        reference.reziseOWSFileInputs();
     },
     changeMainContent: function (pageCode) {
+        let reference = this;
+        reference.removeOWSFileInputs();
         $("#mainContent2").html("");
         $('#mainContent2').append(pageCode);
     },
@@ -91,6 +119,7 @@ module.exports = {
             { id: "itemInicio", id_page: "page-004" },
             { id: "itemTareas", id_page: "page-008" },
             { id: "itemReportes", id_page: "page-014" },
+            { id: "itemTemplates", id_page: "page-007" },
             { id: "itemDeveloper", id_page: "" },
             { id: "itemTesting", id_page: "" },
             { id: "itemCreator", id_page: "" },
@@ -205,10 +234,20 @@ module.exports = {
                 $("#pageName").text("Plantillas");
                 message.addMessageLoder("loaderMessage", "#mainContent2");
                 message.changeMessageLoader("loaderMessage", "Consultando Plantillas en @OWS Datamodel");
-                templates.loadTemplates(tickets.ticketSelected.project).then(function () {
-                    message.removeMessageLoader("#mainContent2");
-                    reference.changeTemplatesPage(templates.allTemplates);
-                });
+
+                if (tickets.ticketSelected.project != undefined) {
+                    templates.loadTemplates(tickets.ticketSelected.project).then(function () {
+                        message.removeMessageLoader("#mainContent2");
+                        reference.changeTemplatesPage(templates.allTemplates);
+                    });
+                }
+                else {
+                    templates.loadTemplates("").then(function () {
+                        message.removeMessageLoader("#mainContent2");
+                        reference.changeTemplatesPageAdm(templates.allTemplates);
+                    });
+                }
+
                 break;
             //New Report Page
             case "page-005":
@@ -226,7 +265,7 @@ module.exports = {
                         reference.loadEventSaveReport();
                         message.removeMessageLoader("#mainContent2");
                     });
-                    console.log("Loading Report From DataModel");
+                console.log("Loading Report From DataModel");
                 if (reports.reportSelected.id_report != undefined) {
                     message.addMessageLoder("loaderMessage", "#mainContent2");
                     message.changeMessageLoader("loaderMessage", "Cargando Reporte");
@@ -266,6 +305,14 @@ module.exports = {
                 reports.loadStatistic(reference.userGroup).then(function () {
                     message.removeMessageLoader("#mainContent2");
                     reference.changeDataReport();
+                });
+                break;
+            // New Report
+            case "page-025":
+                reference.showOWSFileInputs();
+                reference.getProjects().then(function (projects) {
+                    reference.fillProjects(projects);
+                    reference.enableCreateTemplateButtons();
                 });
                 break;
         }
@@ -370,6 +417,7 @@ module.exports = {
         let reference = this;
         message.addMessageLoder("loaderMessage", "#mainContent2");
         message.changeMessageLoader("loaderMessage", "Cargando Plantillas");
+        $("#templateBoxesButtonsAdm").remove();
         let attachmentId;
         let batchId;
         let cont = 0;
@@ -386,6 +434,32 @@ module.exports = {
                     templates.templateSelected = event.data.val;
                     console.log(templates.templateSelected);
                     reference.bootstrapPage("page-005");
+                });
+                cont += 1;
+            }
+        }
+        message.removeMessageLoader("#mainContent2");
+    }
+    ,
+    changeTemplatesPageAdm: function (allTemplates) {
+        let reference = this;
+        message.addMessageLoder("loaderMessage", "#mainContent2");
+        message.changeMessageLoader("loaderMessage", "Cargando Plantillas");
+        let cont = 0;
+        if (allTemplates.length > 0) {
+            $("#new_template").click(function () {
+                reference.bootstrapPage("page-025");
+            });
+            $("#templatesNotFound").remove();
+            for (let template of allTemplates) {
+                $("#allTemplatesDiv").append("<div class='col-sm-12 col-md-6 col-lg-6'><div class=pricing-table><div class=pt-header style=background-color:#fff><div class=plan-pricing><div class=pricing style=font-size:1.5em>" + template.template_name_web + "</div><img src='" + template.icon_template.substr(1).slice(0, -1) + "'style=padding:10px><div class=pricing-type><!--<b>Id:</b>" + template.id_template + "!--></div></div></div><div class=pt-footer><p><b>Ultima Actualizacion: </b> " + template.template_date + " </p><button id='editTemplate_" + cont + "'class='btn btn-warning' style='margin-right:5px' type=button>Editar</button><button id='editTemplate_" + cont + "'class='btn btn-danger' style='margin-right:5px' type=button>Eliminar</button></div></div></div>");
+                $("#editTemplate_" + cont).on("click", {
+                    val:
+                    { id_template: template.id_template }
+                }, function (event) {
+                    //templates.templateSelected = event.data.val;
+                    //console.log(templates.templateSelected);
+                    // reference.bootstrapPage("page-005");
                 });
                 cont += 1;
             }
@@ -729,10 +803,10 @@ module.exports = {
         $("#detail_ticket_edit").click(function () {
             reference.bootstrapPage('page-005');
         });
-        $("#detail_ticket_approve").click(function(){
+        $("#detail_ticket_approve").click(function () {
             reference.launchApproveModal();
         });
-        $("#detail_ticket_reject").click(function(){
+        $("#detail_ticket_reject").click(function () {
             reference.launchRejectModal();
         });
     },
@@ -760,10 +834,12 @@ module.exports = {
         for (let report of reportsFiltered) {
             $("#allReportsRelatedDiv").append("<div class='col-sm-12 col-md-6 col-lg-6'><div class='pricing-table " + report.status_background + "'><div class=pt-header><div class=plan-pricing><div class=pricing style=font-size:1.5em>" + report.web_template_name + "</div><div class=pricing-type> Ultima Modificacion:" + report.last_modification + "</div></div></div><div class=pt-body><h4>" + report.status_name + "</h4><ul class=plan-detail><li><b>Autor :</b> " + report.author + "<li><b>Ultima Modificacion : </b>" + report.modified_by + "<li><b>Report Id:<br></b>" + report.id_report + "</ul></div><div class=pt-footer><button id='viewReport_" + cont + "' class='btn btn-" + report.status_class + "'type=button>Ver Detalles</button></div></div></div>");
             $("#viewReport_" + cont).on("click", {
-                "id_report": report.id_report
+                val: { "id_report": report.id_report, "id_template": report.web_template, "template_name": report.web_template_name }
             }, function (event) {
                 reports.reportSelected = { "ticket_id": reports.reportSelected.ticket_id, "id_report": event.data.id_report };
                 reference.bootstrapPage('page-021');
+                val:
+                templates.templateSelected = { id_template: event.data.val, template_name: template.template_name, template_pdf: template.template_pdf, template_project: template.template_project, template_web: template.template_web }
 
             });
             cont++;
@@ -772,41 +848,103 @@ module.exports = {
         message.removeMessageLoader("#mainContent2");
     },
     launchApproveModal: function () {
-            let reference = this;
-            $("#approve_report_modal").remove();
-            $("body").append("<div class='fade modal modal-success'aria-hidden=true aria-labelledby=myModalLabel1 id=approve_report_modal role=dialog style=display:block tabindex=-1><div class=modal-dialog><div class=modal-content><div class=modal-header><h4 class=modal-title id=myModalLabel13>Aprobar Reporte </h4></div><div class=modal-body> <label> Deja un comentario </label> <input id='approve_report_comment' type='text' class='form-control' placeholder='El comentario minimo debe ser de 5 caracteres'><br><p style='text-align: center'><b>Nota:</b> Este comentario sera visible en la seccion de Historia del Reporte</p></div><div class='modal-footer'><input type='button' id='approve_report_btn' disabled=true class='btn btn-success' data-dismiss='modal' value='Aprobar'></div></div></div></div>");
-            $("#approve_report_modal").modal('show');
-            $("#approve_report_comment").on('input', function () {
-                let comment_size = $("#approve_report_comment").val().length;
-                if (comment_size > 4) {
-                    $("#approve_report_btn").attr("disabled", false);
-                }
-                else {
-                    $("#approve_report_btn").attr("disabled", true);
-                }
-            });
+        let reference = this;
+        $("#approve_report_modal").remove();
+        $("body").append("<div class='fade modal modal-success'aria-hidden=true aria-labelledby=myModalLabel1 id=approve_report_modal role=dialog style=display:block tabindex=-1><div class=modal-dialog><div class=modal-content><div class=modal-header><h4 class=modal-title id=myModalLabel13>Aprobar Reporte </h4></div><div class=modal-body> <label> Deja un comentario </label> <input id='approve_report_comment' type='text' class='form-control' placeholder='El comentario minimo debe ser de 5 caracteres'><br><p style='text-align: center'><b>Nota:</b> Este comentario sera visible en la seccion de Historia del Reporte</p></div><div class='modal-footer'><input type='button' id='approve_report_btn' disabled=true class='btn btn-success' data-dismiss='modal' value='Aprobar'></div></div></div></div>");
+        $("#approve_report_modal").modal('show');
+        $("#approve_report_comment").on('input', function () {
+            let comment_size = $("#approve_report_comment").val().length;
+            if (comment_size > 4) {
+                $("#approve_report_btn").attr("disabled", false);
+            }
+            else {
+                $("#approve_report_btn").attr("disabled", true);
+            }
+        });
 
-            $("#approve_report_btn").click(function () {
-                $('#approve_report_modal').modal('hide');
-            });
-        },
-        launchRejectModal: function () {
-            let reference = this;
-            $("#reject_report_modal").remove();
-            $("body").append("<div class='fade modal modal-danger'aria-hidden=true aria-labelledby=myModalLabel1 id=reject_report_modal role=dialog style=display:block tabindex=-1><div class=modal-dialog><div class=modal-content><div class=modal-header><h4 class=modal-title id=myModalLabel13>Rechazar Reporte </h4></div><div class=modal-body> <label> Deja un comentario </label> <input id='reject_report_comment' type='text' class='form-control' placeholder='El comentario minimo debe ser de 5 caracteres'><br><p style='text-align: center'><b>Nota:</b> Este comentario sera visible en la seccion de Historia del Reporte</p></div><div class='modal-footer'><input type='button' id='reject_report_btn' disabled=true class='btn btn-danger' data-dismiss='modal' value='Rechazar'></div></div></div></div>");
-            $("#reject_report_modal").modal('show');
-            $("#reject_report_comment").on('input', function () {
-                let comment_size = $("#reject_report_comment").val().length;
-                if (comment_size > 4) {
-                    $("#reject_report_btn").attr("disabled", false);
-                }
-                else {
-                    $("#reject_report_btn").attr("disabled", true);
-                }
-            });
+        $("#approve_report_btn").click(function () {
+            $('#approve_report_modal').modal('hide');
+        });
+    },
+    launchRejectModal: function () {
+        let reference = this;
+        $("#reject_report_modal").remove();
+        $("body").append("<div class='fade modal modal-danger'aria-hidden=true aria-labelledby=myModalLabel1 id=reject_report_modal role=dialog style=display:block tabindex=-1><div class=modal-dialog><div class=modal-content><div class=modal-header><h4 class=modal-title id=myModalLabel13>Rechazar Reporte </h4></div><div class=modal-body> <label> Deja un comentario </label> <input id='reject_report_comment' type='text' class='form-control' placeholder='El comentario minimo debe ser de 5 caracteres'><br><p style='text-align: center'><b>Nota:</b> Este comentario sera visible en la seccion de Historia del Reporte</p></div><div class='modal-footer'><input type='button' id='reject_report_btn' disabled=true class='btn btn-danger' data-dismiss='modal' value='Rechazar'></div></div></div></div>");
+        $("#reject_report_modal").modal('show');
+        $("#reject_report_comment").on('input', function () {
+            let comment_size = $("#reject_report_comment").val().length;
+            if (comment_size > 4) {
+                $("#reject_report_btn").attr("disabled", false);
+            }
+            else {
+                $("#reject_report_btn").attr("disabled", true);
+            }
+        });
 
-            $("#approve_report_btn").click(function () {
-                $('#approve_report_modal').modal('hide');
-            });
+        $("#approve_report_btn").click(function () {
+            $('#approve_report_modal').modal('hide');
+        });
+    },
+    enableCreateTemplateButtons: function () {
+        let reference = this;
+        $("#create_template").prop("disabled", false);
+
+        $("#template_logo_input").on('change', function () {
+            console.log("The Image changes");
+            smartEngine.imgTo64(this, "template_logo");
+        });
+
+        $("#create_template").click(function () {
+            try {
+                let template_icon = $("#template_logo").attr("src");
+                let template_web_name = $("#template_web_name").val();
+                let template_pdf_name = $("#template_pdf_name").val();
+                let template_project = $("#template_project").val();
+                let template_web_batchId = $("#web_template_file").val();
+                let template_web_attachmentId = $("#web_template_file_div > .filelist_cls").attr("id").split('div_')[1];
+                let template_pdf_batchId = $("#pdf_template_file").val();
+                let template_pdf_attachmentId = $("#pdf_template_file_div > .filelist_cls").attr("id").split('div_')[1];
+                let templateToCreate = {
+                    "icon_template": template_icon,
+                    "template_name_web": template_web_name,
+                    "template_name_export": template_pdf_name,
+                    "template_project": template_project,
+                    "template_web": "/get?batchId=" + template_web_batchId + "&attachmentId=" + template_web_attachmentId,
+                    "template_pdf": "/get?batchId=" + template_pdf_batchId + "&attachmentId=" + template_pdf_attachmentId
+                };
+                templates.createTemplate(templateToCreate).then(function () {
+                    console.log("The template was created");
+                    $("#web_template_file_div > .filelist_cls").remove();
+                    $("#pdf_template_file_div > .filelist_cls").remove()
+                    reference.bootstrapPage('page-007');
+                });
+            }
+            catch (error) {
+                $("#error404").modal('show');
+            }
+        });
+    },
+    getProjects: function () {
+        return new Promise(function (resolve, reject) {
+            var http = new XMLHttpRequest();
+            var url = "https://100l-app.teleows.com/servicecreator/pageservices/service.do?forAccessLog={serviceName:project_item_getList,userId:" + USER_ID + ",tenantId:" + tenantId + "}";
+            var params = "start=0&limit=100&csrfToken=" + csrfToken + "&serviceId=project_item_getList";
+            http.open("POST", url, true);
+
+            //Send the proper header information along with the request
+            http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+            http.onreadystatechange = function () {//Call a function when the state changes.
+                if (http.readyState == 4 && http.status == 200) {
+                    resolve(JSON.parse(http.response).results);
+                }
+            }
+            http.send(params);
+        });
+    },
+    fillProjects: function (projects) {
+        for (let project of projects) {
+            $("#template_project").append("<option vaue=" + project.project + ">" + project.project_name + "</option>");
         }
+    }
 }
