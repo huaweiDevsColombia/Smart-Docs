@@ -3,6 +3,7 @@ let tickets = require("./tickets");
 let reports = require("./reports");
 let templates = require("./templates");
 let smartEngine = require("./smartEngine");
+let message = require("./messages");
 
 module.exports = {
     loadAllPages: function () {
@@ -176,7 +177,11 @@ module.exports = {
         switch (page_id) {
             //Home Page
             case "page-004":
+                $("#pageName").text("Inicio");
+                message.addMessageLoder("loaderMessage", "#mainContent2");
+                message.changeMessageLoader("loaderMessage", "Consultando Reportes en @OWS Datamodel");
                 reports.loadStatistic(reference.userGroup).then(function () {
+                    message.removeMessageLoader("#mainContent2");
                     reference.changeBoxStatistic(reports.allReports);
                 });
                 //reference.loadStatistic("", "statisticTotal");
@@ -187,29 +192,43 @@ module.exports = {
                 break;
             //All Tickets Page    
             case "page-008":
+                $("#pageName").text("Mis Tareas");
+                message.addMessageLoder("loaderMessage", "#mainContent2");
+                message.changeMessageLoader("loaderMessage", "Consultando Tickets en @OWS SDM Application");
                 tickets.loadTickets().then(function () {
+                    message.removeMessageLoader("#mainContent2");
                     reference.changeTicketsPage(tickets.allTickets);
                 });
                 break;
             //All Templates Page    
             case "page-007":
+                $("#pageName").text("Plantillas");
+                message.addMessageLoder("loaderMessage", "#mainContent2");
+                message.changeMessageLoader("loaderMessage", "Consultando Plantillas en @OWS Datamodel");
                 templates.loadTemplates(tickets.ticketSelected.project).then(function () {
+                    message.removeMessageLoader("#mainContent2");
                     reference.changeTemplatesPage(templates.allTemplates);
                 });
                 break;
             //New Report Page
             case "page-005":
+                $("#pageName").text("Edicion Reporte");
                 let templateSelected = templates.templateSelected;
-
+                message.addMessageLoder("loaderMessage", "#mainContent2");
+                message.changeMessageLoader("loaderMessage", "Consultando Plantilla en @OWS Datamodel");
                 templates.loadTemplate(templateSelected.template_web.attachment[0].batchId,
                     templateSelected.template_web.attachment[0].attachmentId,
                     templateSelected.template_pdf.attachment[0].batchId,
                     templateSelected.template_pdf.attachment[0].attachmentId).then(function () {
+                        message.changeMessageLoader("loaderMessage", "Generando Plantilla");
                         smartEngine.executeEngine(templates.template[0].jsonWeb);
                         $('#templateNavTabs a:first').tab('show');
                         reference.loadEventSaveReport();
+                        message.removeMessageLoader("#mainContent2");
                     });
                 if (reports.reportSelected.id_report != undefined) {
+                    message.addMessageLoder("loaderMessage", "#mainContent2");
+                    message.changeMessageLoader("loaderMessage", "Cargando Reporte");
                     reports.loadReport().then(function () {
                         console.log("Load Report: ", reports.reportResponse);
                         for (let reportAnswer of reports.reportResponse) {
@@ -219,22 +238,32 @@ module.exports = {
                             }
                         }
                     });
+                    message.removeMessageLoader("#mainContent2");
                 }
                 break;
             //My Reports    
             case "page-014":
+                $("#pageName").text("Mis Reportes");
+                message.addMessageLoder("loaderMessage", "#mainContent2");
+                message.changeMessageLoader("loaderMessage", "Consultando Reportes en @OWS Datamodel");
                 reports.loadStatistic(reference.userGroup).then(function () {
+                    message.removeMessageLoader("#mainContent2");
                     reference.fillDataTableMyReports(reports.fillMyReports());
                     $('#allReportsNavTab a:first').tab('show');
                 });
                 break;
             // My Reports Related
             case "page-024":
-                  reference.fillBoxesReportsRelated(reports.fillMyReportsRelated());
+                $("#pageName").text("Reportes Relacionados");
+                reference.fillBoxesReportsRelated(reports.fillMyReportsRelated());
                 break;
             //Detail Report    
             case "page-021":
+                $("#pageName").text("Detalle del Reporte");
+                message.addMessageLoder("loaderMessage", "#mainContent2");
+                message.changeMessageLoader("loaderMessage", "Consultando Reporte en @OWS Datamodel");
                 reports.loadStatistic(reference.userGroup).then(function () {
+                    message.removeMessageLoader("#mainContent2");
                     reference.changeDataReport();
                 });
                 break;
@@ -242,6 +271,8 @@ module.exports = {
     },
     changeBoxStatistic: function (allReports) {
         let reference = this;
+        message.addMessageLoder("loaderMessage", "#mainContent2");
+        message.changeMessageLoader("loaderMessage", "Cargando Estadisticas");
         let statusFME = [
             { status: "SM-Status002", selector: "statisticCompleted", labelSel: "labelStatisticCompleted", label: "Reportes Completados (SOLO YO)" },
             { status: "SM-Status003", selector: "statisticApproved", labelSel: "labelStatisticApproved", label: "Reportes Aprobados (SOLO YO)" },
@@ -283,9 +314,12 @@ module.exports = {
                 }
                 break;
         }
+        message.removeMessageLoader("#mainContent2");
     },
     changeTicketsPage: function (allTickets) {
         let reference = this;
+        message.addMessageLoder("loaderMessage", "#mainContent2");
+        message.changeMessageLoader("loaderMessage", "Cargando Tickets");
         let PMLength = (allTickets.PM != undefined) ? allTickets.PM.total : 0;
         let CMLength = (allTickets.CM != undefined) ? allTickets.CM.total : 0;
         let PMLLength = (allTickets.PLM != undefined) ? allTickets.PLM.total : 0;
@@ -329,9 +363,12 @@ module.exports = {
                 }
             }
         }
+        message.removeMessageLoader("#mainContent2");
     },
     changeTemplatesPage: function (allTemplates) {
         let reference = this;
+        message.addMessageLoder("loaderMessage", "#mainContent2");
+        message.changeMessageLoader("loaderMessage", "Cargando Plantillas");
         let attachmentId;
         let batchId;
         let cont = 0;
@@ -352,6 +389,7 @@ module.exports = {
                 cont += 1;
             }
         }
+        message.removeMessageLoader("#mainContent2");
     },
     loadEventSaveReport: function () {
         let reference = this;
@@ -461,12 +499,15 @@ module.exports = {
                     answerImages_3 = answerImages.splice(0, 20);
                     answerImages_4 = answerImages.splice(0, 20);
 
+                    message.addMessageLoder("loaderMessage", "#mainContent2");
+                    message.changeMessageLoader("loaderMessage", "Guardando Relacion del Reporte con Ticket");
                     console.log("Creating the Report");
                     return reference.saveDatamodel(status, comments, tickets.ticketSelected.project, tickets.ticketSelected.region,
                         tickets.ticketSelected.site_id, tickets.ticketSelected.supplier, tickets.ticketSelected.ticket_id, templates.templateSelected.id_template, tickets.ticketSelected.work_client)
 
                 }).then(function (idReportRes) {
                     reports.reportSelected = { "id_report": idReportRes };
+                    message.changeMessageLoader("loaderMessage", "Guardando Reporte");
                     idReport = idReportRes;
                     let saveAnswerDate = reference.saveAnswer("date_answer", answerDate, idReport);
                     let saveAnswerDateTime = reference.saveAnswer("datetime_answer", answerDateTime, idReport);
@@ -494,6 +535,7 @@ module.exports = {
                             reference.showIncompleteModal();
                         }
                         */
+                        message.removeMessageLoader("#mainContent2");
                         reference.bootstrapPage('page-021');
                     });
                 });
@@ -622,6 +664,8 @@ module.exports = {
     },
     changeDataReport: function () {
         let reference = this;
+        message.addMessageLoder("loaderMessage", "#mainContent2");
+        message.changeMessageLoader("loaderMessage", "Cargando Detalles del Reporte");
         reference.enableButtonsDetailReport();
         let reportSelected = reports.reportSelected;
         let allReports = reports.allReports;
@@ -677,6 +721,7 @@ module.exports = {
             }
             $("#showComments").append("<li class='" + class_background_comment + "'><span class='badge'>" + comment.time + "<br>" + status + "</span>" + comment.comment + "<br>" + comment.author + "</li>");
         }
+        message.removeMessageLoader("#mainContent2");
     },
     enableButtonsDetailReport: function () {
         let reference = this;
@@ -686,6 +731,8 @@ module.exports = {
     },
     fillDataTableMyReports: function (reportsFiltered) {
         let reference = this;
+        message.addMessageLoder("loaderMessage", "#mainContent2");
+        message.changeMessageLoader("loaderMessage", "Filtrando Reportes por Ticket de SDM");
         console.log("Wrap Reports: ", reportsFiltered)
         let cont = 0;
         for (let report of reportsFiltered) {
@@ -696,21 +743,24 @@ module.exports = {
                     reference.bootstrapPage('page-024');
                 });
         }
+        message.removeMessageLoader("#mainContent2");
     },
     fillBoxesReportsRelated: function (reportsFiltered) {
         let reference = this;
+        message.addMessageLoder("loaderMessage", "#mainContent2");
+        message.changeMessageLoader("loaderMessage", "Filtrando Reportes Relacionados");
         let cont = 0;
         for (let report of reportsFiltered) {
             $("#allReportsRelatedDiv").append("<div class='col-sm-12 col-md-6 col-lg-6'><div class='pricing-table " + report.status_background + "'><div class=pt-header><div class=plan-pricing><div class=pricing style=font-size:1.5em>" + report.web_template + "</div><div class=pricing-type> Ultima Modificacion:" + report.web_template + "</div></div></div><div class=pt-body><h4>" + report.status_name + "</h4><ul class=plan-detail><li><b>Autor :</b> " + report.author + "<li><b>Ultima Modificacion : </b>" + report.modified_by + "<li><b>Report Id:<br></b>" + report.id_report + "</ul></div><div class=pt-footer><button id='viewReport_" + cont + "' class='btn btn-" + report.status_class + "'type=button>Ver Detalles</button></div></div></div>");
             $("#viewReport_" + cont).on("click", {
                 val: { "id_report": report.id_report, }
             }, function (event) {
-                reports.reportSelected = { "ticket_id": reference.reportSelected.ticket_id, "id_report": event.data.id_report };
+                reports.reportSelected = { "ticket_id": reports.reportSelected.ticket_id, "id_report": event.data.id_report };
                 reference.bootstrapPage('page-005');
 
             });
             cont++;
         }
+        message.removeMessageLoader("#mainContent2");
     }
-
 }
