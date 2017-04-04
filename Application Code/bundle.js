@@ -775,6 +775,15 @@ module.exports = {
                     reference.enableCreateTemplateButtons();
                 });
                 break;
+            // Edit Report
+            case "page-026":
+                reference.showOWSFileInputs();
+                reference.fillTemplateData();
+                reference.getProjects().then(function (projects) {
+                    reference.fillProjects(projects);
+                    reference.enableEditTemplatesButtons();
+                });
+                break;
         }
     },
     changeBoxStatistic: function (allReports) {
@@ -887,7 +896,7 @@ module.exports = {
                 attachmentId = template.icon_template.attachment[0].attachmentId;
                 batchId = template.icon_template.attachment[0].batchId;
                 $("#allTemplatesDiv").append("<div class='col-sm-12 col-md-6 col-lg-6'><div class=pricing-table><div class=pt-header style=background-color:#fff><div class=plan-pricing><div class=pricing style=font-size:1.5em>" + template.template_name + "</div><img src='https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=" + batchId + "&attachmentId=" + attachmentId + "'style=padding:10px><div class=pricing-type><!--<b>Id:</b>" + template.id_template + "!--></div></div></div><div class=pt-footer><p><b>Ultima Actualizacion: </b> " + template.template_date + " </p><button id='createTemplate_" + cont + "'class='btn btn-primary' style='margin-right:5px' type=button>Crear Reporte</button></div></div></div>");
-                $("#createTemplate_" + cont).on("click", {
+                $("#editTemplate_" + cont).on("click", {
                     val:
                     { id_template: template.id_template, template_name: template.template_name, template_pdf: template.template_pdf, template_project: template.template_project, template_web: template.template_web }
                 }, function (event) {
@@ -912,14 +921,24 @@ module.exports = {
             });
             $("#templatesNotFound").remove();
             for (let template of allTemplates) {
-                $("#allTemplatesDiv").append("<div class='col-sm-12 col-md-6 col-lg-6'><div class=pricing-table><div class=pt-header style=background-color:#fff><div class=plan-pricing><div class=pricing style=font-size:1.5em>" + template.template_name_web + "</div><img src='" + template.icon_template.substr(1).slice(0, -1) + "'style=padding:10px><div class=pricing-type><!--<b>Id:</b>" + template.id_template + "!--></div></div></div><div class=pt-footer><p><b>Ultima Actualizacion: </b> " + template.template_date + " </p><button id='editTemplate_" + cont + "'class='btn btn-warning' style='margin-right:5px' type=button>Editar</button><button id='editTemplate_" + cont + "'class='btn btn-danger' style='margin-right:5px' type=button>Eliminar</button></div></div></div>");
-                $("#editTemplate_" + cont).on("click", {
+                $("#allTemplatesDiv").append("<div class='col-sm-12 col-md-6 col-lg-6'><div class=pricing-table><div class=pt-header style=background-color:#fff><div class=plan-pricing><div class=pricing style=font-size:1.5em>" + template.template_name_web + "</div><img src='" + template.icon_template.substr(1).slice(0, -1) + "'style=padding:10px><div class=pricing-type><!--<b>Id:</b>" + template.id_template + "!--></div></div></div><div class=pt-footer><p><b>Ultima Actualizacion: </b> " + template.template_date + " </p><button id='previewTemplate_" + cont + "'class='btn btn-primary' style='margin-right:5px' type=button>Previsualizacion </button><button id='editTemplate_" + cont + "'class='btn btn-default' style='margin-right:5px' type=button>Editar</button><button id='deleteTemplate_" + cont + "'class='btn btn-danger' style='margin-right:5px' type=button>Eliminar</button></div></div></div>");
+                $("#editTemplate_" + cont).add('#previewTemplate_' + cont ).add('#deleteTemplate_' + cont ).on("click", {
                     val:
-                    { id_template: template.id_template }
+                    {
+                        id_template: template.id_template,
+                        icon_template: template.icon_template,
+                        template_date: template.template_date,
+                        template_name_export: template.template_name_export,
+                        template_name_web: template.template_name_web,
+                        template_pdf: template.template_pdf,
+                        template_project: template.template_project,
+                        template_web: template.template_web,
+                        author: template.author
+                    }
                 }, function (event) {
-                    //templates.templateSelected = event.data.val;
-                    //console.log(templates.templateSelected);
-                    // reference.bootstrapPage("page-005");
+                    templates.templateSelected = event.data.val;
+                    console.log(templates.templateSelected);
+                    reference.bootstrapPage("page-026");
                 });
                 cont += 1;
             }
@@ -1406,6 +1425,57 @@ module.exports = {
         for (let project of projects) {
             $("#template_project").append("<option vaue=" + project.project + ">" + project.project_name + "</option>");
         }
+    },
+    enableEditTemplatesButtons: function () {
+        let reference = this;
+        $("#create_template").prop("disabled", false);
+
+        $("#template_logo_input").on('change', function () {
+            console.log("The Image changes");
+            smartEngine.imgTo64(this, "template_logo");
+        });
+
+        $("#create_template").click(function () {
+            try {
+                let template_icon = $("#template_logo").attr("src");
+                let template_web_name = $("#template_web_name").val();
+                let template_pdf_name = $("#template_pdf_name").val();
+                let template_project = $("#template_project").val();
+                let template_web_batchId = $("#web_template_file").val();
+                let template_web_attachmentId = $("#web_template_file_div > .filelist_cls").attr("id").split('div_')[1];
+                let template_pdf_batchId = $("#pdf_template_file").val();
+                let template_pdf_attachmentId = $("#pdf_template_file_div > .filelist_cls").attr("id").split('div_')[1];
+                let templateToCreate = {
+                    "icon_template": template_icon,
+                    "template_name_web": template_web_name,
+                    "template_name_export": template_pdf_name,
+                    "template_project": template_project,
+                    "template_web": "/get?batchId=" + template_web_batchId + "&attachmentId=" + template_web_attachmentId,
+                    "template_pdf": "/get?batchId=" + template_pdf_batchId + "&attachmentId=" + template_pdf_attachmentId
+                };
+                templates.createTemplate(templateToCreate).then(function () {
+                    console.log("The template was created");
+                    $("#web_template_file_div > .filelist_cls").remove();
+                    $("#pdf_template_file_div > .filelist_cls").remove()
+                    reference.bootstrapPage('page-007');
+                });
+            }
+            catch (error) {
+                $("#error404").modal('show');
+            }
+        });
+    },
+    fillTemplateData: function () {
+        let reference = this;
+        $("#template_logo").attr('src', templates.templateSelected.icon_template.substr(1).slice(0, -1));
+        $("#template_id_template").val(templates.templateSelected.id_template);
+        $("#template_web_name").val(templates.templateSelected.template_name_web);
+        $("#template_pdf_name").val(templates.templateSelected.template_name_web);
+        $("#template_project").val(templates.templateSelected.template_project);
+        $("#template_web_route").val("https://100l-app.teleows.com/servicecreator/fileservice" + templates.templateSelected.template_web);
+        $("#template_pdf_route").val("https://100l-app.teleows.com/servicecreator/fileservice" + templates.templateSelected.template_pdf);
+        $("#template_web_route_link").attr('href', "https://100l-app.teleows.com/servicecreator/fileservice" + templates.templateSelected.template_web);
+        $("#template_pdf_route_link").attr('href', "https://100l-app.teleows.com/servicecreator/fileservice" + templates.templateSelected.template_pdf);
     }
 }
 
@@ -2890,6 +2960,25 @@ module.exports = {
                 resolve();
             }).catch(function (error) {
                 reject(error);
+            });
+        });
+    },
+    createTemplate: function (template) {
+        return new Promise(function (resolve, reject) {
+            MessageProcessor.process({
+                serviceId: "co_sm_template_create",
+                data: {
+                    "icon_template": JSON.stringify(template.icon_template),
+                    "template_name_web": template.template_name_web,
+                    "template_name_export": template.template_name_export,
+                    "template_project": template.template_project,
+                    "template_web": template.template_web,
+                    "template_pdf": template.template_pdf
+                },
+                success: function (data) {
+                    console.log(data);
+                    resolve();
+                }
             });
         });
     },

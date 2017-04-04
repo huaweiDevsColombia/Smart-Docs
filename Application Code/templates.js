@@ -48,5 +48,39 @@ module.exports = {
                 }
             });
         });
+    },
+    updateTemplate: function () {
+        return new Promise(function (resolve, reject) {
+            MessageProcessor.process({
+                serviceId: "co_sm_template_update",
+                data: {
+                    "id_template":template.id_template,
+                    "icon_template": JSON.stringify(template.icon_template),
+                    "template_name_web": template.template_name_web,
+                    "template_name_export": template.template_name_export,
+                    "template_project": template.template_project,
+                    "template_web": template.template_web,
+                    "template_pdf": template.template_pdf
+                },
+                success: function (data) {
+                    console.log(data);
+                    resolve();
+                }
+            });
+        });
+    },
+    deleteTemplate: function(){
+        return new Promise(function (resolve, reject) {
+            MessageProcessor.process({
+                serviceId: "co_sm_template_batch_delete",
+                data: {
+                    "id":template.id
+                },
+                success: function (data) {
+                    console.log(data);
+                    resolve();
+                }
+            });
+        });
     }
 }
