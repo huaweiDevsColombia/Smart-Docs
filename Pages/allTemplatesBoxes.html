@@ -11,11 +11,24 @@
                 <div class="card-header">
                     <div class="pull-right" id="templateBoxesButtonsAdm">
 
-                        <button id="new_template" class="btn btn-primary"><span class="fa fa-plus"></span> Crear </button>
+                        <button id="new_templateBtn" class="btn btn-primary"><span class="fa fa-plus"></span> Nueva Plantilla </button>
                         <!--<button id="detail_ticket_delete" class="btn btn-primary"><span class="fa fa-trash"></span> Eliminar</button>-->
                     </div>
                     <div class="card-title">
                         <div class="title">Smart Templates</div>
+                    </div>
+                    <div id="templateBoxesFilterAdm" class="panel panel-default">
+                        <div class="panel-body">
+                            <div class="clearfix"></div>
+                            <div class="col-md-4"><label>Selecciona un proyecto</label>
+                            <select id="projectsFilter"class="form-control">
+                                <option value="None">Todos</option>
+                            </select>
+                            </div>
+                            <div class="col-md-4"><label>Total Reportes</label>
+                                <h4 id="totalTemplates">0</h4>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="card-body">
@@ -23,20 +36,20 @@
 
                         <div id="templatesNotFound">
 
-                             <h3 class="text-center">
+                            <h3 class="text-center">
                                 <i class="fa fa-eye-slash" aria-hidden="true"></i>
                                 <br> No se han encontrados plantillas para este proyecto</h3>
 
 
-                            
 
-                            </div>
 
                         </div>
 
                     </div>
+
                 </div>
             </div>
         </div>
     </div>
+</div>
 </div>
