@@ -922,7 +922,7 @@ module.exports = {
             $("#templatesNotFound").remove();
             for (let template of allTemplates) {
                 $("#allTemplatesDiv").append("<div class='col-sm-12 col-md-6 col-lg-6'><div class=pricing-table><div class=pt-header style=background-color:#fff><div class=plan-pricing><div class=pricing style=font-size:1.5em>" + template.template_name_web + "</div><img src='" + template.icon_template.substr(1).slice(0, -1) + "'style=padding:10px><div class=pricing-type><!--<b>Id:</b>" + template.id_template + "!--></div></div></div><div class=pt-footer><p><b>Ultima Actualizacion: </b> " + template.template_date + " </p><button id='previewTemplate_" + cont + "'class='btn btn-primary' style='margin-right:5px' type=button>Previsualizacion </button><button id='editTemplate_" + cont + "'class='btn btn-default' style='margin-right:5px' type=button>Editar</button><button id='deleteTemplate_" + cont + "'class='btn btn-danger' style='margin-right:5px' type=button>Eliminar</button></div></div></div>");
-                $("#editTemplate_" + cont).add('#previewTemplate_' + cont ).add('#deleteTemplate_' + cont ).on("click", {
+                $("#editTemplate_" + cont).on("click", {
                     val:
                     {
                         id_template: template.id_template,
@@ -939,6 +939,44 @@ module.exports = {
                     templates.templateSelected = event.data.val;
                     console.log(templates.templateSelected);
                     reference.bootstrapPage("page-026");
+                });
+                $("#previewTemplate_" + cont).on("click", {
+                    val:
+                    {
+                        id_template: template.id_template,
+                        icon_template: template.icon_template,
+                        template_date: template.template_date,
+                        template_name_export: template.template_name_export,
+                        template_name_web: template.template_name_web,
+                        template_pdf: template.template_pdf,
+                        template_project: template.template_project,
+                        template_web: template.template_web,
+                        author: template.author
+                    }
+                }, function (event) {
+                    templates.templateSelected = event.data.val;
+                    console.log(templates.templateSelected);
+                    reference.bootstrapPage("page-026");
+                });
+                $("#deleteTemplate_" + cont).on("click", {
+                    val:
+                    {
+                        id_template: template.id_template,
+                        icon_template: template.icon_template,
+                        template_date: template.template_date,
+                        template_name_export: template.template_name_export,
+                        template_name_web: template.template_name_web,
+                        template_pdf: template.template_pdf,
+                        template_project: template.template_project,
+                        template_web: template.template_web,
+                        author: template.author,
+                        id:template.id
+                    }
+                }, function (event) {
+                    templates.templateSelected = event.data.val;
+                    console.log(templates.templateSelected);
+                    templates.deleteTemplate();
+                    reference.bootstrapPage("page-007");
                 });
                 cont += 1;
             }
@@ -2982,17 +3020,32 @@ module.exports = {
             });
         });
     },
-    createTemplate: function (template) {
+    updateTemplate: function () {
         return new Promise(function (resolve, reject) {
             MessageProcessor.process({
-                serviceId: "co_sm_template_create",
+                serviceId: "co_sm_template_update",
                 data: {
+                    "id_template":template.id_template,
                     "icon_template": JSON.stringify(template.icon_template),
                     "template_name_web": template.template_name_web,
                     "template_name_export": template.template_name_export,
                     "template_project": template.template_project,
                     "template_web": template.template_web,
                     "template_pdf": template.template_pdf
+                },
+                success: function (data) {
+                    console.log(data);
+                    resolve();
+                }
+            });
+        });
+    },
+    deleteTemplate: function(){
+        return new Promise(function (resolve, reject) {
+            MessageProcessor.process({
+                serviceId: "co_sm_template_batch_delete",
+                data: {
+                    "id":template.id
                 },
                 success: function (data) {
                     console.log(data);
@@ -3030,47 +3083,47 @@ $(function () {
             message.addMessageLoder("pageLoaderContent", "body");
             cssLibs.loadFonts.then(function () {
                 console.log("Fonts libs were loaded");
-                message.changeMessageLoader("pageLoaderContent", "Fonts Libs were loaded");
+                message.changeMessageLoader("pageLoaderContent", "Las fuentes han sido cargadas");
                 return cssLibs.loadIcons;
             }).then(function () {
                 console.log("Icons libs were loaded");
-                message.changeMessageLoader("pageLoaderContent", "Icons libs were loaded");
+                message.changeMessageLoader("pageLoaderContent", "Los Iconos han sido cargados");
                 return cssLibs.loadCSS;
             }).then(function () {
                 console.log("CSS Libs were loaded");
-                message.changeMessageLoader("pageLoaderContent", "CSS Libs were loaded");
+                message.changeMessageLoader("pageLoaderContent", "Los Estilos Primarios han sido cargados");
                 return cssLibs.loadCustomCss;
             }).then(function () {
                 console.log("CSS Custom Libs were loaded");
-                message.changeMessageLoader("pageLoaderContent", "CSS Custom Libs were loaded");
+                message.changeMessageLoader("pageLoaderContent", "Los Estilos Secundarios han sido cargados");
                 return jsLibs.loadHighJS();
             }).then(function () {
                 console.log("High JS were loaded");
-                message.changeMessageLoader("pageLoaderContent", "High JS were loaded");
+                message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 1/4 han sido cargadas");
                 return jsLibs.loadMediumJS();
             }).then(function () {
                 console.log("JS Medium Libs were loaded");
-                message.changeMessageLoader("pageLoaderContent", "JS Medium Libs were loaded");
+                message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 2/4 han sido cargadas");
                 return jsLibs.loadLowJS();
             }).then(function () {
                 console.log("JS Low Libs were loaded");
-                message.changeMessageLoader("pageLoaderContent", "JS Low Libs were loaded");
+                message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 3/4 han sido cargadas");
                 return jsLibs.loadLow2JS();
-            }).then(function () {
+            })/*.then(function () {
                 console.log("JS Low 2 were loaded");
                 message.changeMessageLoader("pageLoaderContent", "Js Low 2  were loaded");
                 return jsLibs.loadcustomJS();
-            })
+            })*/
                 .then(function () {
                     console.log("JS Load custom were loaded");
-                    message.changeMessageLoader("pageLoaderContent", "JS Load custom were loaded");
+                    message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 4/4 han sido cargadas");
                     return pages.loadAllPages();
                 }).then(function (data) {
-                    message.changeMessageLoader("pageLoaderContent", "Pages were loaded");
+                    message.changeMessageLoader("pageLoaderContent", "Las Paginas han sido cargadas");
                     pages.bootstrapMenu("page-022").then(function () {
                         return workers.getUserGroups;
                     }).then(function (data) {
-                        message.changeMessageLoader("pageLoaderContent", "User Groups was loaded");
+                        message.changeMessageLoader("pageLoaderContent", "Se ha obtenido los grupos del usuario");
                         let userGroups = JSON.parse(data).results;
                         let userGroupsEdited = []
                         for (let group of userGroups) {
@@ -3081,7 +3134,7 @@ $(function () {
                         return workers.getUserInformation;
                     })
                         .then(function (data) {
-                            message.changeMessageLoader("pageLoaderContent", "User Information was loaded");
+                            message.changeMessageLoader("pageLoaderContent", "La informacion del usuario ha sido cargada");
                             reference.userInformation = JSON.parse(data).result;
                             pages.showUserInformationNav(reference.userInformation);
                             reference.grantPermissions(reference.userGroups);

@@ -21,47 +21,47 @@ $(function () {
             message.addMessageLoder("pageLoaderContent", "body");
             cssLibs.loadFonts.then(function () {
                 console.log("Fonts libs were loaded");
-                message.changeMessageLoader("pageLoaderContent", "Fonts Libs were loaded");
+                message.changeMessageLoader("pageLoaderContent", "Las fuentes han sido cargadas");
                 return cssLibs.loadIcons;
             }).then(function () {
                 console.log("Icons libs were loaded");
-                message.changeMessageLoader("pageLoaderContent", "Icons libs were loaded");
+                message.changeMessageLoader("pageLoaderContent", "Los Iconos han sido cargados");
                 return cssLibs.loadCSS;
             }).then(function () {
                 console.log("CSS Libs were loaded");
-                message.changeMessageLoader("pageLoaderContent", "CSS Libs were loaded");
+                message.changeMessageLoader("pageLoaderContent", "Los Estilos Primarios han sido cargados");
                 return cssLibs.loadCustomCss;
             }).then(function () {
                 console.log("CSS Custom Libs were loaded");
-                message.changeMessageLoader("pageLoaderContent", "CSS Custom Libs were loaded");
+                message.changeMessageLoader("pageLoaderContent", "Los Estilos Secundarios han sido cargados");
                 return jsLibs.loadHighJS();
             }).then(function () {
                 console.log("High JS were loaded");
-                message.changeMessageLoader("pageLoaderContent", "High JS were loaded");
+                message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 1/4 han sido cargadas");
                 return jsLibs.loadMediumJS();
             }).then(function () {
                 console.log("JS Medium Libs were loaded");
-                message.changeMessageLoader("pageLoaderContent", "JS Medium Libs were loaded");
+                message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 2/4 han sido cargadas");
                 return jsLibs.loadLowJS();
             }).then(function () {
                 console.log("JS Low Libs were loaded");
-                message.changeMessageLoader("pageLoaderContent", "JS Low Libs were loaded");
+                message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 3/4 han sido cargadas");
                 return jsLibs.loadLow2JS();
-            }).then(function () {
+            })/*.then(function () {
                 console.log("JS Low 2 were loaded");
                 message.changeMessageLoader("pageLoaderContent", "Js Low 2  were loaded");
                 return jsLibs.loadcustomJS();
-            })
+            })*/
                 .then(function () {
                     console.log("JS Load custom were loaded");
-                    message.changeMessageLoader("pageLoaderContent", "JS Load custom were loaded");
+                    message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 4/4 han sido cargadas");
                     return pages.loadAllPages();
                 }).then(function (data) {
-                    message.changeMessageLoader("pageLoaderContent", "Pages were loaded");
+                    message.changeMessageLoader("pageLoaderContent", "Las Paginas han sido cargadas");
                     pages.bootstrapMenu("page-022").then(function () {
                         return workers.getUserGroups;
                     }).then(function (data) {
-                        message.changeMessageLoader("pageLoaderContent", "User Groups was loaded");
+                        message.changeMessageLoader("pageLoaderContent", "Se ha obtenido los grupos del usuario");
                         let userGroups = JSON.parse(data).results;
                         let userGroupsEdited = []
                         for (let group of userGroups) {
@@ -72,7 +72,7 @@ $(function () {
                         return workers.getUserInformation;
                     })
                         .then(function (data) {
-                            message.changeMessageLoader("pageLoaderContent", "User Information was loaded");
+                            message.changeMessageLoader("pageLoaderContent", "La informacion del usuario ha sido cargada");
                             reference.userInformation = JSON.parse(data).result;
                             pages.showUserInformationNav(reference.userInformation);
                             reference.grantPermissions(reference.userGroups);
