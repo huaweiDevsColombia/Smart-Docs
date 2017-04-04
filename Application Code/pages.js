@@ -82,8 +82,8 @@ module.exports = {
         $("#formUploadTemplates").css("margin", "0 auto");
         $("#formUploadTemplates").css("width", "250px");
         //$(".e_btn_gary > a").remove();
-        $("#web_template_file_UploadBtn_bifFile").html("<button id='btnEnviarWeb' class='btn btn-primary'>Agregar WEB Template (SOLO .JSON)</button>");
-        $("#pdf_template_file_UploadBtn_bifFile").html("<button id='btnEnviarPdf' class='btn btn-primary'>Agregar PDF Template (SOLO .JSON)</button>");
+        $("#web_template_file_UploadBtn_bifFile").html("<button id='btnEnviarWeb' class='btn btn-primary'><i class='fa fa-plus' aria-hidden='true'></i> &nbsp Agregar WEB Template (SOLO .JSON)</button>");
+        $("#pdf_template_file_UploadBtn_bifFile").html("<button id='btnEnviarPdf' class='btn btn-primary'><i class='fa fa-plus' aria-hidden='true'></i> &nbsp Agregar PDF Template (SOLO .JSON)</button>");
         $("#web_template_file_UploadBtn_bifFile > span").remove();
         $("#pdf_template_file_UploadBtn_bifFile > span").remove();
         $("#web_template_file_div > span").remove();
@@ -158,7 +158,7 @@ module.exports = {
                 $("#itemInicio").show();
                 $("#itemTareas").hide();
                 $("#itemReportes").show();
-                $("#itemInventarios").show();
+                $("#itemTemplates").show();
                 $("#itemUsers").hide();
                 $("#itemDeveloper").hide();
                 $("#itemTesting").hide();
@@ -169,7 +169,7 @@ module.exports = {
                 $("#itemInicio").show();
                 $("#itemTareas").show();
                 $("#itemReportes").show();
-                $("#itemInventarios").show();
+                $("#itemTemplates").hide();
                 $("#itemUsers").hide();
                 $("#itemDeveloper").hide();
                 $("#itemTesting").hide();
@@ -244,7 +244,7 @@ module.exports = {
                 else {
                     templates.loadTemplates(templates.templateProject).then(function () {
                         message.removeMessageLoader("#mainContent2");
-                        reference.changeTemplatesPageAdm(templates.templateProject,templates.allTemplates);
+                        reference.changeTemplatesPageAdm(templates.templateProject, templates.allTemplates);
                     });
                 }
 
@@ -317,7 +317,7 @@ module.exports = {
                 reference.showOWSFileInputs();
                 reference.fillTemplateData();
                 reference.getProjects().then(function (projects) {
-                    reference.fillProjects(projects);
+                    reference.fillProjects("template_project", projects);
                     reference.enableEditTemplatesButtons();
                 });
                 break;
@@ -448,23 +448,23 @@ module.exports = {
         message.removeMessageLoader("#mainContent2");
     }
     ,
-    changeTemplatesPageAdm: function (project,allTemplates) {
+    changeTemplatesPageAdm: function (project, allTemplates) {
         let reference = this;
         message.addMessageLoder("loaderMessage", "#mainContent2");
         message.changeMessageLoader("loaderMessage", "Cargando Plantillas");
         reference.getProjects().then(function (projects) {
             reference.fillProjects("projectsFilter", projects);
-            $("#projectsFilter").val((templates.templateProject == "")?"None":templates.templateProject);
+            $("#projectsFilter").val((templates.templateProject == "") ? "None" : templates.templateProject);
             $("#totalTemplates").text(allTemplates.length);
-            $("#projectsFilter").on("change",function(){
-                templates.templateProject = ($("#projectsFilter").val() == "None")?"":$("#projectsFilter").val();
+            $("#projectsFilter").on("change", function () {
+                templates.templateProject = ($("#projectsFilter").val() == "None") ? "" : $("#projectsFilter").val();
                 reference.bootstrapPage('page-007');
             })
+            $("#new_templateBtn").click(function () {
+                reference.bootstrapPage("page-025");
+            });
             let cont = 0;
             if (allTemplates.length > 0) {
-                $("#new_templateBtn").click(function () {
-                    reference.bootstrapPage("page-025");
-                });
                 $("#templatesNotFound").remove();
                 for (let template of allTemplates) {
                     $("#allTemplatesDiv").append("<div class='col-sm-12 col-md-6 col-lg-6'><div class=pricing-table><div class=pt-header style=background-color:#fff><div class=plan-pricing><div class=pricing style=font-size:1.5em>" + template.template_name_web + "</div><img src='" + template.icon_template.substr(1).slice(0, -1) + "'style=padding:10px><div class=pricing-type><!--<b>Id:</b>" + template.id_template + "!--></div></div></div><div class=pt-footer><p><b>Ultima Actualizacion: </b> " + template.template_date + " </p><button id='previewTemplate_" + cont + "'class='btn btn-primary' style='margin-right:5px' type=button> <i class='fa fa-eye' aria-hidden=true></i> Visualizar </button><button id='editTemplate_" + cont + "'class='btn btn-primary' style='margin-right:5px' type=button><i class='fa fa-pencil-square-o' aria-hidden=true></i> Editar</button><button id='deleteTemplate_" + cont + "'class='btn btn-danger' style='margin-right:5px' type=button><i class='fa fa-trash-o' aria-hidden=true></i> Eliminar</button></div></div></div>");
@@ -528,13 +528,17 @@ module.exports = {
                     }, function (event) {
                         templates.templateSelected = event.data.val;
                         console.log(templates.templateSelected);
-                        templates.deleteTemplate().then(function () {
-                            reference.bootstrapPage("page-007");
-                        });
+                        $("#deleteTemplate").modal('show');
                     });
                     cont += 1;
                 }
             }
+            $("#btnDeleteReportTrue").click(function () {
+                            templates.deleteTemplate().then(function () {
+                                $("#deleteTemplate").modal('hide');
+                                reference.bootstrapPage("page-007");
+                            });
+                        });
             message.removeMessageLoader("#mainContent2");
         });
     },
@@ -895,6 +899,7 @@ module.exports = {
                     reports.reportSelected = { "ticket_id": event.data.id_ticket };
                     reference.bootstrapPage('page-024');
                 });
+            cont += 1;
         }
         message.removeMessageLoader("#mainContent2");
     },
@@ -992,7 +997,7 @@ module.exports = {
                 });
             }
             catch (error) {
-                $("#error404").modal('show');
+                $("#errorTemplate").modal('show');
             }
         });
     },
@@ -1021,32 +1026,52 @@ module.exports = {
     },
     enableEditTemplatesButtons: function () {
         let reference = this;
-        $("#create_template").prop("disabled", false);
 
         $("#template_logo_input").on('change', function () {
             console.log("The Image changes");
             smartEngine.imgTo64(this, "template_logo");
         });
 
-        $("#create_template").click(function () {
+        $("#template_web_name").add("#template_pdf_name").on('input', function () {
+
+            let template_web_name_length = $("#template_web_name").val().length;
+            let template_pdf_name_length = $("#template_pdf_name").val().length;
+            if (template_web_name_length > 5 & template_pdf_name_length > 5) {
+                $("#update_template").attr("disabled", false);
+            }
+            else {
+                $("#update_template").attr("disabled", true);
+            }
+        });
+        $("#update_template").click(function () {
             try {
+                let template_id = $("#template_id_template").val();
                 let template_icon = $("#template_logo").attr("src");
-                let template_web_name = $("#template_web_name").val();
+                let template_web_name = ($("#template_web_name").val());
                 let template_pdf_name = $("#template_pdf_name").val();
                 let template_project = $("#template_project").val();
-                let template_web_batchId = $("#web_template_file").val();
-                let template_web_attachmentId = $("#web_template_file_div > .filelist_cls").attr("id").split('div_')[1];
-                let template_pdf_batchId = $("#pdf_template_file").val();
-                let template_pdf_attachmentId = $("#pdf_template_file_div > .filelist_cls").attr("id").split('div_')[1];
-                let templateToCreate = {
+                let template_web = $("#template_web_route").val();
+                let template_pdf = $("#template_pdf_route").val();
+                if ($("#web_template_file_div > .filelist_cls").attr("id") != undefined) {
+                    let template_web_batchId = $("#web_template_file").val();
+                    let template_web_attachmentId = $("#web_template_file_div > .filelist_cls").attr("id").split('div_')[1];
+                    template_web = "/get?batchId=" + template_web_batchId + "&attachmentId=" + template_web_attachmentId;
+                }
+                if ($("#pdf_template_file_div > .filelist_cls").attr("id") != undefined) {
+                    let template_pdf_batchId = $("#pdf_template_file").val();
+                    let template_pdf_attachmentId = $("#pdf_template_file_div > .filelist_cls").attr("id").split('div_')[1];
+                    template_pdf = "/get?batchId=" + template_pdf_batchId + "&attachmentId=" + template_pdf_attachmentId;
+                }
+                let templateToEdit = {
+                    "id_template": template_id,
                     "icon_template": template_icon,
                     "template_name_web": template_web_name,
                     "template_name_export": template_pdf_name,
                     "template_project": template_project,
-                    "template_web": "/get?batchId=" + template_web_batchId + "&attachmentId=" + template_web_attachmentId,
-                    "template_pdf": "/get?batchId=" + template_pdf_batchId + "&attachmentId=" + template_pdf_attachmentId
+                    "template_web": template_web,
+                    "template_pdf": template_pdf
                 };
-                templates.createTemplate(templateToCreate).then(function () {
+                templates.updateTemplate(templateToEdit).then(function () {
                     console.log("The template was created");
                     $("#web_template_file_div > .filelist_cls").remove();
                     $("#pdf_template_file_div > .filelist_cls").remove()
@@ -1054,7 +1079,7 @@ module.exports = {
                 });
             }
             catch (error) {
-                $("#error404").modal('show');
+                $("#errorTemplate").modal('show');
             }
         });
     },
@@ -1065,8 +1090,8 @@ module.exports = {
         $("#template_web_name").val(templates.templateSelected.template_name_web);
         $("#template_pdf_name").val(templates.templateSelected.template_name_web);
         $("#template_project").val(templates.templateSelected.template_project);
-        $("#template_web_route").val("https://100l-app.teleows.com/servicecreator/fileservice" + templates.templateSelected.template_web);
-        $("#template_pdf_route").val("https://100l-app.teleows.com/servicecreator/fileservice" + templates.templateSelected.template_pdf);
+        $("#template_web_route").val(templates.templateSelected.template_web);
+        $("#template_pdf_route").val(templates.templateSelected.template_pdf);
         $("#template_web_route_link").attr('href', "https://100l-app.teleows.com/servicecreator/fileservice" + templates.templateSelected.template_web);
         $("#template_pdf_route_link").attr('href', "https://100l-app.teleows.com/servicecreator/fileservice" + templates.templateSelected.template_pdf);
     }
