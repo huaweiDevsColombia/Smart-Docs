@@ -255,16 +255,13 @@ module.exports = {
                 let templateSelected = templates.templateSelected;
                 message.addMessageLoder("loaderMessage", "#mainContent2");
                 message.changeMessageLoader("loaderMessage", "Consultando Plantilla en @OWS Datamodel");
-                templates.loadTemplate(templateSelected.template_web.attachment[0].batchId,
-                    templateSelected.template_web.attachment[0].attachmentId,
-                    templateSelected.template_pdf.attachment[0].batchId,
-                    templateSelected.template_pdf.attachment[0].attachmentId).then(function () {
-                        message.changeMessageLoader("loaderMessage", "Generando Plantilla");
-                        smartEngine.executeEngine(templates.template[0].jsonWeb);
-                        $('#templateNavTabs a:first').tab('show');
-                        reference.loadEventSaveReport();
-                        message.removeMessageLoader("#mainContent2");
-                    });
+                templates.loadTemplate(templateSelected.template_web, templateSelected.template_pdf).then(function () {
+                    message.changeMessageLoader("loaderMessage", "Generando Plantilla");
+                    smartEngine.executeEngine(templates.template[0].jsonWeb);
+                    $('#templateNavTabs a:first').tab('show');
+                    reference.loadEventSaveReport();
+                    message.removeMessageLoader("#mainContent2");
+                });
                 console.log("Loading Report From DataModel");
                 if (reports.reportSelected.id_report != undefined) {
                     message.addMessageLoder("loaderMessage", "#mainContent2");
@@ -496,7 +493,13 @@ module.exports = {
                 }, function (event) {
                     templates.templateSelected = event.data.val;
                     console.log(templates.templateSelected);
-                    reference.bootstrapPage("page-026");
+                    reference.bootstrapPage("page-005").then(function () {
+                        $("#btnSave").remove();
+                        $("#saveZoneDiv").append("<button id='btnGoBack' class='btn btn-primary'>Volver Atrás</button>");
+                        $("#btnGoBack").click(function () {
+                            reference.bootstrapPage('page-007');
+                        });
+                    });
                 });
                 $("#deleteTemplate_" + cont).on("click", {
                     val:
@@ -510,7 +513,7 @@ module.exports = {
                         template_project: template.template_project,
                         template_web: template.template_web,
                         author: template.author,
-                        id:template.id
+                        id: template.id
                     }
                 }, function (event) {
                     templates.templateSelected = event.data.val;

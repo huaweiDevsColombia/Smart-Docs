@@ -281,12 +281,12 @@ function getTemplates(project) {
         });
     },
     getTemplate: 
-    function getTemplate(batchIdWeb,attachmentIdWeb,batchIdPdf,attachmentIdPdf) {
+    function getTemplate(web_location,pdf_location) {
         return new Promise(function (resolve, reject) {
             let workerTemplates = $.ajax({
                 method: "GET",
                 dataType: "script",
-                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=a0955b30-5b3f-4937-a231-e1778dd3d6f0&attachmentId=942193b3-c040-4cb7-831e-a877d7696c60"
+                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=8117dc95-0e34-4ac6-abd4-530eefcaafb4&attachmentId=ad1b3ab2-6f5f-4049-a78b-9201a38de3a3"
             });
             $.when(workerTemplates).done(function (workerTemplatesResponse) {
                 $('<script>')
@@ -307,7 +307,7 @@ function getTemplates(project) {
                     resolve(e.data);
                 }, false);
 
-                worker.postMessage({"batchIdWeb":batchIdWeb,"attachmentIdWeb":attachmentIdWeb,"batchIdPdf":batchIdPdf,"attachmentIdPdf":attachmentIdPdf}); // Send data to our worker.
+                worker.postMessage({"web_location":web_location,"pdf_location":pdf_location}); // Send data to our worker.
 
                 console.log("[Wk] - Get Template has Loaded");
 

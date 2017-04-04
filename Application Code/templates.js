@@ -18,10 +18,10 @@ module.exports = {
         });
 
     },
-    loadTemplate: function (batchIdWeb, attachmentWeb, batchIdPdf, attachmentPdf) {
+    loadTemplate: function (web_location,pdf_location) {
         let reference = this;
         return new Promise(function (resolve, reject) {
-            workers.getTemplate(batchIdWeb, attachmentWeb, batchIdPdf, attachmentPdf).then(function (loadTemplateResponse) {
+            workers.getTemplate(web_location,pdf_location).then(function (loadTemplateResponse) {
                 reference.template = loadTemplateResponse;
                 console.log(reference.template);
                 resolve();
