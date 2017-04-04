@@ -70,11 +70,12 @@ module.exports = {
         });
     },
     deleteTemplate: function(){
+        let reference = this;
         return new Promise(function (resolve, reject) {
             MessageProcessor.process({
                 serviceId: "co_sm_template_batch_delete",
                 data: {
-                    "id":template.id
+                    "id":reference.templateSelected.id
                 },
                 success: function (data) {
                     console.log(data);

@@ -918,7 +918,7 @@ module.exports = {
             });
             $("#templatesNotFound").remove();
             for (let template of allTemplates) {
-                $("#allTemplatesDiv").append("<div class='col-sm-12 col-md-6 col-lg-6'><div class=pricing-table><div class=pt-header style=background-color:#fff><div class=plan-pricing><div class=pricing style=font-size:1.5em>" + template.template_name_web + "</div><img src='" + template.icon_template.substr(1).slice(0, -1) + "'style=padding:10px><div class=pricing-type><!--<b>Id:</b>" + template.id_template + "!--></div></div></div><div class=pt-footer><p><b>Ultima Actualizacion: </b> " + template.template_date + " </p><button id='previewTemplate_" + cont + "'class='btn btn-primary' style='margin-right:5px' type=button>Previsualizacion </button><button id='editTemplate_" + cont + "'class='btn btn-default' style='margin-right:5px' type=button>Editar</button><button id='deleteTemplate_" + cont + "'class='btn btn-danger' style='margin-right:5px' type=button>Eliminar</button></div></div></div>");
+                $("#allTemplatesDiv").append("<div class='col-sm-12 col-md-6 col-lg-6'><div class=pricing-table><div class=pt-header style=background-color:#fff><div class=plan-pricing><div class=pricing style=font-size:1.5em>" + template.template_name_web + "</div><img src='" + template.icon_template.substr(1).slice(0, -1) + "'style=padding:10px><div class=pricing-type><!--<b>Id:</b>" + template.id_template + "!--></div></div></div><div class=pt-footer><p><b>Ultima Actualizacion: </b> " + template.template_date + " </p><button id='previewTemplate_" + cont + "'class='btn btn-primary' style='margin-right:5px' type=button> <i class='fa fa-eye' aria-hidden=true></i> Visualizar </button><button id='editTemplate_" + cont + "'class='btn btn-primary' style='margin-right:5px' type=button><i class='fa fa-pencil-square-o' aria-hidden=true></i> Editar</button><button id='deleteTemplate_" + cont + "'class='btn btn-danger' style='margin-right:5px' type=button><i class='fa fa-trash-o' aria-hidden=true></i> Eliminar</button></div></div></div>");
                 $("#editTemplate_" + cont).on("click", {
                     val:
                     {
@@ -958,6 +958,7 @@ module.exports = {
                         $("#saveZoneDiv").append("<button id='btnGoBack' class='btn btn-primary'>Volver Atrás</button>");
                         $("#btnGoBack").click(function () {
                             reference.bootstrapPage('page-007');
+                            templates.templateSelected = "";
                         });
                     });
                 });
@@ -978,8 +979,9 @@ module.exports = {
                 }, function (event) {
                     templates.templateSelected = event.data.val;
                     console.log(templates.templateSelected);
-                    templates.deleteTemplate();
-                    reference.bootstrapPage("page-007");
+                    templates.deleteTemplate().then(function(){
+                        reference.bootstrapPage("page-007");
+                    });
                 });
                 cont += 1;
             }
@@ -3044,11 +3046,12 @@ module.exports = {
         });
     },
     deleteTemplate: function(){
+        let reference = this;
         return new Promise(function (resolve, reject) {
             MessageProcessor.process({
                 serviceId: "co_sm_template_batch_delete",
                 data: {
-                    "id":template.id
+                    "id":reference.templateSelected.id
                 },
                 success: function (data) {
                     console.log(data);
