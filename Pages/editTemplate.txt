@@ -24,17 +24,18 @@
                                     <img src=""
                                         class="form-control" id="template_logo">
                                     <div class="caption">
-                                        <h3>LOGO<a class="anchorjs-link" href="#thumbnail-label"><span class="anchorjs-icon"></span></a></h3>
+                                        <small> Dimensiones Recomendadas: <br><b>164*164 px </b></small>
+                                        <h3>Logo Proyecto<a class="anchorjs-link" href="#thumbnail-label"><span class="anchorjs-icon"></span></a></h3>
                                         <p><input type="file" id="template_logo_input" accetps="image/*" capture="camera"></p>
                                     </div>
                                 </div>
                             </div>
-                            <div id="2" class="col-sm-12 col-sm-8 col-sm-8 form-group"><label class="control-label">* ID TEMPLATE</label> <input id="template_web_name" class="form-control"
-                                    name="template_id_template" type="text" disabled=true> </div>
+                            <div id="2" class="col-sm-12 col-sm-8 col-sm-8 form-group"><label class="control-label">* ID TEMPLATE</label> <input id="template_id_template" class="form-control"
+                                     type="text" disabled=true> </div>
                             <div id="2" class="col-sm-12 col-sm-8 col-sm-8 form-group"><label class="control-label">* NOMBRE PLANTILLA (WEB)</label> <input id="template_web_name" class="form-control"
-                                    name="template_web_name" type="text"> </div>
+                                     type="text"> </div>
                             <div id="2" class="col-sm-12 col-sm-8 col-sm-8 form-group"><label class="control-label">* NOMBRE DESCARGA (PDF)</label> <input id="template_pdf_name" class="form-control"
-                                    name="assettorre5element" type="text"> </div>
+                                     type="text"> </div>
                             <div id="2" class="col-sm-12 col-sm-8 col-sm-8 form-group"><label class="control-label">* PROYECTO</label>
                                 <select class="form-control" id='template_project'>
                             </select>
@@ -45,10 +46,10 @@
                             <div id="2" class="col-sm-12 col-sm-8 col-sm-8 form-group"><label class="control-label">* ARCHIVO .JSON (PDF)</label> <input id="template_pdf_route" class="form-control"
                                      type="text" disabled=true>
                                      <a style='cursor: pointer' id="template_pdf_route_link">Descargar Archivo PDF</a></div>
-                            <div id="templatesDiv" class="col-sm-12 col-sm-8 col-sm-8 form-group">
+                            <div id="templatesDiv" class="col-sm-12 col-md-8 col-offset-md-4 form-group">
                             </div>
                             <div id="2" class="col-sm-12 col-sm-8 col-sm-8 form-group">
-                                <button id="create_template" class="btn btn-primary"> Actualizar Plantilla </div>
+                                <button id="update_template" class="btn btn-primary"> <i class="fa fa-paper-plane" aria-hidden="true"></i> &nbsp Actualizar Plantilla </div>
                         </div>
                     </div>
                 </div>
