@@ -242,9 +242,9 @@ module.exports = {
                     });
                 }
                 else {
-                    templates.loadTemplates("").then(function () {
+                    templates.loadTemplates(templates.templateProject).then(function () {
                         message.removeMessageLoader("#mainContent2");
-                        reference.changeTemplatesPageAdm(templates.allTemplates);
+                        reference.changeTemplatesPageAdm(templates.templateProject,templates.allTemplates);
                     });
                 }
 
@@ -308,7 +308,7 @@ module.exports = {
             case "page-025":
                 reference.showOWSFileInputs();
                 reference.getProjects().then(function (projects) {
-                    reference.fillProjects(projects);
+                    reference.fillProjects("template_project", projects);
                     reference.enableCreateTemplateButtons();
                 });
                 break;
@@ -424,6 +424,7 @@ module.exports = {
         message.addMessageLoder("loaderMessage", "#mainContent2");
         message.changeMessageLoader("loaderMessage", "Cargando Plantillas");
         $("#templateBoxesButtonsAdm").remove();
+        $("#templateBoxesFilterAdm").remove();
         let attachmentId;
         let batchId;
         let cont = 0;
@@ -447,86 +448,95 @@ module.exports = {
         message.removeMessageLoader("#mainContent2");
     }
     ,
-    changeTemplatesPageAdm: function (allTemplates) {
+    changeTemplatesPageAdm: function (project,allTemplates) {
         let reference = this;
         message.addMessageLoder("loaderMessage", "#mainContent2");
         message.changeMessageLoader("loaderMessage", "Cargando Plantillas");
-        let cont = 0;
-        if (allTemplates.length > 0) {
-            $("#new_template").click(function () {
-                reference.bootstrapPage("page-025");
-            });
-            $("#templatesNotFound").remove();
-            for (let template of allTemplates) {
-                $("#allTemplatesDiv").append("<div class='col-sm-12 col-md-6 col-lg-6'><div class=pricing-table><div class=pt-header style=background-color:#fff><div class=plan-pricing><div class=pricing style=font-size:1.5em>" + template.template_name_web + "</div><img src='" + template.icon_template.substr(1).slice(0, -1) + "'style=padding:10px><div class=pricing-type><!--<b>Id:</b>" + template.id_template + "!--></div></div></div><div class=pt-footer><p><b>Ultima Actualizacion: </b> " + template.template_date + " </p><button id='previewTemplate_" + cont + "'class='btn btn-primary' style='margin-right:5px' type=button> <i class='fa fa-eye' aria-hidden=true></i> Visualizar </button><button id='editTemplate_" + cont + "'class='btn btn-primary' style='margin-right:5px' type=button><i class='fa fa-pencil-square-o' aria-hidden=true></i> Editar</button><button id='deleteTemplate_" + cont + "'class='btn btn-danger' style='margin-right:5px' type=button><i class='fa fa-trash-o' aria-hidden=true></i> Eliminar</button></div></div></div>");
-                $("#editTemplate_" + cont).on("click", {
-                    val:
-                    {
-                        id_template: template.id_template,
-                        icon_template: template.icon_template,
-                        template_date: template.template_date,
-                        template_name_export: template.template_name_export,
-                        template_name_web: template.template_name_web,
-                        template_pdf: template.template_pdf,
-                        template_project: template.template_project,
-                        template_web: template.template_web,
-                        author: template.author
-                    }
-                }, function (event) {
-                    templates.templateSelected = event.data.val;
-                    console.log(templates.templateSelected);
-                    reference.bootstrapPage("page-026");
+        reference.getProjects().then(function (projects) {
+            reference.fillProjects("projectsFilter", projects);
+            $("#projectsFilter").val((templates.templateProject == "")?"None":templates.templateProject);
+            $("#totalTemplates").text(allTemplates.length);
+            $("#projectsFilter").on("change",function(){
+                templates.templateProject = ($("#projectsFilter").val() == "None")?"":$("#projectsFilter").val();
+                reference.bootstrapPage('page-007');
+            })
+            let cont = 0;
+            if (allTemplates.length > 0) {
+                $("#new_templateBtn").click(function () {
+                    reference.bootstrapPage("page-025");
                 });
-                $("#previewTemplate_" + cont).on("click", {
-                    val:
-                    {
-                        id_template: template.id_template,
-                        icon_template: template.icon_template,
-                        template_date: template.template_date,
-                        template_name_export: template.template_name_export,
-                        template_name_web: template.template_name_web,
-                        template_pdf: template.template_pdf,
-                        template_project: template.template_project,
-                        template_web: template.template_web,
-                        author: template.author
-                    }
-                }, function (event) {
-                    templates.templateSelected = event.data.val;
-                    console.log(templates.templateSelected);
-                    reference.bootstrapPage("page-005").then(function () {
-                        $("#btnSave").remove();
-                        $("#saveZoneDiv").append("<button id='btnGoBack' class='btn btn-primary'>Volver Atrás</button>");
-                        $("#btnGoBack").click(function () {
-                            reference.bootstrapPage('page-007');
-                            templates.templateSelected = "";
+                $("#templatesNotFound").remove();
+                for (let template of allTemplates) {
+                    $("#allTemplatesDiv").append("<div class='col-sm-12 col-md-6 col-lg-6'><div class=pricing-table><div class=pt-header style=background-color:#fff><div class=plan-pricing><div class=pricing style=font-size:1.5em>" + template.template_name_web + "</div><img src='" + template.icon_template.substr(1).slice(0, -1) + "'style=padding:10px><div class=pricing-type><!--<b>Id:</b>" + template.id_template + "!--></div></div></div><div class=pt-footer><p><b>Ultima Actualizacion: </b> " + template.template_date + " </p><button id='previewTemplate_" + cont + "'class='btn btn-primary' style='margin-right:5px' type=button> <i class='fa fa-eye' aria-hidden=true></i> Visualizar </button><button id='editTemplate_" + cont + "'class='btn btn-primary' style='margin-right:5px' type=button><i class='fa fa-pencil-square-o' aria-hidden=true></i> Editar</button><button id='deleteTemplate_" + cont + "'class='btn btn-danger' style='margin-right:5px' type=button><i class='fa fa-trash-o' aria-hidden=true></i> Eliminar</button></div></div></div>");
+                    $("#editTemplate_" + cont).on("click", {
+                        val:
+                        {
+                            id_template: template.id_template,
+                            icon_template: template.icon_template,
+                            template_date: template.template_date,
+                            template_name_export: template.template_name_export,
+                            template_name_web: template.template_name_web,
+                            template_pdf: template.template_pdf,
+                            template_project: template.template_project,
+                            template_web: template.template_web,
+                            author: template.author
+                        }
+                    }, function (event) {
+                        templates.templateSelected = event.data.val;
+                        console.log(templates.templateSelected);
+                        reference.bootstrapPage("page-026");
+                    });
+                    $("#previewTemplate_" + cont).on("click", {
+                        val:
+                        {
+                            id_template: template.id_template,
+                            icon_template: template.icon_template,
+                            template_date: template.template_date,
+                            template_name_export: template.template_name_export,
+                            template_name_web: template.template_name_web,
+                            template_pdf: template.template_pdf,
+                            template_project: template.template_project,
+                            template_web: template.template_web,
+                            author: template.author
+                        }
+                    }, function (event) {
+                        templates.templateSelected = event.data.val;
+                        console.log(templates.templateSelected);
+                        reference.bootstrapPage("page-005").then(function () {
+                            $("#btnSave").remove();
+                            $("#saveZoneDiv").append("<button id='btnGoBack' class='btn btn-primary'>Volver Atrás</button>");
+                            $("#btnGoBack").click(function () {
+                                reference.bootstrapPage('page-007');
+                                templates.templateSelected = "";
+                            });
                         });
                     });
-                });
-                $("#deleteTemplate_" + cont).on("click", {
-                    val:
-                    {
-                        id_template: template.id_template,
-                        icon_template: template.icon_template,
-                        template_date: template.template_date,
-                        template_name_export: template.template_name_export,
-                        template_name_web: template.template_name_web,
-                        template_pdf: template.template_pdf,
-                        template_project: template.template_project,
-                        template_web: template.template_web,
-                        author: template.author,
-                        id: template.id
-                    }
-                }, function (event) {
-                    templates.templateSelected = event.data.val;
-                    console.log(templates.templateSelected);
-                    templates.deleteTemplate().then(function(){
-                        reference.bootstrapPage("page-007");
+                    $("#deleteTemplate_" + cont).on("click", {
+                        val:
+                        {
+                            id_template: template.id_template,
+                            icon_template: template.icon_template,
+                            template_date: template.template_date,
+                            template_name_export: template.template_name_export,
+                            template_name_web: template.template_name_web,
+                            template_pdf: template.template_pdf,
+                            template_project: template.template_project,
+                            template_web: template.template_web,
+                            author: template.author,
+                            id: template.id
+                        }
+                    }, function (event) {
+                        templates.templateSelected = event.data.val;
+                        console.log(templates.templateSelected);
+                        templates.deleteTemplate().then(function () {
+                            reference.bootstrapPage("page-007");
+                        });
                     });
-                });
-                cont += 1;
+                    cont += 1;
+                }
             }
-        }
-        message.removeMessageLoader("#mainContent2");
+            message.removeMessageLoader("#mainContent2");
+        });
     },
     loadEventSaveReport: function () {
         let reference = this;
@@ -1004,9 +1014,9 @@ module.exports = {
             http.send(params);
         });
     },
-    fillProjects: function (projects) {
+    fillProjects: function (selector, projects) {
         for (let project of projects) {
-            $("#template_project").append("<option vaue=" + project.project + ">" + project.project_name + "</option>");
+            $("#" + selector).append("<option vaue=" + project.project + ">" + project.project_name + "</option>");
         }
     },
     enableEditTemplatesButtons: function () {

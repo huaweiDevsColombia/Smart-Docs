@@ -4,6 +4,7 @@ module.exports = {
     allTemplates: "",
     templateSelected: "",
     template: "",
+    templateProject:"",
     loadTemplates: function (project) {
         let reference = this;
         return new Promise(function (resolve, reject) {
