@@ -425,18 +425,24 @@ module.exports = {
         message.changeMessageLoader("loaderMessage", "Cargando Plantillas");
         $("#templateBoxesButtonsAdm").remove();
         $("#templateBoxesFilterAdm").remove();
-        let attachmentId;
-        let batchId;
         let cont = 0;
         if (allTemplates.length > 0) {
             $("#templatesNotFound").remove();
             for (let template of allTemplates) {
-                attachmentId = template.icon_template.attachment[0].attachmentId;
-                batchId = template.icon_template.attachment[0].batchId;
-                $("#allTemplatesDiv").append("<div class='col-sm-12 col-md-6 col-lg-6'><div class=pricing-table><div class=pt-header style=background-color:#fff><div class=plan-pricing><div class=pricing style=font-size:1.5em>" + template.template_name + "</div><img src='https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=" + batchId + "&attachmentId=" + attachmentId + "'style=padding:10px><div class=pricing-type><!--<b>Id:</b>" + template.id_template + "!--></div></div></div><div class=pt-footer><p><b>Ultima Actualizacion: </b> " + template.template_date + " </p><button id='createTemplate_" + cont + "'class='btn btn-primary' style='margin-right:5px' type=button>Crear Reporte</button></div></div></div>");
-                $("#editTemplate_" + cont).on("click", {
+                $("#allTemplatesDiv").append("<div class='col-sm-12 col-md-6 col-lg-6'><div class=pricing-table><div class=pt-header style=background-color:#fff><div class=plan-pricing><div class=pricing style=font-size:1.5em>" + template.template_name_web + "</div><img src='" + template.icon_template.substr(1).slice(0, -1) + "'style=padding:10px><div class=pricing-type><!--<b>Id:</b>" + template.id_template + "!--></div></div></div><div class=pt-footer><p><b>Ultima Actualizacion: </b> " + template.template_date + " </p><button id='createTemplate_" + cont + "'class='btn btn-primary' style='margin-right:5px' type=button>Crear Reporte</button></div></div></div>");
+                $("#createTemplate_" + cont).on("click", {
                     val:
-                    { id_template: template.id_template, template_name: template.template_name, template_pdf: template.template_pdf, template_project: template.template_project, template_web: template.template_web }
+                    {
+                        id_template: template.id_template,
+                        icon_template: template.icon_template,
+                        template_date: template.template_date,
+                        template_name_export: template.template_name_export,
+                        template_name_web: template.template_name_web,
+                        template_pdf: template.template_pdf,
+                        template_project: template.template_project,
+                        template_web: template.template_web,
+                        author: template.author
+                    }
                 }, function (event) {
                     templates.templateSelected = event.data.val;
                     console.log(templates.templateSelected);
@@ -534,11 +540,11 @@ module.exports = {
                 }
             }
             $("#btnDeleteReportTrue").click(function () {
-                            templates.deleteTemplate().then(function () {
-                                $("#deleteTemplate").modal('hide');
-                                reference.bootstrapPage("page-007");
-                            });
-                        });
+                templates.deleteTemplate().then(function () {
+                    $("#deleteTemplate").modal('hide');
+                    reference.bootstrapPage("page-007");
+                });
+            });
             message.removeMessageLoader("#mainContent2");
         });
     },

@@ -50,7 +50,7 @@ module.exports = {
             });
         });
     },
-    updateTemplate: function () {
+    updateTemplate: function (template) {
         return new Promise(function (resolve, reject) {
             MessageProcessor.process({
                 serviceId: "co_sm_template_update",
