@@ -576,6 +576,52 @@ module.exports = {
             let answerImages_2;
             let answerImages_3;
             let answerImages_4;
+            let answerImages_5;
+            let answerImages_6;
+            let answerImages_7;
+            let answerImages_8;
+            let answerImages_9;
+            let answerImages_10;
+            let answerImages_11;
+            let answerImages_12;
+            let answerImages_13;
+            let answerImages_14;
+            let answerImages_15;
+            let answerImages_16;
+            let answerImages_17;
+            let answerImages_18;
+            let answerImages_19;
+            let answerImages_20;
+            let answerImages_21;
+            let answerImages_22;
+            let answerImages_23;
+            let answerImages_24;
+            let answerImages_25;
+            let answerImages_26;
+            let answerImages_27;
+            let answerImages_28;
+            let answerImages_29;
+            let answerImages_30;
+            let answerImages_31;
+            let answerImages_32;
+            let answerImages_33;
+            let answerImages_34;
+            let answerImages_35;
+            let answerImages_36;
+            let answerImages_37;
+            let answerImages_38;
+            let answerImages_39;
+            let answerImages_40;
+            let answerImages_41;
+            let answerImages_42;
+            let answerImages_43;
+            let answerImages_44;
+            let answerImages_45;
+            let answerImages_46;
+            let answerImages_47;
+            let answerImages_48;
+            let answerImages_49;
+            let answerImages_50;
 
             if (reports.reportSelected.id_report) {
                 console.log("El reporte ya existe");
@@ -600,10 +646,56 @@ module.exports = {
                     answerTable = reference.filterByAnswerType('table');
                     answerImages = reference.filterByAnswerTypeImage();
 
-                    answerImages_1 = answerImages.splice(0, 20);
-                    answerImages_2 = answerImages.splice(0, 20);
-                    answerImages_3 = answerImages.splice(0, 20);
-                    answerImages_4 = answerImages.splice(0, 20);
+                    answerImages_1 = answerImages.splice(0, 1);
+                    answerImages_2 = answerImages.splice(0, 1);
+                    answerImages_3 = answerImages.splice(0, 1);
+                    answerImages_4 = answerImages.splice(0, 1);
+                    answerImages_5 = answerImages.splice(0, 1);
+                    answerImages_6 = answerImages.splice(0, 1);
+                    answerImages_7 = answerImages.splice(0, 1);
+                    answerImages_8 = answerImages.splice(0, 1);
+                    answerImages_9 = answerImages.splice(0, 1);
+                    answerImages_10 = answerImages.splice(0, 1);
+                    answerImages_11 = answerImages.splice(0, 1);
+                    answerImages_12 = answerImages.splice(0, 1);
+                    answerImages_13 = answerImages.splice(0, 1);
+                    answerImages_14 = answerImages.splice(0, 1);
+                    answerImages_15 = answerImages.splice(0, 1);
+                    answerImages_16 = answerImages.splice(0, 1);
+                    answerImages_17 = answerImages.splice(0, 1);
+                    answerImages_18 = answerImages.splice(0, 1);
+                    answerImages_19 = answerImages.splice(0, 1);
+                    answerImages_20 = answerImages.splice(0, 1);
+                    answerImages_21 = answerImages.splice(0, 1);
+                    answerImages_22 = answerImages.splice(0, 1);
+                    answerImages_23 = answerImages.splice(0, 1);
+                    answerImages_24 = answerImages.splice(0, 1);
+                    answerImages_25 = answerImages.splice(0, 1);
+                    answerImages_26 = answerImages.splice(0, 1);
+                    answerImages_27 = answerImages.splice(0, 1);
+                    answerImages_28 = answerImages.splice(0, 1);
+                    answerImages_29 = answerImages.splice(0, 1);
+                    answerImages_30 = answerImages.splice(0, 1);
+                    answerImages_31 = answerImages.splice(0, 1);
+                    answerImages_32 = answerImages.splice(0, 1);
+                    answerImages_33 = answerImages.splice(0, 1);
+                    answerImages_34 = answerImages.splice(0, 1);
+                    answerImages_35 = answerImages.splice(0, 1);
+                    answerImages_36 = answerImages.splice(0, 1);
+                    answerImages_37 = answerImages.splice(0, 1);
+                    answerImages_38 = answerImages.splice(0, 1);
+                    answerImages_39 = answerImages.splice(0, 1);
+                    answerImages_40 = answerImages.splice(0, 1);
+                    answerImages_41 = answerImages.splice(0, 1);
+                    answerImages_42 = answerImages.splice(0, 1);
+                    answerImages_43 = answerImages.splice(0, 1);
+                    answerImages_44 = answerImages.splice(0, 1);
+                    answerImages_45 = answerImages.splice(0, 1);
+                    answerImages_46 = answerImages.splice(0, 1);
+                    answerImages_47 = answerImages.splice(0, 1);
+                    answerImages_48 = answerImages.splice(0, 1);
+                    answerImages_49 = answerImages.splice(0, 1);
+                    answerImages_50 = answerImages.splice(0, 1);
 
                     console.log("Creating the Report");
                     idReport = reports.reportSelected.id_report;
@@ -619,12 +711,18 @@ module.exports = {
                     let saveAnswerMultiSelect = reference.saveAnswer("multiselect_answer", answerMultiSelect, idReport);
                     let saveAnswerList = reference.saveAnswer("list_answer", answerList, idReport);
                     let saveAnswerTable = reference.saveAnswer("table_answer", answerTable, idReport);
-                    let saveAnswerImage_1 = reference.saveAnswer("image_answer_1", "[" + JSON.stringify(answerImages_1) + "]", idReport);
-                    let saveAnswerImage_2 = reference.saveAnswer("image_answer_2", "[" + JSON.stringify(answerImages_2) + "]", idReport);
-                    let saveAnswerImage_3 = reference.saveAnswer("image_answer_3", "[" + JSON.stringify(answerImages_3) + "]", idReport);
-                    let saveAnswerImage_4 = reference.saveAnswer("image_answer_4", "[" + JSON.stringify(answerImages_4) + "]", idReport);
+                    let saveAnswerImage_1 = reference.saveAnswer("image_answer_1", "[" + /*JSON.stringify(answerImages_1)*/ 1 + "]", idReport);
+                    let saveAnswerImage_2 = reference.saveAnswer("image_answer_2", "[" + /*JSON.stringify(answerImages_2)*/ 2 + "]", idReport);
+                    let saveAnswerImage_3 = reference.saveAnswer("image_answer_3", "[" + /*JSON.stringify(answerImages_3)*/ 3 + "]", idReport);
+                    let saveAnswerImage_4 = reference.saveAnswer("image_answer_4", "[" + /*JSON.stringify(answerImages_4)*/ 4 + "]", idReport);
+                    let saveAnswerImage_5 = reference.saveAnswer("image_answer_5", "[" + /*JSON.stringify(answerImages_5)*/ 5 + "]", idReport);
+                    let saveAnswerImage_6 = reference.saveAnswer("image_answer_6", "[" + /*JSON.stringify(answerImages_6)*/ 6 + "]", idReport);
+                    let saveAnswerImage_7 = reference.saveAnswer("image_answer_7", "[" + /*JSON.stringify(answerImages_7)*/ 7 + "]", idReport);
+                    let saveAnswerImage_8 = reference.saveAnswer("image_answer_8", "[" + /*JSON.stringify(answerImages_8)*/ 8 + "]", idReport);
+                    let saveAnswerImage_9 = reference.saveAnswer("image_answer_9", "[" + /*JSON.stringify(answerImages_9)*/ 9 + "]", idReport);
+                    let saveAnswerImage_10 = reference.saveAnswer("image_answer_10", "[" + /*JSON.stringify(answerImages_10)*/ 10 + "]", idReport);
 
-                    Promise.all([saveAnswerDate, saveAnswerDateTime, saveAnswerTime, saveAnswerWeek, saveAnswerMonth, saveAnswerText, saveAnswerRadio, answerCheckbox, saveAnswerSelect, saveAnswerMultiSelect, saveAnswerList, saveAnswerTable, saveAnswerImage_1, saveAnswerImage_2, saveAnswerImage_3, saveAnswerImage_4]).then(values => {
+                    Promise.all([saveAnswerDate, saveAnswerDateTime, saveAnswerTime, saveAnswerWeek, saveAnswerMonth, saveAnswerText, saveAnswerRadio, answerCheckbox, saveAnswerSelect, saveAnswerMultiSelect, saveAnswerList, saveAnswerTable, saveAnswerImage_1, saveAnswerImage_2, saveAnswerImage_3, saveAnswerImage_4, saveAnswerImage_5, saveAnswerImage_6, saveAnswerImage_7, saveAnswerImage_8, saveAnswerImage_9, saveAnswerImage_10]).then(values => {
                         reference.bootstrapPage('page-021');
                     });
                 })
@@ -651,10 +749,56 @@ module.exports = {
                     answerTable = reference.filterByAnswerType('table');
                     answerImages = reference.filterByAnswerTypeImage();
 
-                    answerImages_1 = answerImages.splice(0, 20);
-                    answerImages_2 = answerImages.splice(0, 20);
-                    answerImages_3 = answerImages.splice(0, 20);
-                    answerImages_4 = answerImages.splice(0, 20);
+                    answerImages_1 = answerImages.splice(0, 1);
+                    answerImages_2 = answerImages.splice(0, 1);
+                    answerImages_3 = answerImages.splice(0, 1);
+                    answerImages_4 = answerImages.splice(0, 1);
+                    answerImages_5 = answerImages.splice(0, 1);
+                    answerImages_6 = answerImages.splice(0, 1);
+                    answerImages_7 = answerImages.splice(0, 1);
+                    answerImages_8 = answerImages.splice(0, 1);
+                    answerImages_9 = answerImages.splice(0, 1);
+                    answerImages_10 = answerImages.splice(0, 1);
+                    answerImages_11 = answerImages.splice(0, 1);
+                    answerImages_12 = answerImages.splice(0, 1);
+                    answerImages_13 = answerImages.splice(0, 1);
+                    answerImages_14 = answerImages.splice(0, 1);
+                    answerImages_15 = answerImages.splice(0, 1);
+                    answerImages_16 = answerImages.splice(0, 1);
+                    answerImages_17 = answerImages.splice(0, 1);
+                    answerImages_18 = answerImages.splice(0, 1);
+                    answerImages_19 = answerImages.splice(0, 1);
+                    answerImages_20 = answerImages.splice(0, 1);
+                    answerImages_21 = answerImages.splice(0, 1);
+                    answerImages_22 = answerImages.splice(0, 1);
+                    answerImages_23 = answerImages.splice(0, 1);
+                    answerImages_24 = answerImages.splice(0, 1);
+                    answerImages_25 = answerImages.splice(0, 1);
+                    answerImages_26 = answerImages.splice(0, 1);
+                    answerImages_27 = answerImages.splice(0, 1);
+                    answerImages_28 = answerImages.splice(0, 1);
+                    answerImages_29 = answerImages.splice(0, 1);
+                    answerImages_30 = answerImages.splice(0, 1);
+                    answerImages_31 = answerImages.splice(0, 1);
+                    answerImages_32 = answerImages.splice(0, 1);
+                    answerImages_33 = answerImages.splice(0, 1);
+                    answerImages_34 = answerImages.splice(0, 1);
+                    answerImages_35 = answerImages.splice(0, 1);
+                    answerImages_36 = answerImages.splice(0, 1);
+                    answerImages_37 = answerImages.splice(0, 1);
+                    answerImages_38 = answerImages.splice(0, 1);
+                    answerImages_39 = answerImages.splice(0, 1);
+                    answerImages_40 = answerImages.splice(0, 1);
+                    answerImages_41 = answerImages.splice(0, 1);
+                    answerImages_42 = answerImages.splice(0, 1);
+                    answerImages_43 = answerImages.splice(0, 1);
+                    answerImages_44 = answerImages.splice(0, 1);
+                    answerImages_45 = answerImages.splice(0, 1);
+                    answerImages_46 = answerImages.splice(0, 1);
+                    answerImages_47 = answerImages.splice(0, 1);
+                    answerImages_48 = answerImages.splice(0, 1);
+                    answerImages_49 = answerImages.splice(0, 1);
+                    answerImages_50 = answerImages.splice(0, 1);
 
                     message.addMessageLoder("loaderMessage", "#mainContent2");
                     message.changeMessageLoader("loaderMessage", "Guardando Relacion del Reporte con Ticket");
@@ -682,19 +826,85 @@ module.exports = {
                     let saveAnswerImage_2 = reference.saveAnswer("image_answer_2", "[" + JSON.stringify(answerImages_2) + "]", idReport);
                     let saveAnswerImage_3 = reference.saveAnswer("image_answer_3", "[" + JSON.stringify(answerImages_3) + "]", idReport);
                     let saveAnswerImage_4 = reference.saveAnswer("image_answer_4", "[" + JSON.stringify(answerImages_4) + "]", idReport);
+                    let saveAnswerImage_5 = reference.saveAnswer("image_answer_5", "[" + JSON.stringify(answerImages_5) + "]", idReport);
 
-                    Promise.all([saveAnswerDate, saveAnswerDateTime, saveAnswerTime, saveAnswerWeek, saveAnswerMonth, saveAnswerText, saveAnswerRadio, answerCheckbox, saveAnswerSelect, saveAnswerMultiSelect, saveAnswerList, saveAnswerTable, saveAnswerImage_1, saveAnswerImage_2, saveAnswerImage_3, saveAnswerImage_4]).then(values => {
-                        /*reference.showCompleteModal();
-                        if (answer.completed) {
-                            reference.showCompleteModal();
-                        }
-                        else {
-                            reference.showIncompleteModal();
-                        }
-                        */
-                        message.removeMessageLoader("#mainContent2");
+                    /*
+                    let saveAnswerImage_6 = reference.saveAnswer("image_answer_6", "[" + JSON.stringify(answerImages_6) + "]", idReport);
+                    let saveAnswerImage_7 = reference.saveAnswer("image_answer_7", "[" + JSON.stringify(answerImages_7) + "]", idReport);
+                    let saveAnswerImage_8 = reference.saveAnswer("image_answer_8", "[" + JSON.stringify(answerImages_8) + "]", idReport);
+                    let saveAnswerImage_9 = reference.saveAnswer("image_answer_9", "[" + JSON.stringify(answerImages_9) + "]", idReport);
+                    let saveAnswerImage_10 = reference.saveAnswer("image_answer_10", "[" + JSON.stringify(answerImages_10) + "]", idReport);
+                    */
+                    /*let saveAnswerImage_11 = reference.saveAnswer("image_answer_11", "[" + JSON.stringify(answerImages_11) + "]", idReport);
+                    let saveAnswerImage_12 = reference.saveAnswer("image_answer_12", "[" + JSON.stringify(answerImages_12) + "]", idReport);
+                    let saveAnswerImage_13 = reference.saveAnswer("image_answer_13", "[" + JSON.stringify(answerImages_13) + "]", idReport);
+                    let saveAnswerImage_14 = reference.saveAnswer("image_answer_14", "[" + JSON.stringify(answerImages_14) + "]", idReport);
+                    let saveAnswerImage_15 = reference.saveAnswer("image_answer_15", "[" + JSON.stringify(answerImages_15) + "]", idReport);
+                    let saveAnswerImage_16 = reference.saveAnswer("image_answer_16", "[" + JSON.stringify(answerImages_16) + "]", idReport);
+                    let saveAnswerImage_17 = reference.saveAnswer("image_answer_17", "[" + JSON.stringify(answerImages_17) + "]", idReport);
+                    let saveAnswerImage_18 = reference.saveAnswer("image_answer_18", "[" + JSON.stringify(answerImages_18) + "]", idReport);
+                    let saveAnswerImage_19 = reference.saveAnswer("image_answer_19", "[" + JSON.stringify(answerImages_19) + "]", idReport);
+                    let saveAnswerImage_20 = reference.saveAnswer("image_answer_20", "[" + JSON.stringify(answerImages_20) + "]", idReport);
+                    let saveAnswerImage_21 = reference.saveAnswer("image_answer_21", "[" + JSON.stringify(answerImages_21) + "]", idReport);
+                    let saveAnswerImage_22 = reference.saveAnswer("image_answer_22", "[" + JSON.stringify(answerImages_22) + "]", idReport);
+                    let saveAnswerImage_23 = reference.saveAnswer("image_answer_23", "[" + JSON.stringify(answerImages_23) + "]", idReport);
+                    let saveAnswerImage_24 = reference.saveAnswer("image_answer_24", "[" + JSON.stringify(answerImages_24) + "]", idReport);
+                    let saveAnswerImage_25 = reference.saveAnswer("image_answer_25", "[" + JSON.stringify(answerImages_25) + "]", idReport);
+                    let saveAnswerImage_26 = reference.saveAnswer("image_answer_26", "[" + JSON.stringify(answerImages_26) + "]", idReport);
+                    let saveAnswerImage_27 = reference.saveAnswer("image_answer_27", "[" + JSON.stringify(answerImages_27) + "]", idReport);
+                    let saveAnswerImage_28 = reference.saveAnswer("image_answer_28", "[" + JSON.stringify(answerImages_28) + "]", idReport);
+                    let saveAnswerImage_29 = reference.saveAnswer("image_answer_29", "[" + JSON.stringify(answerImages_29) + "]", idReport);
+                    let saveAnswerImage_30 = reference.saveAnswer("image_answer_30", "[" + JSON.stringify(answerImages_30) + "]", idReport);
+                    let saveAnswerImage_31 = reference.saveAnswer("image_answer_31", "[" + JSON.stringify(answerImages_31) + "]", idReport);
+                    let saveAnswerImage_32 = reference.saveAnswer("image_answer_32", "[" + JSON.stringify(answerImages_32) + "]", idReport);
+                    let saveAnswerImage_33 = reference.saveAnswer("image_answer_33", "[" + JSON.stringify(answerImages_33) + "]", idReport);
+                    let saveAnswerImage_34 = reference.saveAnswer("image_answer_34", "[" + JSON.stringify(answerImages_34) + "]", idReport);
+                    let saveAnswerImage_35 = reference.saveAnswer("image_answer_35", "[" + JSON.stringify(answerImages_35) + "]", idReport);
+                    let saveAnswerImage_36 = reference.saveAnswer("image_answer_36", "[" + JSON.stringify(answerImages_36) + "]", idReport);
+                    let saveAnswerImage_37 = reference.saveAnswer("image_answer_37", "[" + JSON.stringify(answerImages_37) + "]", idReport);
+                    let saveAnswerImage_38 = reference.saveAnswer("image_answer_38", "[" + JSON.stringify(answerImages_38) + "]", idReport);
+                    let saveAnswerImage_39 = reference.saveAnswer("image_answer_39", "[" + JSON.stringify(answerImages_39) + "]", idReport);
+                    let saveAnswerImage_40 = reference.saveAnswer("image_answer_40", "[" + JSON.stringify(answerImages_40) + "]", idReport);
+                    let saveAnswerImage_41 = reference.saveAnswer("image_answer_41", "[" + JSON.stringify(answerImages_41) + "]", idReport);
+                    let saveAnswerImage_42 = reference.saveAnswer("image_answer_42", "[" + JSON.stringify(answerImages_42) + "]", idReport);
+                    let saveAnswerImage_43 = reference.saveAnswer("image_answer_43", "[" + JSON.stringify(answerImages_43) + "]", idReport);
+                    let saveAnswerImage_44 = reference.saveAnswer("image_answer_44", "[" + JSON.stringify(answerImages_44) + "]", idReport);
+                    let saveAnswerImage_45 = reference.saveAnswer("image_answer_45", "[" + JSON.stringify(answerImages_45) + "]", idReport);
+                    let saveAnswerImage_46 = reference.saveAnswer("image_answer_46", "[" + JSON.stringify(answerImages_46) + "]", idReport);
+                    let saveAnswerImage_47 = reference.saveAnswer("image_answer_47", "[" + JSON.stringify(answerImages_47) + "]", idReport);
+                    let saveAnswerImage_48 = reference.saveAnswer("image_answer_48", "[" + JSON.stringify(answerImages_48) + "]", idReport);
+                    let saveAnswerImage_49 = reference.saveAnswer("image_answer_49", "[" + JSON.stringify(answerImages_49) + "]", idReport);
+                    let saveAnswerImage_50 = reference.saveAnswer("image_answer_50", "[" + JSON.stringify(answerImages_50) + "]", idReport);
+ */
+                    Promise.all([saveAnswerDate, saveAnswerDateTime, saveAnswerTime, saveAnswerWeek, saveAnswerMonth, saveAnswerText, saveAnswerRadio, answerCheckbox, saveAnswerSelect, saveAnswerMultiSelect, saveAnswerList, saveAnswerTable, saveAnswerImage_1, saveAnswerImage_2, saveAnswerImage_3, saveAnswerImage_4, saveAnswerImage_5]).then(values => {
+                        let saveAnswerImage_6 = reference.saveAnswer("image_answer_6", "[" + JSON.stringify(answerImages_6) + "]", idReport);
+                        let saveAnswerImage_7 = reference.saveAnswer("image_answer_7", "[" + JSON.stringify(answerImages_7) + "]", idReport);
+                        let saveAnswerImage_8 = reference.saveAnswer("image_answer_8", "[" + JSON.stringify(answerImages_8) + "]", idReport);
+                        let saveAnswerImage_9 = reference.saveAnswer("image_answer_9", "[" + JSON.stringify(answerImages_9) + "]", idReport);
+                        let saveAnswerImage_10 = reference.saveAnswer("image_answer_10", "[" + JSON.stringify(answerImages_10) + "]", idReport);
+                    Promise.all([saveAnswerImage_6, saveAnswerImage_7, saveAnswerImage_8, saveAnswerImage_9, saveAnswerImage_10]).then(values => {
+                         message.removeMessageLoader("#mainContent2");
                         reference.bootstrapPage('page-021');
                     });
+
+                       
+                        /*
+                        Promise.all([saveAnswerImage_11, saveAnswerImage_12, saveAnswerImage_13, saveAnswerImage_14, saveAnswerImage_15, saveAnswerImage_16, saveAnswerImage_17, saveAnswerImage_18, saveAnswerImage_19, saveAnswerImage_20]).then(values => {
+                            Promise.all([saveAnswerImage_21, saveAnswerImage_22, saveAnswerImage_23, saveAnswerImage_24, saveAnswerImage_25, saveAnswerImage_26, saveAnswerImage_27, saveAnswerImage_28, saveAnswerImage_29, saveAnswerImage_30]).then(values => {
+                                Promise.all([saveAnswerImage_31, saveAnswerImage_32, saveAnswerImage_33, saveAnswerImage_34, saveAnswerImage_35, saveAnswerImage_36, saveAnswerImage_37, saveAnswerImage_38, saveAnswerImage_39, saveAnswerImage_40]).then(values => {
+                                   
+                                });
+                            });
+                        });*/
+                    });
+                    /*reference.showCompleteModal();
+                    if (answer.completed) {
+                        reference.showCompleteModal();
+                    }
+                    else {
+                        reference.showIncompleteModal();
+                    }
+                    */
                 });
             }
         });
@@ -784,6 +994,7 @@ module.exports = {
                 data: data,
                 success: function (data) {
                     console.log(data);
+                    message.changeMessageLoader("mainContent2", "Se ha guardado exitosamente " + type);
                     resolve();
                 }
             });

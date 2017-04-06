@@ -1,3 +1,5 @@
+let ticket = require('./tickets.js');
+
 module.exports = {
     "imgTo64": function (input) {
         if (input.files && input.files[0]) {
@@ -953,42 +955,63 @@ module.exports = {
                                         var myCanvas = $('#canvasRezise')[0];
                                         var ctx = myCanvas.getContext('2d');
                                         var img = new Image();
+
                                         img.onload = function () {
 
-                                            myCanvas.width = 750;
-                                            myCanvas.height = 1334;
-                                            ctx.drawImage(img, 0, 0, 750, 1334);
+                                            myCanvas.width = 500;
+                                            myCanvas.height = 800;
+                                            ctx.drawImage(img, 0, 0, 500, 800);
 
                                             ctx.font = "bold 12pt sans-serif";
                                             ctx.shadowColor = 'black';
                                             ctx.fillStyle = "white";
                                             ctx.shadowBlur = 7;
 
-                                            ctx.fillText('Smart Report: SM-00000001 ', 10, (myCanvas.height - 130));
-                                            ctx.fillText('SDM Ticket: PM-00001 ', 10, (myCanvas.height - 110));
-                                            ctx.fillText('Hora Actual: 2026-01-01 00:00:00 ', 10, (myCanvas.height - 90));
+                                            ctx.fillText('SDM Ticket : ' + ticket.ticketSelected.ticket_id, 10, (myCanvas.height - 150));
+                                            ctx.fillText('Sitio: ' + ticket.ticketSelected.site_name, 10, (myCanvas.height - 130));
+                                            ctx.fillText('Hora Actual: ' + new Date(), 10, (myCanvas.height - 110));
                                             ctx.font = "bold 12pt sans-serif";
                                             ctx.shadowColor = 'black';
                                             ctx.fillStyle = "white";
                                             ctx.shadowBlur = 7;
 
-                                            $.getJSON('https://geoip-db.com/json/geoip.php?jsonp=?')
-                                                .done(function (locationResponse) {
-                                                    console.log(locationResponse);
-                                                    ctx.fillText('Latitud: ' + locationResponse.latitude, 10, (myCanvas.height - 70));
-                                                    ctx.fillText('Longitud: ' + locationResponse.longitude, 10, (myCanvas.height - 50));
-                                                    get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + locationResponse.latitude + "," + locationResponse.longitude).then(function (mapResponse) {
-                                                        console.log(mapResponse);
-                                                        ctx.fillText('Direccion: ' + mapResponse.results[0].formatted_address, (myCanvas.width / 2) - 50, (myCanvas.height - 10));
-                                                        ctx.font = "italic 10pt sans-serif";
-                                                        ctx.shadowColor = 'black';
-                                                        ctx.fillStyle = "white";
-                                                        ctx.shadowBlur = 7;
-                                                        ctx.fillText('Este Imagen fue cargada en Smart Docs', 10, (myCanvas.height - 30));
-                                                        ctx.fillText('Huawei @OWS', 80, (myCanvas.height - 10));
-                                                        $("#" + valueSubPanelEle.id).attr("src", myCanvas.toDataURL());
-                                                    });
+                                            /* USING GEO IP
+                                            
+                                             $.getJSON('https://geoip-db.com/json/geoip.php?jsonp=?')
+                                                 .done(function (locationResponse) {
+                                                     console.log(locationResponse);
+                                                     ctx.fillText('Latitud: ' + locationResponse.latitude, 10, (myCanvas.height - 70));
+                                                     ctx.fillText('Longitud: ' + locationResponse.longitude, 10, (myCanvas.height - 50));
+                                                     get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + locationResponse.latitude + "," + locationResponse.longitude).then(function (mapResponse) {
+                                                         console.log(mapResponse);
+                                                         ctx.fillText('Direccion: ' + mapResponse.results[0].formatted_address, (myCanvas.width / 2) - 50, (myCanvas.height - 10));
+                                                         ctx.font = "italic 10pt sans-serif";
+                                                         ctx.shadowColor = 'black';
+                                                         ctx.fillStyle = "white";
+                                                         ctx.shadowBlur = 7;
+                                                         ctx.fillText('Este Imagen fue cargada en Smart Docs', 10, (myCanvas.height - 30));
+                                                         ctx.fillText('Huawei @OWS', 80, (myCanvas.height - 10));
+                                                         $("#" + valueSubPanelEle.id).attr("src", myCanvas.toDataURL());
+                                                     });
+                                                 });*/
+
+                                            navigator.geolocation.getCurrentPosition(function (position) {
+                                                ctx.fillText('Latitud : ' + position.coords.latitude, 10, (myCanvas.height - 90));
+                                                ctx.fillText('Longitud : ' + position.coords.longitude, 10, (myCanvas.height - 70));
+                                                ctx.fillText('Precision : Aprox.' + position.coords.accuracy + ' Metros', 10, (myCanvas.height - 50));
+                                                get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + position.coords.latitude + "," + position.coords.longitude).then(function (mapResponse) {
+                                                    console.log(mapResponse);
+                                                    ctx.fillText('Direccion: ' + mapResponse.results[0].formatted_address, (myCanvas.width / 2) - 80, (myCanvas.height - 10));
+                                                    ctx.font = "italic 10pt sans-serif";
+                                                    ctx.shadowColor = 'black';
+                                                    ctx.fillStyle = "white";
+                                                    ctx.shadowBlur = 7;
+                                                    ctx.fillText('Este Imagen fue cargada en Smart Docs', 10, (myCanvas.height - 30));
+                                                    ctx.fillText('Huawei @OWS', 80, (myCanvas.height - 10));
+                                                    $("#" + valueSubPanelEle.id).attr("src", myCanvas.toDataURL());
                                                 });
+                                            });
+
 
                                             function get(url) {
                                                 return new Promise(function (resolve, reject) {

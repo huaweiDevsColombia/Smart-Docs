@@ -112,7 +112,8 @@ $(function () {
                 //Dev
                 case "0-0-0-1":
                     reference.userGroup = "Developer";
-                    reference.openSmatApp();
+                    reference.grantPermissionPosition();
+                    //reference.openSmatApp();
                     //reference.loadMainMenu();
                     break;
                 //Adm-Dev
@@ -143,13 +144,15 @@ $(function () {
                 //Adm
                 case "0-0-1-0":
                     reference.userGroup = "Admin";
-                    reference.openSmatApp();
+                    reference.grantPermissionPosition();
+                    //reference.openSmatApp();
                     //reference.loadMainMenu();
                     break;
                 //Qua
                 case "0-1-0-0":
                     reference.userGroup = "Quality";
-                    reference.openSmatApp();
+                    reference.grantPermissionPosition();
+                    //reference.openSmatApp();
                     //reference.loadMainMenu();
                     break;
                 //All
@@ -177,7 +180,8 @@ $(function () {
                 //Fme
                 case "1-0-0-0":
                     reference.userGroup = "FME";
-                    reference.openSmatApp();
+                    reference.grantPermissionPosition();
+                    //reference.openSmatApp();
                     //reference.loadWorkerAllTickets();
                     break;
                 //Fme-Adm
@@ -226,10 +230,40 @@ $(function () {
                 reference.userGroup = groupSelected;
                 $("#userGroup").text(groupSelected);
                 $("#groupError").modal('hide');
-                reference.openSmatApp();
+                reference.grantPermissionPosition();
+                //reference.openSmatApp();
                 pages.loadResources('page-004');
             });
             $("#groupError").modal({ backdrop: 'static', keyboard: false });
+        },
+        grantPermissionPosition: function () {
+            let reference = this;
+            var options = {
+                enableHighAccuracy: true,
+                timeout: 5000,
+                maximumAge: 0
+            };
+
+            function success(pos) {
+                var crd = pos.coords;
+                console.log('Your current position is:');
+                console.log('Latitude : ' + crd.latitude);
+                console.log('Longitude: ' + crd.longitude);
+                console.log('More or less ' + crd.accuracy + ' meters.');
+                reference.openSmatApp();
+            };
+
+            function error(err) {
+                reference.launchErrorPosition();
+                console.warn('ERROR(' + err.code + '): ' + err.message);
+            };
+
+            navigator.geolocation.getCurrentPosition(success, error, options);
+        },
+        launchErrorPosition:function(){
+            $("#errorPosition").remove();
+            $("body").append("<div class='fade modal modal-danger'aria-hidden=true aria-labelledby=myModalLabel2 id=errorPosition role=dialog style=display:block tabindex=-1><div class=modal-dialog><div class=modal-content><div class=modal-header><h4 class=modal-title id=myModalLabel13>No has permitido el acceso a tu localizacion </h4></div><div class=modal-body><img src='https://cdn4.iconfinder.com/data/icons/flatified/128/map.png' style=margin-left:auto;margin-right:auto;display:block width=150px><h4 style=text-align:center> Por favor, configura tu dispositivo correctamente </h4><h5 style=text-align:center>El accesor a la localizacion ha sido bloqueado <br> <b> Solucion> </b> Ingresa a la configuracion del navegador y modifica los permisos de localizacion </h5><div class='text-center'></div></div></div></div></div>");
+            $("#errorPosition").modal({ backdrop: 'static', keyboard: false });
         },
         openSmatApp: function () {
             let reference = this;
