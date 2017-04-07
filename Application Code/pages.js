@@ -550,31 +550,18 @@ module.exports = {
     },
     loadEventSaveReport: function () {
         let reference = this;
-        $("#btnSave").click(() => {
+        $("#btnSave").click(function () {
 
             let id_reportResponse = "";
             let answer = smartEngine.saveAnswer();
             let comments = [];
             let status = (answer.completed) ? "SM-Status002" : "SM-Status001";
-            let idReport;
-            let answerDate;
-            let answerDateTime;
-            let answerTime;
-            let answerWeek;
-            let answerMonth;
-            let answerText;
-            let answerTextArea;
-            let answerNumber;
-            let answerRadio;
-            let answerCheckbox;
-            let answerSelect;
-            let answerMultiSelect;
-            let answerList;
-            let answerTable;
-            let answerImages;
-            let contImages;
+            let idReport; let contImages;
+            let answerDate; let answerDateTime; let answerTime; let answerWeek; let answerMonth;
+            let answerText; let answerTextArea; let answerNumber; let answerRadio; let answerCheckbox;
+            let answerSelect; let answerMultiSelect; let answerList; let answerTable; let answerImages;
 
-            if (reports.reportSelected.id_report) {
+            if (reports.reportTemp.id_report) {
                 console.log("El reporte ya existe");
                 workers.getCurrentTime.then(function (currentTimeResponse) {
                     comments.push({ "author": username, "comment": "El reporte ha sido creado exitosamente en el sistema", "time": JSON.parse(currentTimeResponse).result.localDateTime, "status": status })
@@ -596,60 +583,6 @@ module.exports = {
                     answerList = reference.filterByAnswerType('list');
                     answerTable = reference.filterByAnswerType('table');
                     answerImages = reference.filterByAnswerTypeImage();
-                    /*
-                    answerImages_1 = answerImages.splice(0, 5);
-                    answerImages_2 = answerImages.splice(0, 5);
-                    answerImages_3 = answerImages.splice(0, 5);
-                    answerImages_4 = answerImages.splice(0, 5);
-                    answerImages_5 = answerImages.splice(0, 5);
-                    
-                    answerImages_6 = answerImages.splice(0, 1);
-                    answerImages_7 = answerImages.splice(0, 1);
-                    answerImages_8 = answerImages.splice(0, 1);
-                    answerImages_9 = answerImages.splice(0, 1);
-                    answerImages_10 = answerImages.splice(0, 1);
-                    answerImages_11 = answerImages.splice(0, 1);
-                    answerImages_12 = answerImages.splice(0, 1);
-                    answerImages_13 = answerImages.splice(0, 1);
-                    answerImages_14 = answerImages.splice(0, 1);
-                    answerImages_15 = answerImages.splice(0, 1);
-                    answerImages_16 = answerImages.splice(0, 1);
-                    answerImages_17 = answerImages.splice(0, 1);
-                    answerImages_18 = answerImages.splice(0, 1);
-                    answerImages_19 = answerImages.splice(0, 1);
-                    answerImages_20 = answerImages.splice(0, 1);
-                    answerImages_21 = answerImages.splice(0, 1);
-                    answerImages_22 = answerImages.splice(0, 1);
-                    answerImages_23 = answerImages.splice(0, 1);
-                    answerImages_24 = answerImages.splice(0, 1);
-                    answerImages_25 = answerImages.splice(0, 1);
-                    answerImages_26 = answerImages.splice(0, 1);
-                    answerImages_27 = answerImages.splice(0, 1);
-                    answerImages_28 = answerImages.splice(0, 1);
-                    answerImages_29 = answerImages.splice(0, 1);
-                    answerImages_30 = answerImages.splice(0, 1);
-                    answerImages_31 = answerImages.splice(0, 1);
-                    answerImages_32 = answerImages.splice(0, 1);
-                    answerImages_33 = answerImages.splice(0, 1);
-                    answerImages_34 = answerImages.splice(0, 1);
-                    answerImages_35 = answerImages.splice(0, 1);
-                    answerImages_36 = answerImages.splice(0, 1);
-                    answerImages_37 = answerImages.splice(0, 1);
-                    answerImages_38 = answerImages.splice(0, 1);
-                    answerImages_39 = answerImages.splice(0, 1);
-                    answerImages_40 = answerImages.splice(0, 1);
-                    answerImages_41 = answerImages.splice(0, 1);
-                    answerImages_42 = answerImages.splice(0, 1);
-                    answerImages_43 = answerImages.splice(0, 1);
-                    answerImages_44 = answerImages.splice(0, 1);
-                    answerImages_45 = answerImages.splice(0, 1);
-                    answerImages_46 = answerImages.splice(0, 1);
-                    answerImages_47 = answerImages.splice(0, 1);
-                    answerImages_48 = answerImages.splice(0, 1);
-                    answerImages_49 = answerImages.splice(0, 1);
-                    answerImages_50 = answerImages.splice(0, 1);
-                    */
-
                     console.log("Creating the Report");
                     idReport = reports.reportSelected.id_report;
                     let saveAnswerDate = reference.saveAnswer("date_answer", answerDate, idReport);
@@ -664,17 +597,6 @@ module.exports = {
                     let saveAnswerMultiSelect = reference.saveAnswer("multiselect_answer", answerMultiSelect, idReport);
                     let saveAnswerList = reference.saveAnswer("list_answer", answerList, idReport);
                     let saveAnswerTable = reference.saveAnswer("table_answer", answerTable, idReport);
-                    let saveAnswerImage_1 = reference.saveAnswer("image_answer_1", "[" + /*JSON.stringify(answerImages_1)*/ 1 + "]", idReport);
-                    let saveAnswerImage_2 = reference.saveAnswer("image_answer_2", "[" + /*JSON.stringify(answerImages_2)*/ 2 + "]", idReport);
-                    let saveAnswerImage_3 = reference.saveAnswer("image_answer_3", "[" + /*JSON.stringify(answerImages_3)*/ 3 + "]", idReport);
-                    let saveAnswerImage_4 = reference.saveAnswer("image_answer_4", "[" + /*JSON.stringify(answerImages_4)*/ 4 + "]", idReport);
-                    let saveAnswerImage_5 = reference.saveAnswer("image_answer_5", "[" + /*JSON.stringify(answerImages_5)*/ 5 + "]", idReport);
-                    let saveAnswerImage_6 = reference.saveAnswer("image_answer_6", "[" + /*JSON.stringify(answerImages_6)*/ 6 + "]", idReport);
-                    let saveAnswerImage_7 = reference.saveAnswer("image_answer_7", "[" + /*JSON.stringify(answerImages_7)*/ 7 + "]", idReport);
-                    let saveAnswerImage_8 = reference.saveAnswer("image_answer_8", "[" + /*JSON.stringify(answerImages_8)*/ 8 + "]", idReport);
-                    let saveAnswerImage_9 = reference.saveAnswer("image_answer_9", "[" + /*JSON.stringify(answerImages_9)*/ 9 + "]", idReport);
-                    let saveAnswerImage_10 = reference.saveAnswer("image_answer_10", "[" + /*JSON.stringify(answerImages_10)*/ 10 + "]", idReport);
-
                     Promise.all([saveAnswerDate, saveAnswerDateTime, saveAnswerTime, saveAnswerWeek, saveAnswerMonth, saveAnswerText, saveAnswerRadio, answerCheckbox, saveAnswerSelect, saveAnswerMultiSelect, saveAnswerList, saveAnswerTable, saveAnswerImage_1, saveAnswerImage_2, saveAnswerImage_3, saveAnswerImage_4, saveAnswerImage_5, saveAnswerImage_6, saveAnswerImage_7, saveAnswerImage_8, saveAnswerImage_9, saveAnswerImage_10]).then(values => {
                         reference.bootstrapPage('page-021');
                     });
@@ -707,17 +629,21 @@ module.exports = {
                         contImages++;
                     }
                     while (answerImages.length > 0);
-
+                    reports.reportTemp["total_images"] = contImages;
+                    reports.reportTemp["total_images_saved"] = 0;
                     message.addMessageLoder("loaderMessage", "#mainContent2");
                     message.changeMessageLoader("loaderMessage", "Guardando Relacion del Reporte con Ticket");
                     console.log("Creating the Report");
                     return reference.saveDatamodel(status, comments, tickets.ticketSelected.project, tickets.ticketSelected.region,
                         tickets.ticketSelected.site_id, tickets.ticketSelected.supplier, tickets.ticketSelected.ticket_id, templates.templateSelected.id_template, tickets.ticketSelected.work_client)
 
-                }).then(function (idReportRes) {
-                    reports.reportSelected = { "id_report": idReportRes };
-                    message.changeMessageLoader("loaderMessage", "Guardando Reporte");
-                    idReport = idReportRes;
+                }).then(function (idReport) {
+                    reports.reportSelected = { "id_report": idReport };
+                    //reports.reportSelected["id_report"] = contImages ;
+                    //message.changeMessageLoader("loaderMessage", "Guardando Reporte");
+                    reference.changeSaveModalText("Abriendo comunicacion con @OWS Datamodel");
+                    reference.launchSaveModal();
+                    //idReport = idReportRes;
                     let saveAnswerDate = reference.saveAnswerReport("date_answer", answerDate, idReport);
                     let saveAnswerDateTime = reference.saveAnswerReport("datetime_answer", answerDateTime, idReport);
                     let saveAnswerTime = reference.saveAnswerReport("time_answer", answerTime, idReport);
@@ -731,9 +657,7 @@ module.exports = {
                     let saveAnswerList = reference.saveAnswerReport("list_answer", answerList, idReport);
                     let saveAnswerTable = reference.saveAnswerReport("table_answer", answerTable, idReport);
 
-                    let contProImg = 0;
-                    let subIdNumber = 0;
-                    let subId = "-SB";
+                    let contProImg = 0; let subIdNumber = 0; let subId = "-SB";
                     let promisesSave = [saveAnswerDate, saveAnswerDateTime, saveAnswerTime, saveAnswerWeek, saveAnswerMonth, saveAnswerText, saveAnswerRadio, saveAnswerSelect, saveAnswerMultiSelect, saveAnswerList, saveAnswerTable];
                     do {
                         console.log(this["answerImages_" + contProImg]);
@@ -746,12 +670,7 @@ module.exports = {
                         contProImg++;
                     }
                     while (contProImg <= contImages);
-
-                    contProImg = 0;
-                    subIdNumber = 0;
-                    subIdNumber = 0;
-                    subId = "-SB";
-
+                    contProImg = 0; subIdNumber = 0;
                     console.log(promisesSave);
                     Promise.all(promisesSave).then(function (values) {
                         let promisesUpdate = [];
@@ -766,21 +685,13 @@ module.exports = {
                             contProImg++;
                         }
                         while (contProImg <= contImages);
-                        console.log(promisesUpdate);
-
-                        Promise.all(promisesUpdate).then(values => {
+                        //console.log(promisesUpdate);
+                        Promise.all(promisesUpdate).then(function (values) {
                             message.removeMessageLoader("#mainContent2");
+                            reference.changeSaveModalText("Se ha guardado exitosamente tu progreso");
+                            reference.removeSaveModal();
                             reference.bootstrapPage('page-021');
                         });
-
-                        /*
-                        Promise.all([saveAnswerImage_11, saveAnswerImage_12, saveAnswerImage_13, saveAnswerImage_14, saveAnswerImage_15, saveAnswerImage_16, saveAnswerImage_17, saveAnswerImage_18, saveAnswerImage_19, saveAnswerImage_20]).then(values => {
-                            Promise.all([saveAnswerImage_21, saveAnswerImage_22, saveAnswerImage_23, saveAnswerImage_24, saveAnswerImage_25, saveAnswerImage_26, saveAnswerImage_27, saveAnswerImage_28, saveAnswerImage_29, saveAnswerImage_30]).then(values => {
-                                Promise.all([saveAnswerImage_31, saveAnswerImage_32, saveAnswerImage_33, saveAnswerImage_34, saveAnswerImage_35, saveAnswerImage_36, saveAnswerImage_37, saveAnswerImage_38, saveAnswerImage_39, saveAnswerImage_40]).then(values => {
-                                   
-                                });
-                            });
-                        });*/
                     });
                     /*reference.showCompleteModal();
                     if (answer.completed) {
@@ -825,29 +736,7 @@ module.exports = {
         $("#emptyFields").modal('show');
     },
     saveDatamodel: function (status, comment, project, region, site, supplier, ticket, template, workClient) {
-
         return new Promise(function (resolve, reject) {
-            /*
-            var http = new XMLHttpRequest();
-            var url = "https://100l-app.teleows.com/servicecreator/debugMessage";
-            var messageData = { "modified_by": "", "author": "", "last_modification": "", "creation_date": "", "answer": answer, "approval_date": "", "approver": "", "comments": comment, "completed_date": "", "id_report": "", "project": project, "region": region, "rejected_date": "", "rejecter": "", "site_id": site, "status": status, "supplier": supplier, "ticket_id": ticket, "web_template": template, "work_client": workClient, "active": "", "actual_model_id": "" }
-            var params = "comeFrom=page&messageId=10113&csrfToken=" + csrfToken + "&messageData=" + JSON.stringify(messageData);
-
-            http.open("POST", url, true);
-
-            //Send the proper header information along with the request
-            http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-
-            http.onreadystatechange = function () {//Call a function when the state changes.
-                if (http.readyState == 4 && http.status == 200) {
-                    console.log("Se ha guardado Exitosamente");
-                    console.log(http.readyState);
-                    console.log(http.response);
-                    resolve();
-                }
-            }
-            http.send(params);
-            */
             MessageProcessor.process({
                 serviceId: "co_sm_report_create",
                 data: {
@@ -870,6 +759,7 @@ module.exports = {
         });
     },
     saveAnswerReport: function (type, answer, idReport) {
+        let reference = this;
         return new Promise(function (resolve, reject) {
             let data = {};
             data["id_report"] = idReport;
@@ -879,13 +769,15 @@ module.exports = {
                 data: data,
                 success: function (data) {
                     console.log(data);
-                    message.changeMessageLoader("mainContent2", "Se ha guardado exitosamente " + type);
+                    reference.changeSaveModalText("Se han guardado " + type);
+                    //message.changeMessageLoader("mainContent2", "Se ha guardado exitosamente " + type);
                     resolve();
                 }
             });
         });
     },
     saveAnswerReportImagesCreate: function (answer, idReportImg, idReport) {
+        let reference = this;
         return new Promise(function (resolve, reject) {
             let data = {};
             data["report_img_id"] = idReportImg;
@@ -896,13 +788,16 @@ module.exports = {
                 data: data,
                 success: function (data) {
                     console.log(data);
-                    message.changeMessageLoader("mainContent2", "Se han guardado algunas imagenes");
+                    reports.reportTemp.total_images_saved += 2;
+                    reference.changeSaveModalText("Se han guardado " + reports.reportTemp.total_images_saved + " imagenes de " + reports.reportTemp.total_images*2);
+                    //message.changeMessageLoader("mainContent2", "Se han guardado algunas imagenes");
                     resolve();
                 }
             });
         });
     },
     saveAnswerReportImagesUpdate: function (answer, idReportImg, idReport) {
+        let reference = this;
         return new Promise(function (resolve, reject) {
             let data = {};
             data["report_img_id"] = idReportImg;
@@ -912,40 +807,12 @@ module.exports = {
                 data: data,
                 success: function (data) {
                     console.log(data);
-                    message.changeMessageLoader("mainContent2", "Se han guardado algunas imagenes");
+                    reports.reportTemp.total_images_saved += 2;
+                    reference.changeSaveModalText("Se han guardado " + reports.reportTemp.total_images_saved + " imagenes de " + reports.reportTemp.total_images*2);
+                    //message.changeMessageLoader("mainContent2", "Se han guardado algunas imagenes");
                     resolve();
                 }
             });
-        });
-    },
-    saveAnswerByChunks: function (answer, idReport) {
-        return new Promise(function (resolve, reject) {
-            MessageProcessor.process({
-                serviceId: "co_sm_report_update_chunks",
-                data: {
-                    "id_report": idReport,
-                    "answer": answer
-                },
-                success: function (data) {
-                    console.log(data);
-                    resolve();
-                }
-            });
-        });
-    },
-    saveAnswerByChunksImages: function (answer, idReport) {
-        let reference = this;
-        return new Promise(function (resolve, reject) {
-            reference.saveAnswerByChunks("[" + JSON.stringify(answer.splice(0, 10)) + "]", idReport).
-                then(function () {
-                    if (answer.length >= 10) {
-                        reference.saveAnswerByChunksImages(answer, idReport);
-                    }
-                    else {
-                        reference.saveAnswerByChunks("[" + JSON.stringify(answer) + "]", idReport);
-                    }
-                });
-            resolve();
         });
     },
     changeDataReport: function () {
@@ -1058,6 +925,18 @@ module.exports = {
         }
         $("#sdmTicket").text(reports.reportSelected.ticket_id);
         message.removeMessageLoader("#mainContent2");
+    },
+    launchSaveModal: function () {
+        let reference = this;
+        $("#save_report_modal").remove();
+        $("body").append("<div class='fade modal modal-warning'aria-hidden=true aria-labelledby=myModalLabel1 id=save_report_modal role=dialog style=display:block tabindex=-1><div class=modal-dialog><div class=modal-content><div class=modal-header><h4 class=modal-title id=myModalLabel13>Se esta guardando el reporte </h4></div><div class=modal-body><div style='margin-left:auto;margin-right:auto;display:block'><i style='color:white' class='fa fa-spinner fa-pulse fa-5x'></i></div><h4 style='text-align:center'>Por favor no cierres la aplicacion, estamos guardando tu progreso .</h4><br><h5 style='text-align:center'><b> Estado : </b><div id='save_report_status'></div></h5></div></div></div></div>");
+        $("#save_report_modal").modal({ backdrop: 'static', keyboard: false });
+    },
+    changeSaveModalText: function (msg) {
+        $("#save_report_status").html(msg);
+    },
+    removeSaveModal: function () {
+        $("#save_report_modal").modal('hide');
     },
     launchApproveModal: function () {
         let reference = this;

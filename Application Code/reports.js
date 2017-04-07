@@ -6,6 +6,7 @@ module.exports = {
     allTickets: "",
     userGroup: "",
     reportSelected: "",
+    reportTemp:{"total_images":0,"total_images_saved":0},
     reportResponse: "",
     loadStatistic: function (userGroup) {
         let reference = this;
@@ -35,27 +36,62 @@ module.exports = {
             let getAnswerMultiSelect = reference.getAnswer("multiselect_answer", idReport);
             let getAnswerList = reference.getAnswer("list_answer", idReport);
             let getAnswerTable = reference.getAnswer("table_answer", idReport);
-            let getAnswerImage_1 = reference.getAnswer("image_answer_1", idReport);
-            let getAnswerImage_2 = reference.getAnswer("image_answer_2", idReport);
-            let getAnswerImage_3 = reference.getAnswer("image_answer_3", idReport);
-            let getAnswerImage_4 = reference.getAnswer("image_answer_4", idReport);
-
-            Promise.all([getAnswerDate, getAnswerDateTime, getAnswerTime, getAnswerWeek, getAnswerMonth, getAnswerText, getAnswerRadio, getAnswerCheckbox, getAnswerSelect, getAnswerMultiSelect, getAnswerList, getAnswerTable, getAnswerImage_1, getAnswerImage_2, getAnswerImage_3, getAnswerImage_4]).then(values => {
+            let totalImages = reference.getAnswerImage(idReport);
+            let getAnswerImages = [];
+            Promise.all([getAnswerDate, getAnswerDateTime, getAnswerTime, getAnswerWeek, getAnswerMonth, getAnswerText, getAnswerRadio, getAnswerCheckbox, getAnswerSelect, getAnswerMultiSelect, getAnswerList, getAnswerTable,totalImages]).then(values => {
+                let contProImg = 0; let subIdNumber = 0; let subId = "-SB";
+                do{
+                     this["getAnswerImage_" + contProImg] = reference.getAnswerImage(idReport + subId + subIdNumber);
+                     getAnswerImages.push(this["getAnswerImage_" + contProImg]);
+                     subIdNumber ++;
+                     contProImg ++; 
+                }
+                while(contProImg <= totalImages);
+                Promise.all(getAnswerImages).then(function (values) {
                 console.log("Promise Resolve", values);
                 reference.reportResponse = values;
                 resolve();
+                });
             });
         });
     },
-    getAnswer: function (service, idReport) {
+    getAnswer: function (idReport,service) {
         return new Promise(function (resolve, reject) {
             let data = {};
             data["id_report"] = idReport;
             MessageProcessor.process({
-                serviceId: "co_sm_report_get_" + service,
+                serviceId: "co_sm_report_get",
                 data: data,
                 success: function (data) {
                     resolve(data.result[service]);
+                }
+            });
+        });
+    },
+    getAnswerImage: function(idReport,subIdReport){
+        return new Promise(function (resolve, reject) {
+            let data = {};
+            data["report_img_id"] = idReport+subIdReport;
+            MessageProcessor.process({
+                serviceId: "co_sm_report_images_get",
+                data: data,
+                success: function (data) {
+                    resolve(data.result);
+                }
+            });
+        });
+    },
+    getAnswerImageTotal: function(idReport){
+        return new Promise(function (resolve, reject) {
+            let data = {};
+            data["id_report"] = idReport;
+            data["start"]=0;
+            data["limit"]=100;
+            MessageProcessor.process({
+                serviceId: "co_sm_report_images_getList",
+                data: data,
+                success: function (data) {
+                    resolve(data.total);
                 }
             });
         });
