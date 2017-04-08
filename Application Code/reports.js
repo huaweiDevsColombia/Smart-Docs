@@ -7,7 +7,8 @@ module.exports = {
     userGroup: "",
     reportSelected: "",
     reportTemp:{"total_images":0,"total_images_saved":0},
-    reportResponse: "",
+    reportResponse:"",
+    reportResponseImages: "",
     loadStatistic: function (userGroup) {
         let reference = this;
         reference.userGroup = userGroup;
@@ -36,31 +37,32 @@ module.exports = {
             let getAnswerMultiSelect = reference.getAnswer("multiselect_answer", idReport);
             let getAnswerList = reference.getAnswer("list_answer", idReport);
             let getAnswerTable = reference.getAnswer("table_answer", idReport);
-            let totalImages = reference.getAnswerImage(idReport);
+            let totalImages = reference.getAnswerImageTotal(idReport);
             let getAnswerImages = [];
             Promise.all([getAnswerDate, getAnswerDateTime, getAnswerTime, getAnswerWeek, getAnswerMonth, getAnswerText, getAnswerRadio, getAnswerCheckbox, getAnswerSelect, getAnswerMultiSelect, getAnswerList, getAnswerTable,totalImages]).then(values => {
                 let contProImg = 0; let subIdNumber = 0; let subId = "-SB";
+                reference.reportResponse = values;
                 do{
                      this["getAnswerImage_" + contProImg] = reference.getAnswerImage(idReport + subId + subIdNumber);
                      getAnswerImages.push(this["getAnswerImage_" + contProImg]);
                      subIdNumber ++;
                      contProImg ++; 
                 }
-                while(contProImg <= totalImages);
+                while(contProImg < values[12]);
                 Promise.all(getAnswerImages).then(function (values) {
                 console.log("Promise Resolve", values);
-                reference.reportResponse = values;
+                reference.reportResponseImages = values;
                 resolve();
                 });
             });
         });
     },
-    getAnswer: function (idReport,service) {
+    getAnswer: function (service,idReport) {
         return new Promise(function (resolve, reject) {
             let data = {};
             data["id_report"] = idReport;
             MessageProcessor.process({
-                serviceId: "co_sm_report_get",
+                serviceId: "co_sm_report_get_"+service,
                 data: data,
                 success: function (data) {
                     resolve(data.result[service]);
@@ -68,10 +70,10 @@ module.exports = {
             });
         });
     },
-    getAnswerImage: function(idReport,subIdReport){
+    getAnswerImage: function(idReportImg){
         return new Promise(function (resolve, reject) {
             let data = {};
-            data["report_img_id"] = idReport+subIdReport;
+            data["report_img_id"] = idReportImg;
             MessageProcessor.process({
                 serviceId: "co_sm_report_images_get",
                 data: data,

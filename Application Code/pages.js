@@ -268,10 +268,21 @@ module.exports = {
                     message.changeMessageLoader("loaderMessage", "Cargando Reporte");
                     reports.loadReport().then(function () {
                         console.log("Load Report: ", reports.reportResponse);
+                        console.log("Load Report Images: ", reports.reportResponseImages);
+                        for (let reportAnswer of reports.reportResponseImages) {
+                            if (Array.isArray(reportAnswer.images)) {
+                                smartEngine.matchAnswers(reportAnswer.images[0]);
+                                if (Array.isArray(reportAnswer.images_1)) {
+                                    smartEngine.matchAnswers(reportAnswer.images_1[0]);
+                                }
+                            }
+                        }
+
                         for (let reportAnswer of reports.reportResponse) {
-                            if (reportAnswer.length > 0) {
-                                console.log(reportAnswer[0]);
-                                smartEngine.matchAnswers(reportAnswer[0]);
+                            if (Array.isArray(reportAnswer)) {
+                                if (reportAnswer.length > 0) {
+                                    smartEngine.matchAnswers(reportAnswer[0]);
+                                }
                             }
                         }
                     });
@@ -445,6 +456,7 @@ module.exports = {
                     }
                 }, function (event) {
                     templates.templateSelected = event.data.val;
+                    reports.reportSelected = "";
                     console.log(templates.templateSelected);
                     reference.bootstrapPage("page-005");
                 });
@@ -691,16 +703,14 @@ module.exports = {
                             reference.changeSaveModalText("Se ha guardado exitosamente tu progreso");
                             reference.removeSaveModal();
                             reference.bootstrapPage('page-021');
+                            if (answer.completed) {
+                                reference.showCompleteModal();
+                            }
+                            else {
+                                reference.showIncompleteModal();
+                            }
                         });
                     });
-                    /*reference.showCompleteModal();
-                    if (answer.completed) {
-                        reference.showCompleteModal();
-                    }
-                    else {
-                        reference.showIncompleteModal();
-                    }
-                    */
                 });
             }
         });
@@ -789,7 +799,7 @@ module.exports = {
                 success: function (data) {
                     console.log(data);
                     reports.reportTemp.total_images_saved += 2;
-                    reference.changeSaveModalText("Se han guardado " + reports.reportTemp.total_images_saved + " imagenes de " + reports.reportTemp.total_images*2);
+                    reference.changeSaveModalText("Se han guardado " + reports.reportTemp.total_images_saved + " imagenes de " + reports.reportTemp.total_images * 2);
                     //message.changeMessageLoader("mainContent2", "Se han guardado algunas imagenes");
                     resolve();
                 }
@@ -808,7 +818,7 @@ module.exports = {
                 success: function (data) {
                     console.log(data);
                     reports.reportTemp.total_images_saved += 2;
-                    reference.changeSaveModalText("Se han guardado " + reports.reportTemp.total_images_saved + " imagenes de " + reports.reportTemp.total_images*2);
+                    reference.changeSaveModalText("Se han guardado " + reports.reportTemp.total_images_saved + " imagenes de " + reports.reportTemp.total_images * 2);
                     //message.changeMessageLoader("mainContent2", "Se han guardado algunas imagenes");
                     resolve();
                 }
