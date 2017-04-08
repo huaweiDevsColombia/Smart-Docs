@@ -510,6 +510,28 @@ module.exports = {
             http.send(params);
         });
     },
+    loadNavBar: function () {
+        $(function () {
+            $(".navbar-expand-toggle").click(function () {
+                $(".app-container").toggleClass("expanded");
+                return $(".navbar-expand-toggle").toggleClass("fa-rotate-90");
+            });
+            return $(".navbar-right-expand-toggle").click(function () {
+                $(".navbar-right").toggleClass("expanded");
+                return $(".navbar-right-expand-toggle").toggleClass("fa-rotate-90");
+            });
+        });
+
+        $(function () {
+            return $(".side-menu .nav .dropdown").on('show.bs.collapse', function () {
+                return $(".side-menu .nav .dropdown .collapse").collapse('hide');
+            });
+        });
+    },
+    makeProgressive: function(){
+        $("head").append("<meta name='mobile-web-app-capable' content='yes'>");
+        $("head").append("<link rel='icon' sizes='192x192' href='https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=6296cedb-8b8b-4d71-8b18-2985a3cc43e6&attachmentId=666870'>");
+    },
     pages: "",
     userGroup: "",
     filterPage: function (id_page) {
@@ -536,6 +558,8 @@ module.exports = {
             reference.filterPage('page-022').then(function (pageCode) {
                 reference.changeMenuContent(pageCode);
                 reference.addEventsToMenuItems();
+                reference.loadNavBar();
+                reference.makeProgressive();
                 return reference.filterPage("page-004");
             }).then(function (pageCode) {
                 reference.changeMainContent(pageCode);
@@ -2899,7 +2923,7 @@ module.exports = {
                                         "<h3>" + valueSubPanelEle.labels.firstLabel + "<a class='anchorjs-link' href='#thumbnail-label'><span class='anchorjs-icon'></span></a></h3>" +
                                         "<img width='450' height='600' style='width: 450px;height: 600px' src='" + defaultImg + "' class='" + valueSubPanelEle.class + "' id='" + valueSubPanelEle.id + "'>" +
                                         "<div class='caption'> <h3>" + valueSubPanelEle.labels.secondLabel + "<a class='anchorjs-link' href='#thumbnail-label'><span class='anchorjs-icon'></span></a></h3> " +
-                                        " <p><input type='file' id='" + valueSubPanelEle.id + "Event' accetps='image/*' capture='camera'></p></div> </div>" +
+                                        " <p><input type='file' id='" + valueSubPanelEle.id + "Event' accept='image/*' capture='camera'></p></div> </div>" +
                                         "</div>");
 
 
@@ -3004,7 +3028,7 @@ module.exports = {
     "<div id='" + valueSubPanelEle.idDiv + "' class='thumbnail' align='center'>" +
     "<img width='450' height='600' style='width: 450px;height: 600px' src='" + defaultImg + "' class='" + valueSubPanelEle.class + "' id='" + valueSubPanelEle.id + "'>" +
     "<div class='caption'> <h3>" + valueSubPanelEle.labels.firstLabel + "<a class='anchorjs-link' href='#thumbnail-label'><span class='anchorjs-icon'></span></a></h3> " +
-    " <p><input type='file' id='" + valueSubPanelEle.id + "Event' accetps='image/*'     capture='camera'></p></div> </div>" +
+    " <p><input type='file' id='" + valueSubPanelEle.id + "Event' accept='image/*'     capture='camera'></p></div> </div>" +
     "</div>");
 
     reference.allInputs.push({ 'name': valueSubPanelEle.label.value, 'selector': valueSubPanelEle.id, "type": valueSubPanelEle.type, "required": valueSubPanelEle.required });

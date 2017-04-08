@@ -28,6 +28,28 @@ module.exports = {
             http.send(params);
         });
     },
+    loadNavBar: function () {
+        $(function () {
+            $(".navbar-expand-toggle").click(function () {
+                $(".app-container").toggleClass("expanded");
+                return $(".navbar-expand-toggle").toggleClass("fa-rotate-90");
+            });
+            return $(".navbar-right-expand-toggle").click(function () {
+                $(".navbar-right").toggleClass("expanded");
+                return $(".navbar-right-expand-toggle").toggleClass("fa-rotate-90");
+            });
+        });
+
+        $(function () {
+            return $(".side-menu .nav .dropdown").on('show.bs.collapse', function () {
+                return $(".side-menu .nav .dropdown .collapse").collapse('hide');
+            });
+        });
+    },
+    makeProgressive: function(){
+        $("head").append("<meta name='mobile-web-app-capable' content='yes'>");
+        $("head").append("<link rel='icon' sizes='192x192' href='https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=6296cedb-8b8b-4d71-8b18-2985a3cc43e6&attachmentId=666870'>");
+    },
     pages: "",
     userGroup: "",
     filterPage: function (id_page) {
@@ -54,6 +76,8 @@ module.exports = {
             reference.filterPage('page-022').then(function (pageCode) {
                 reference.changeMenuContent(pageCode);
                 reference.addEventsToMenuItems();
+                reference.loadNavBar();
+                reference.makeProgressive();
                 return reference.filterPage("page-004");
             }).then(function (pageCode) {
                 reference.changeMainContent(pageCode);

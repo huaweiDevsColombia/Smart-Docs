@@ -899,7 +899,7 @@ module.exports = {
                                         "<h3>" + valueSubPanelEle.labels.firstLabel + "<a class='anchorjs-link' href='#thumbnail-label'><span class='anchorjs-icon'></span></a></h3>" +
                                         "<img width='450' height='600' style='width: 450px;height: 600px' src='" + defaultImg + "' class='" + valueSubPanelEle.class + "' id='" + valueSubPanelEle.id + "'>" +
                                         "<div class='caption'> <h3>" + valueSubPanelEle.labels.secondLabel + "<a class='anchorjs-link' href='#thumbnail-label'><span class='anchorjs-icon'></span></a></h3> " +
-                                        " <p><input type='file' id='" + valueSubPanelEle.id + "Event' accetps='image/*' capture='camera'></p></div> </div>" +
+                                        " <p><input type='file' id='" + valueSubPanelEle.id + "Event' accept='image/*' capture='camera'></p></div> </div>" +
                                         "</div>");
 
 
@@ -1004,7 +1004,7 @@ module.exports = {
     "<div id='" + valueSubPanelEle.idDiv + "' class='thumbnail' align='center'>" +
     "<img width='450' height='600' style='width: 450px;height: 600px' src='" + defaultImg + "' class='" + valueSubPanelEle.class + "' id='" + valueSubPanelEle.id + "'>" +
     "<div class='caption'> <h3>" + valueSubPanelEle.labels.firstLabel + "<a class='anchorjs-link' href='#thumbnail-label'><span class='anchorjs-icon'></span></a></h3> " +
-    " <p><input type='file' id='" + valueSubPanelEle.id + "Event' accetps='image/*'     capture='camera'></p></div> </div>" +
+    " <p><input type='file' id='" + valueSubPanelEle.id + "Event' accept='image/*'     capture='camera'></p></div> </div>" +
     "</div>");
 
     reference.allInputs.push({ 'name': valueSubPanelEle.label.value, 'selector': valueSubPanelEle.id, "type": valueSubPanelEle.type, "required": valueSubPanelEle.required });
