@@ -46,7 +46,7 @@ module.exports = {
             });
         });
     },
-    makeProgressive: function(){
+    makeProgressive: function () {
         $("head").append("<meta name='mobile-web-app-capable' content='yes'>");
         $("head").append("<link rel='icon' sizes='192x192' href='https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=6296cedb-8b8b-4d71-8b18-2985a3cc43e6&attachmentId=666870'>");
     },
@@ -288,8 +288,8 @@ module.exports = {
                 });
                 console.log("Loading Report From DataModel");
                 if (reports.reportSelected.id_report != undefined) {
-                    message.addMessageLoder("loaderMessage", "#mainContent2");
-                    message.changeMessageLoader("loaderMessage", "Cargando Reporte");
+                    message.addMessageLoder("loaderMessage2", "#mainContent2");
+                    message.changeMessageLoader("loaderMessage2", "Cargando Reporte Almacenado");
                     reports.loadReport().then(function () {
                         console.log("Load Report: ", reports.reportResponse);
                         console.log("Load Report Images: ", reports.reportResponseImages);
@@ -597,12 +597,22 @@ module.exports = {
             let answerText; let answerTextArea; let answerNumber; let answerRadio; let answerCheckbox;
             let answerSelect; let answerMultiSelect; let answerList; let answerTable; let answerImages;
 
-            if (reports.reportTemp.id_report) {
+            if (reports.reportSelected.id_report) {
                 console.log("El reporte ya existe");
+                comments = reports.reportSelected.comments; //Take the comments that the report has
                 workers.getCurrentTime.then(function (currentTimeResponse) {
-                    comments.push({ "author": username, "comment": "El reporte ha sido creado exitosamente en el sistema", "time": JSON.parse(currentTimeResponse).result.localDateTime, "status": status })
+                    switch (status) {
+                        case "SM-Status001":
+                            comments.push({ "author": username, "comment": "El reporte ha sido modificado", "time": JSON.parse(currentTimeResponse).result.localDateTime, "status": status })
+                            break;
+                        case "SM-Status002":
+                            comments.push({ "author": username, "comment": "El reporte ha sido completado", "time": JSON.parse(currentTimeResponse).result.localDateTime, "status": status })
+                            break;
+                    }
                     var answersArr = JSON.parse(answer.userAnswer);
                     reference.userAnswer = answersArr;
+                    reference.launchSaveModal();
+                    reference.changeSaveModalText("Creando Paquetes de Respuestas");
                     answerDate = reference.filterByAnswerType('date');
                     answerDateTime = reference.filterByAnswerType('datetime');
                     answerTime = reference.filterByAnswerType('time');
@@ -619,22 +629,47 @@ module.exports = {
                     answerList = reference.filterByAnswerType('list');
                     answerTable = reference.filterByAnswerType('table');
                     answerImages = reference.filterByAnswerTypeImage();
-                    console.log("Creating the Report");
+                    console.log("Updating the Report");
                     idReport = reports.reportSelected.id_report;
-                    let saveAnswerDate = reference.saveAnswer("date_answer", answerDate, idReport);
-                    let saveAnswerDateTime = reference.saveAnswer("datetime_answer", answerDateTime, idReport);
-                    let saveAnswerTime = reference.saveAnswer("time_answer", answerTime, idReport);
-                    let saveAnswerWeek = reference.saveAnswer("week_answer", answerWeek, idReport);
-                    let saveAnswerMonth = reference.saveAnswer("month_answer", answerMonth, idReport);
-                    let saveAnswerText = reference.saveAnswer("text_answer", answerText, idReport);
-                    let saveAnswerRadio = reference.saveAnswer("radio_answer", answerRadio, idReport);
-                    let saveAnswerCheckBox = reference.saveAnswer("radio_answer", answerCheckbox, idReport);
-                    let saveAnswerSelect = reference.saveAnswer("select_answer", answerSelect, idReport);
-                    let saveAnswerMultiSelect = reference.saveAnswer("multiselect_answer", answerMultiSelect, idReport);
-                    let saveAnswerList = reference.saveAnswer("list_answer", answerList, idReport);
-                    let saveAnswerTable = reference.saveAnswer("table_answer", answerTable, idReport);
-                    Promise.all([saveAnswerDate, saveAnswerDateTime, saveAnswerTime, saveAnswerWeek, saveAnswerMonth, saveAnswerText, saveAnswerRadio, answerCheckbox, saveAnswerSelect, saveAnswerMultiSelect, saveAnswerList, saveAnswerTable, saveAnswerImage_1, saveAnswerImage_2, saveAnswerImage_3, saveAnswerImage_4, saveAnswerImage_5, saveAnswerImage_6, saveAnswerImage_7, saveAnswerImage_8, saveAnswerImage_9, saveAnswerImage_10]).then(values => {
-                        reference.bootstrapPage('page-021');
+                    reference.changeSaveModalText("Abriendo Comunicacion con @OWS");
+                    let updateReportInfo = reference.updateDatamodel(idReport,status,comments);
+                    let saveAnswerDate = reference.saveAnswerReport("date_answer", answerDate, idReport);
+                    let saveAnswerDateTime = reference.saveAnswerReport("datetime_answer", answerDateTime, idReport);
+                    let saveAnswerTime = reference.saveAnswerReport("time_answer", answerTime, idReport);
+                    let saveAnswerWeek = reference.saveAnswerReport("week_answer", answerWeek, idReport);
+                    let saveAnswerMonth = reference.saveAnswerReport("month_answer", answerMonth, idReport);
+                    let saveAnswerText = reference.saveAnswerReport("text_answer", answerText, idReport);
+                    let saveAnswerRadio = reference.saveAnswerReport("radio_answer", answerRadio, idReport);
+                    let saveAnswerCheckBox = reference.saveAnswerReport("radio_answer", answerCheckbox, idReport);
+                    let saveAnswerSelect = reference.saveAnswerReport("select_answer", answerSelect, idReport);
+                    let saveAnswerMultiSelect = reference.saveAnswerReport("multiselect_answer", answerMultiSelect, idReport);
+                    let saveAnswerList = reference.saveAnswerReport("list_answer", answerList, idReport);
+                    let saveAnswerTable = reference.saveAnswerReport("table_answer", answerTable, idReport);
+                    
+                    Promise.all([updateReportInfo,saveAnswerDate, saveAnswerDateTime, saveAnswerTime, saveAnswerWeek, saveAnswerMonth, saveAnswerText, saveAnswerRadio, answerCheckbox, saveAnswerSelect, saveAnswerMultiSelect, saveAnswerList, saveAnswerTable]).then(values => {
+                        let contProImg = 0; let subIdNumber = 0; let subId = "-SB";
+                        let promisesUpdate = [];
+                        do {
+                            console.log(this["answerImages_" + contProImg]);
+                            this["saveAnswerImage_" + contProImg] = reference.saveAnswerReportImagesUpdate("[" + JSON.stringify(this["answerImages_" + contProImg]) + "]", idReport + subId + subIdNumber, idReport);
+                            promisesUpdate.push(this["saveAnswerImage_" + contProImg]);
+                            subIdNumber++;
+                            console.log(contProImg);
+                            contProImg++;
+                        }
+                        while (contProImg <= contImages);
+                        contProImg = 0; subIdNumber = 0;
+                        Promise.all(promisesUpdate).then(function (values){
+                            reference.changeSaveModalText("Se ha guardado exitosamente tu progreso");
+                            reference.removeSaveModal();
+                            if (answer.completed) {
+                                reference.launchAnswerCompletedModal();
+                            }
+                            else {
+                                reference.launchAnswerInCompleteModal(answer.fieldsEmpty);
+                            }
+                            reference.bootstrapPage('page-021');
+                        });
                     });
                 })
             }
@@ -677,8 +712,8 @@ module.exports = {
                     reports.reportSelected = { "id_report": idReport };
                     //reports.reportSelected["id_report"] = contImages ;
                     //message.changeMessageLoader("loaderMessage", "Guardando Reporte");
-                    reference.changeSaveModalText("Abriendo comunicacion con @OWS Datamodel");
                     reference.launchSaveModal();
+                    reference.changeSaveModalText("Abriendo comunicacion con @OWS Datamodel");
                     //idReport = idReportRes;
                     let saveAnswerDate = reference.saveAnswerReport("date_answer", answerDate, idReport);
                     let saveAnswerDateTime = reference.saveAnswerReport("datetime_answer", answerDateTime, idReport);
@@ -726,13 +761,13 @@ module.exports = {
                             message.removeMessageLoader("#mainContent2");
                             reference.changeSaveModalText("Se ha guardado exitosamente tu progreso");
                             reference.removeSaveModal();
-                            reference.bootstrapPage('page-021');
                             if (answer.completed) {
-                                reference.showCompleteModal();
+                                reference.launchAnswerCompletedModal();
                             }
                             else {
-                                reference.showIncompleteModal();
+                                reference.launchAnswerInCompleteModal(answer.fieldsEmpty);
                             }
+                            reference.bootstrapPage('page-021');
                         });
                     });
                 });
@@ -762,13 +797,6 @@ module.exports = {
         return answerFiltered;
 
     },
-    showCompleteModal: () => {
-        $("#notEmptyFields").modal('show');
-    },
-    showIncompleteModal: (emptyFields) => {
-        $("#emptyFieldsText").text(emptyFields);
-        $("#emptyFields").modal('show');
-    },
     saveDatamodel: function (status, comment, project, region, site, supplier, ticket, template, workClient) {
         return new Promise(function (resolve, reject) {
             MessageProcessor.process({
@@ -788,6 +816,22 @@ module.exports = {
                     console.log(data);
                     reports.reportSelected = { "id_report": data.id_report };
                     resolve(data.id_report);
+                }
+            });
+        });
+    },
+    updateDatamodel: function (idReport,status, comment) {
+        return new Promise(function (resolve, reject) {
+            MessageProcessor.process({
+                serviceId: "co_sm_report_update",
+                data: {
+                    "id_report":idReport,
+                    "status": status,
+                    "comments": JSON.stringify(comment)
+                },
+                success: function (data) {
+                    console.log(data);
+                    resolve();
                 }
             });
         });
@@ -864,6 +908,7 @@ module.exports = {
         });
         console.log(reportFiltered);
         reportFiltered = reportFiltered[0];
+        reports.reportSelected = reportFiltered;
         reportFiltered.completed_date = (reportFiltered.completed_date == undefined) ? "" : reportFiltered.completed_date;
         reportFiltered.approval_date = (reportFiltered.approval_date == undefined) ? "" : reportFiltered.approval_date;
         reportFiltered.rejected_date = (reportFiltered.rejected_date == undefined) ? "" : reportFiltered.rejected_date;
@@ -913,6 +958,7 @@ module.exports = {
     enableButtonsDetailReport: function () {
         let reference = this;
         $("#detail_ticket_edit").click(function () {
+            templates.templateSelected = {"template_web":reports.reportSelected.template_web,"template_pdf":reports.reportSelected.template_pdf};
             reference.bootstrapPage('page-005');
         });
         $("#detail_ticket_approve").click(function () {
@@ -947,13 +993,10 @@ module.exports = {
         for (let report of reportsFiltered) {
             $("#allReportsRelatedDiv").append("<div class='col-sm-12 col-md-6 col-lg-6'><div class='pricing-table " + report.status_background + "'><div class=pt-header><div class=plan-pricing><div class=pricing style=font-size:1.5em>" + report.web_template_name + "</div><div class=pricing-type> Ultima Modificacion:" + report.last_modification + "</div></div></div><div class=pt-body><h4>" + report.status_name + "</h4><ul class=plan-detail><li><b>Autor :</b> " + report.author + "<li><b>Ultima Modificacion : </b>" + report.modified_by + "<li><b>Report Id:<br></b>" + report.id_report + "</ul></div><div class=pt-footer><button id='viewReport_" + cont + "' class='btn btn-" + report.status_class + "'type=button>Ver Detalles</button></div></div></div>");
             $("#viewReport_" + cont).on("click", {
-                val: { "id_report": report.id_report, "id_template": report.web_template, "template_name": report.web_template_name }
+                val: { "id_report": report.id_report}
             }, function (event) {
-                reports.reportSelected = { "ticket_id": reports.reportSelected.ticket_id, "id_report": event.data.id_report };
+                reports.reportSelected = { "id_report": event.data.val.id_report };
                 reference.bootstrapPage('page-021');
-                val:
-                templates.templateSelected = { id_template: event.data.val, template_name: template.template_name, template_pdf: template.template_pdf, template_project: template.template_project, template_web: template.template_web }
-
             });
             cont++;
         }
@@ -963,7 +1006,7 @@ module.exports = {
     launchSaveModal: function () {
         let reference = this;
         $("#save_report_modal").remove();
-        $("body").append("<div class='fade modal modal-warning'aria-hidden=true aria-labelledby=myModalLabel1 id=save_report_modal role=dialog style=display:block tabindex=-1><div class=modal-dialog><div class=modal-content><div class=modal-header><h4 class=modal-title id=myModalLabel13>Se esta guardando el reporte </h4></div><div class=modal-body><div style='margin-left:auto;margin-right:auto;display:block'><i style='color:white' class='fa fa-spinner fa-pulse fa-5x'></i></div><h4 style='text-align:center'>Por favor no cierres la aplicacion, estamos guardando tu progreso .</h4><br><h5 style='text-align:center'><b> Estado : </b><div id='save_report_status'></div></h5></div></div></div></div>");
+        $("body").append("<div class='fade modal modal-warning'aria-hidden=true aria-labelledby=myModalLabel1 id=save_report_modal role=dialog style=display:block tabindex=-1><div class=modal-dialog><div class=modal-content><div class=modal-header><h4 class=modal-title id=myModalLabel13>Se esta guardando el reporte </h4></div><div class=modal-body><div class='loader-container text-center color-black'><div><i style='color:black' class='fa fa-spinner fa-pulse fa-3x'></i></div></div><h4 style='text-align:center'>Por favor no cierres la aplicacion, estamos guardando tu progreso .</h4><br><h5 style='text-align:center'><b> Estado : </b><div id='save_report_status'></div></h5></div></div></div></div>");
         $("#save_report_modal").modal({ backdrop: 'static', keyboard: false });
     },
     changeSaveModalText: function (msg) {
@@ -971,6 +1014,17 @@ module.exports = {
     },
     removeSaveModal: function () {
         $("#save_report_modal").modal('hide');
+    },
+    launchAnswerCompletedModal: function () {
+        $("#completedReport").remove();
+        $("body").append("<div class='fade modal modal-info'aria-hidden=true aria-labelledby=myModalLabel1 id=completeReport role=dialog style=display:none tabindex=-1><div class=modal-dialog><div class=modal-content><div class=modal-header><h4 class=modal-title id=myModalLabel8>Todos los campos fueron completados</h4></div><div class=modal-body><img src=https://cdn3.iconfinder.com/data/icons/flat-actions-icons-9/512/Tick_Mark-256.png style=margin-left:auto;margin-right:auto;display:block width=150px><h4 style=text-align:center>Todos los campos obligatorios fueron completados.</h4></div><div class=modal-footer><input class='btn btn-info'data-dismiss=modal type=button value='Guardar el reporte'></div></div></div></div>");
+        $("#completedReport").modal({ backdrop: 'static', keyboard: false });
+    },
+    launchAnswerInCompleteModal: function (emptyFields) {
+        $("#incompleteReport").remove();
+        $("body").append("<div class='fade modal modal-info'aria-hidden=true aria-labelledby=myModalLabel1 id=incompleteReport role=dialog style=display:none tabindex=-1><div class=modal-dialog><div class=modal-content><div class=modal-header><h4 class=modal-title id=myModalLabel7>Algunos campos no fueron completados</h4></div><div class=modal-body><img src=https://cdn2.iconfinder.com/data/icons/circle-icons-1/64/chat-256.png style=margin-left:auto;margin-right:auto;display:block width=150px><h4 style=text-align:center>Todos los campos obligatorios no fueron completados</h4><h5 id=emptyFieldsText style=text-align:center></h5></div><div class=modal-footer><input class='btn btn-info'data-dismiss=modal type=button value=Entendido></div></div></div></div>");
+        $("#emptyFieldsText").text(emptyFields);
+        $("#incompleteReport").modal({ backdrop: 'static', keyboard: false });
     },
     launchApproveModal: function () {
         let reference = this;
