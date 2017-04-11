@@ -1554,12 +1554,12 @@ module.exports = {
         $("#approve_report_btn").click(function () {
             let comment = $("#approve_report_comment").val();
             let comments = reports.reportSelected.comments;
-                workers.getCurrentTime.then(function (currentTimeResponse) {
-                comments.push({ "author": username, "comment": "El reporte fue aprobado - "+comment, "time": JSON.parse(currentTimeResponse).result.localDateTime, "status": 'SM-Status003' })
-                reference.updateDatamodel(reports.reportSelected.id_report,"SM-Status003",comments);
+            workers.getCurrentTime.then(function (currentTimeResponse) {
+                comments.push({ "author": username, "comment": "El reporte fue aprobado - " + comment, "time": JSON.parse(currentTimeResponse).result.localDateTime, "status": 'SM-Status003' })
+                reference.updateDatamodel(reports.reportSelected.id_report, "SM-Status003", comments);
                 $('#approve_report_modal').modal('hide');
                 reference.bootstrapPage("page-021");
-                });
+            });
         });
     },
     launchRejectModal: function () {
@@ -1577,10 +1577,17 @@ module.exports = {
             }
         });
 
-        $("#approve_report_btn").click(function () {
-            $('#approve_report_modal').modal('hide');
-        });
-    },
+        $("#reject_report_btn").click(function () {
+            let comment = $("#reject_report_comment").val();
+            let comments = reports.reportSelected.comments;
+            workers.getCurrentTime.then(function (currentTimeResponse) {
+                comments.push({ "author": username, "comment": "El reporte fue rechazado - " + comment, "time": JSON.parse(currentTimeResponse).result.localDateTime, "status": 'SM-Status004' })
+                reference.updateDatamodel(reports.reportSelected.id_report, "SM-Status004", comments);
+                $('#reject_report_modal').modal('hide');
+                reference.bootstrapPage("page-021");
+            });
+    });
+},
     enableCreateTemplateButtons: function () {
         let reference = this;
         $("#create_template").prop("disabled", false);
@@ -1620,100 +1627,100 @@ module.exports = {
             }
         });
     },
-    getProjects: function () {
-        return new Promise(function (resolve, reject) {
-            var http = new XMLHttpRequest();
-            var url = "https://100l-app.teleows.com/servicecreator/pageservices/service.do?forAccessLog={serviceName:project_item_getList,userId:" + USER_ID + ",tenantId:" + tenantId + "}";
-            var params = "start=0&limit=100&csrfToken=" + csrfToken + "&serviceId=project_item_getList";
-            http.open("POST", url, true);
+getProjects: function () {
+    return new Promise(function (resolve, reject) {
+        var http = new XMLHttpRequest();
+        var url = "https://100l-app.teleows.com/servicecreator/pageservices/service.do?forAccessLog={serviceName:project_item_getList,userId:" + USER_ID + ",tenantId:" + tenantId + "}";
+        var params = "start=0&limit=100&csrfToken=" + csrfToken + "&serviceId=project_item_getList";
+        http.open("POST", url, true);
 
-            //Send the proper header information along with the request
-            http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        //Send the proper header information along with the request
+        http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
-            http.onreadystatechange = function () {//Call a function when the state changes.
-                if (http.readyState == 4 && http.status == 200) {
-                    resolve(JSON.parse(http.response).results);
-                }
+        http.onreadystatechange = function () {//Call a function when the state changes.
+            if (http.readyState == 4 && http.status == 200) {
+                resolve(JSON.parse(http.response).results);
             }
-            http.send(params);
-        });
-    },
-    fillProjects: function (selector, projects) {
-        for (let project of projects) {
-            $("#" + selector).append("<option vaue=" + project.project + ">" + project.project_name + "</option>");
         }
-    },
-    enableEditTemplatesButtons: function () {
-        let reference = this;
-
-        $("#template_logo_input").on('change', function () {
-            console.log("The Image changes");
-            smartEngine.imgTo64(this, "template_logo");
-        });
-
-        $("#template_web_name").add("#template_pdf_name").on('input', function () {
-
-            let template_web_name_length = $("#template_web_name").val().length;
-            let template_pdf_name_length = $("#template_pdf_name").val().length;
-            if (template_web_name_length > 5 & template_pdf_name_length > 5) {
-                $("#update_template").attr("disabled", false);
-            }
-            else {
-                $("#update_template").attr("disabled", true);
-            }
-        });
-        $("#update_template").click(function () {
-            try {
-                let template_id = $("#template_id_template").val();
-                let template_icon = $("#template_logo").attr("src");
-                let template_web_name = ($("#template_web_name").val());
-                let template_pdf_name = $("#template_pdf_name").val();
-                let template_project = $("#template_project").val();
-                let template_web = $("#template_web_route").val();
-                let template_pdf = $("#template_pdf_route").val();
-                if ($("#web_template_file_div > .filelist_cls").attr("id") != undefined) {
-                    let template_web_batchId = $("#web_template_file").val();
-                    let template_web_attachmentId = $("#web_template_file_div > .filelist_cls").attr("id").split('div_')[1];
-                    template_web = "/get?batchId=" + template_web_batchId + "&attachmentId=" + template_web_attachmentId;
-                }
-                if ($("#pdf_template_file_div > .filelist_cls").attr("id") != undefined) {
-                    let template_pdf_batchId = $("#pdf_template_file").val();
-                    let template_pdf_attachmentId = $("#pdf_template_file_div > .filelist_cls").attr("id").split('div_')[1];
-                    template_pdf = "/get?batchId=" + template_pdf_batchId + "&attachmentId=" + template_pdf_attachmentId;
-                }
-                let templateToEdit = {
-                    "id_template": template_id,
-                    "icon_template": template_icon,
-                    "template_name_web": template_web_name,
-                    "template_name_export": template_pdf_name,
-                    "template_project": template_project,
-                    "template_web": template_web,
-                    "template_pdf": template_pdf
-                };
-                templates.updateTemplate(templateToEdit).then(function () {
-                    console.log("The template was created");
-                    $("#web_template_file_div > .filelist_cls").remove();
-                    $("#pdf_template_file_div > .filelist_cls").remove()
-                    reference.bootstrapPage('page-007');
-                });
-            }
-            catch (error) {
-                $("#errorTemplate").modal('show');
-            }
-        });
-    },
-    fillTemplateData: function () {
-        let reference = this;
-        $("#template_logo").attr('src', templates.templateSelected.icon_template.substr(1).slice(0, -1));
-        $("#template_id_template").val(templates.templateSelected.id_template);
-        $("#template_web_name").val(templates.templateSelected.template_name_web);
-        $("#template_pdf_name").val(templates.templateSelected.template_name_web);
-        $("#template_project").val(templates.templateSelected.template_project);
-        $("#template_web_route").val(templates.templateSelected.template_web);
-        $("#template_pdf_route").val(templates.templateSelected.template_pdf);
-        $("#template_web_route_link").attr('href', "https://100l-app.teleows.com/servicecreator/fileservice" + templates.templateSelected.template_web);
-        $("#template_pdf_route_link").attr('href', "https://100l-app.teleows.com/servicecreator/fileservice" + templates.templateSelected.template_pdf);
+        http.send(params);
+    });
+},
+fillProjects: function (selector, projects) {
+    for (let project of projects) {
+        $("#" + selector).append("<option vaue=" + project.project + ">" + project.project_name + "</option>");
     }
+},
+enableEditTemplatesButtons: function () {
+    let reference = this;
+
+    $("#template_logo_input").on('change', function () {
+        console.log("The Image changes");
+        smartEngine.imgTo64(this, "template_logo");
+    });
+
+    $("#template_web_name").add("#template_pdf_name").on('input', function () {
+
+        let template_web_name_length = $("#template_web_name").val().length;
+        let template_pdf_name_length = $("#template_pdf_name").val().length;
+        if (template_web_name_length > 5 & template_pdf_name_length > 5) {
+            $("#update_template").attr("disabled", false);
+        }
+        else {
+            $("#update_template").attr("disabled", true);
+        }
+    });
+    $("#update_template").click(function () {
+        try {
+            let template_id = $("#template_id_template").val();
+            let template_icon = $("#template_logo").attr("src");
+            let template_web_name = ($("#template_web_name").val());
+            let template_pdf_name = $("#template_pdf_name").val();
+            let template_project = $("#template_project").val();
+            let template_web = $("#template_web_route").val();
+            let template_pdf = $("#template_pdf_route").val();
+            if ($("#web_template_file_div > .filelist_cls").attr("id") != undefined) {
+                let template_web_batchId = $("#web_template_file").val();
+                let template_web_attachmentId = $("#web_template_file_div > .filelist_cls").attr("id").split('div_')[1];
+                template_web = "/get?batchId=" + template_web_batchId + "&attachmentId=" + template_web_attachmentId;
+            }
+            if ($("#pdf_template_file_div > .filelist_cls").attr("id") != undefined) {
+                let template_pdf_batchId = $("#pdf_template_file").val();
+                let template_pdf_attachmentId = $("#pdf_template_file_div > .filelist_cls").attr("id").split('div_')[1];
+                template_pdf = "/get?batchId=" + template_pdf_batchId + "&attachmentId=" + template_pdf_attachmentId;
+            }
+            let templateToEdit = {
+                "id_template": template_id,
+                "icon_template": template_icon,
+                "template_name_web": template_web_name,
+                "template_name_export": template_pdf_name,
+                "template_project": template_project,
+                "template_web": template_web,
+                "template_pdf": template_pdf
+            };
+            templates.updateTemplate(templateToEdit).then(function () {
+                console.log("The template was created");
+                $("#web_template_file_div > .filelist_cls").remove();
+                $("#pdf_template_file_div > .filelist_cls").remove()
+                reference.bootstrapPage('page-007');
+            });
+        }
+        catch (error) {
+            $("#errorTemplate").modal('show');
+        }
+    });
+},
+fillTemplateData: function () {
+    let reference = this;
+    $("#template_logo").attr('src', templates.templateSelected.icon_template.substr(1).slice(0, -1));
+    $("#template_id_template").val(templates.templateSelected.id_template);
+    $("#template_web_name").val(templates.templateSelected.template_name_web);
+    $("#template_pdf_name").val(templates.templateSelected.template_name_web);
+    $("#template_project").val(templates.templateSelected.template_project);
+    $("#template_web_route").val(templates.templateSelected.template_web);
+    $("#template_pdf_route").val(templates.templateSelected.template_pdf);
+    $("#template_web_route_link").attr('href', "https://100l-app.teleows.com/servicecreator/fileservice" + templates.templateSelected.template_web);
+    $("#template_pdf_route_link").attr('href', "https://100l-app.teleows.com/servicecreator/fileservice" + templates.templateSelected.template_pdf);
+}
 }
 
 /***/ }),
