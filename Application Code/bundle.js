@@ -511,6 +511,7 @@ module.exports = {
         });
     },
     loadNavBar: function () {
+        $("#_homePage").remove();
         $(function () {
             $(".navbar-expand-toggle").click(function () {
                 $(".app-container").toggleClass("expanded");
@@ -1450,6 +1451,26 @@ module.exports = {
             reference.launchRejectModal();
         });
     },
+    convertToDatatable:function (tableName, filename) {
+            $('#' + tableName).DataTable({
+                dom: 'Bfrtip',
+                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                buttons: [
+                    {extend:'copy',text:'Copiar'}
+                ]
+            });
+
+            //$("tfoot").css("display", "table-header-group");
+
+            $(".dt-buttons").addClass("pull-right");
+
+            $(".dt-buttons > a[aria-controls=" + tableName + "").attr("class", "btn btn-primary")
+
+            $(".dt-buttons > a[aria-controls=" + tableName + "").css("margin-right", "20px");
+
+            $("#" + tableName + "_filter").addClass("pull-left");
+
+        },
     fillDataTableMyReports: function (reportsFiltered) {
         let reference = this;
         message.addMessageLoder("loaderMessage", "#mainContent2");
@@ -1465,6 +1486,7 @@ module.exports = {
                 });
             cont += 1;
         }
+        reference.convertToDatatable("dataTableAllReport","Mis Reportes");
         message.removeMessageLoader("#mainContent2");
     },
     fillBoxesReportsRelated: function (reportsFiltered) {
@@ -1690,128 +1712,182 @@ module.exports = {
  * Load JS hierarchically - loadHighJS
  * bootstrap  
  */
-    "loadHighJS":function () {
-    return new Promise(function (resolve, reject) {
-        let bootstrap = $.ajax({
-            method: "GET",
-            dataType: "script",
-            url: "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+    "loadHighJS": function () {
+        return new Promise(function (resolve, reject) {
+            let bootstrap = $.ajax({
+                method: "GET",
+                dataType: "script",
+                url: "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            });
+            $.when(bootstrap).done(function (bootstrapResponse) {
+                resolve();
+            }).fail(function (error) {
+                reject(error);
+            });
         });
-        $.when(bootstrap).done(function (bootstrapResponse) {
-            resolve();
-        }).fail(function (error) {
-            reject(error);
-        });
-    });
-},
-/**
- * Load JS hierarchically - loadMediumJS
- * Boostrap Switch - JqueryMinHeight - Jquery Datatables
- */
+    },
+    /**
+     * Load JS hierarchically - loadMediumJS
+     * Boostrap Switch - JqueryMinHeight - Jquery Datatables
+     */
     "loadMediumJS": function loadMediumJS() {
-    return new Promise(function (resolve, reject) {
-        let bootstrapSwitch = $.ajax({
-            method: "GET",
-            dataType: "script",
-            url: "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.4/js/bootstrap-switch.min.js"
-        });
-        let jqueryMinHeight = $.ajax({
-            method: "GET",
-            dataType: "script",
-            url: "https://cdnjs.cloudflare.com/ajax/libs/jquery.matchHeight/0.7.2/jquery.matchHeight-min.js"
-        });
-        let jqueryDataTables = $.ajax({
-            method: "GET",
-            dataType: "script",
-            url: "https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"
-        });
-        let pdfmake = $.ajax({
-            method: "GET",
-            dataType: "script",
-            url: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.26/pdfmake.min.js"
-        });
-        $.when(bootstrapSwitch, jqueryMinHeight, jqueryDataTables, pdfmake)
-            .done(function (bootstrapSwitchResponse, jqueryMinHeightResponse, jqueryDataTablesResponse, pdfmakeResponse) {
-                resolve();
-            }).fail(function (error) {
-                reject(error);
-            });
-    });
-},
-/**
- * Load JS hierarchically - LoadLowJS
- * Bootstrap Datatables - buttonsDatatble - vs_fonts
- */
-    "loadLowJS":function () {
-    return new Promise(function (resolve, reject) {
-        let bootstrapDataTables = $.ajax({
-            method: "GET",
-            dataType: "script",
-            url: "https://cdn.datatables.net/1.10.13/js/dataTables.bootstrap.min.js"
-        });
-        let vs_fonts = $.ajax({
-            method: "GET",
-            dataType: "script",
-            url: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.26/vfs_fonts.js"
-        });
-        $.when(vs_fonts)
-            .done(function ( vs_fontsResponse) {
-                resolve();
-            }).fail(function (error) {
-                reject(error);
-            });
-    });
-},
-    "loadLow2JS":function(){
-     return new Promise(function (resolve, reject) {
-        let buttonsDataTables = $.ajax({
-            method: "GET",
-            dataType: "script",
-            url: "https://cdn.datatables.net/buttons/1.2.4/js/dataTables.buttons.min.js"
-        });
-        let jszip = $.ajax({
-            method: "GET",
-            dataType: "script",
-            url: "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"
-        });
-        let buttonsHTML5 = $.ajax({
-            method: "GET",
-            dataType: "script",
-            url: "https://cdn.datatables.net/buttons/1.2.4/js/buttons.html5.min.js"
-        });
-
-        $.when(buttonsDataTables, jszip, buttonsHTML5)
-            .done(function (buttonsDataTablesResponse, jszipResponse, buttonsHTML5) {
-                resolve();
-            }).fail(function (error) {
-                reject(error);
-            });
-    });
-},
-/**
- * Load Custom JS - OWS JS Datamodel
- * Smart Engine - Application
- */
-    "loadcustomJS":function(){
-    return new Promise(function(resolve,reject){
-        let smart_Engine = $.ajax({
+        return new Promise(function (resolve, reject) {
+            let bootstrapSwitch = $.ajax({
                 method: "GET",
                 dataType: "script",
-                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=d63a70c5-afde-4275-840a-9c1de5003be3&attachmentId=88381a7d-39ae-4221-9813-f4855faae131"
+                url: "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.4/js/bootstrap-switch.min.js"
             });
-            let app = $.ajax({
+            let jqueryMinHeight = $.ajax({
                 method: "GET",
                 dataType: "script",
-                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=5b674633-91a7-4b71-ba90-88431847ae47&attachmentId=655573"
+                url: "https://cdnjs.cloudflare.com/ajax/libs/jquery.matchHeight/0.7.2/jquery.matchHeight-min.js"
             });
-            $.when(smart_Engine, app)
-                .done(function (smart_EngineResponse, appResponse) {
+            /*let jqueryDataTables = $.ajax({
+                method: "GET",
+                dataType: "script",
+                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=20cb4446-a397-434d-bf86-02ca0d83618c&attachmentId=3140a49c-5b12-4641-8c00-d249346fcb7c"
+            });*/
+            let pdfmake = $.ajax({
+                method: "GET",
+                dataType: "script",
+                url: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.26/pdfmake.min.js"
+            });
+            $.when(bootstrapSwitch, jqueryMinHeight, /*jqueryDataTables,*/ pdfmake)
+                .done(function (bootstrapSwitchResponse, jqueryMinHeightResponse, /*jqueryDataTablesResponse,*/ pdfmakeResponse) {
                     resolve();
                 }).fail(function (error) {
                     reject(error);
                 });
-    });
-}
+        });
+    },
+    /**
+     * Load JS hierarchically - LoadLowJS
+     * Bootstrap Datatables - buttonsDatatble - vs_fonts
+     */
+    "loadLowJS": function () {
+        return new Promise(function (resolve, reject) {
+            let bootstrapDataTables = $.ajax({
+                method: "GET",
+                dataType: "script",
+                url: "https://cdn.datatables.net/1.10.13/js/dataTables.bootstrap.min.js"
+            });
+            let vs_fonts = $.ajax({
+                method: "GET",
+                dataType: "script",
+                url: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.26/vfs_fonts.js"
+            });
+            $.when(bootstrapDataTables, vs_fonts)
+                .done(function (bootstrapDataTablesResponse, vs_fontsResponse) {
+                    resolve();
+                }).fail(function (error) {
+                    reject(error);
+                });
+        });
+    }, "loadPlugins": function () {
+        return new Promise(function (resolve, reject) {
+            let jqueryDataTables = $.ajax({
+                method: "GET",
+                dataType: "script",
+                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=20cb4446-a397-434d-bf86-02ca0d83618c&attachmentId=3140a49c-5b12-4641-8c00-d249346fcb7c"
+            });
+
+            $.when(jqueryDataTables)
+                .done(function (jqueryDataTablesResponse) {
+                    console.log("Jquery Datatables was loaded");
+                    let buttonsDataTables = $.ajax({
+                        method: "GET",
+                        dataType: "script",
+                        url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=80ec9329-9477-4da7-a497-d89a79b0d94d&attachmentId=614a3478-6f9d-4f33-9b81-202dfca8363c"
+                    });
+
+                    $.when(buttonsDataTables)
+                        .done(function (buttonsDataTablesReponse) {
+                            console.log("Buttons Datatables was loaded");
+                            let buttonsHTML5 = $.ajax({
+                                method: "GET",
+                                dataType: "script",
+                                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=15cd3450-8033-4cdb-8ec8-b25497efba12&attachmentId=466f53d5-55c0-4810-aa33-46c65b4790b3"
+                            });
+                            $.when(buttonsHTML5)
+                                .done(function (buttonsHTML5Reponse) {
+
+                                    console.log("Buttons HML5 was loaded");
+                                    let jsZip = $.ajax({
+                                        method: "GET",
+                                        dataType: "script",
+                                        url: "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.js"
+                                    });
+
+                                    $.when(jsZip)
+                                        .done(function (jsZipReponse) {
+                                            console.log("Js Zip  was loaded");
+                                            resolve();
+
+                                        }).fail(function (error) {
+                                            console.log(error);
+                                            reject(error);
+                                        });
+                                }).fail(function (error) {
+                                    console.log(error);
+                                    reject(error);
+                                });
+                        }).fail(function (error) {
+                            console.log(error);
+                            reject(error);
+                        });
+                }).fail(function (error) {
+                    console.log(error);
+                    reject(error);
+                });
+        });
+    },
+    "loadPlugins_1": function () {
+        return new Promise(function (resolve, reject) {
+            let buttonsDataTables = $.ajax({
+                method: "GET",
+                dataType: "script",
+                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=80ec9329-9477-4da7-a497-d89a79b0d94d&attachmentId=614a3478-6f9d-4f33-9b81-202dfca8363c"
+            })
+            $.when(buttonsDataTables)
+                .done(function (buttonsDataTablesResponse) {
+                    resolve();
+                }).fail(function (error) {
+                    reject(error);
+                });
+        })
+    },
+    "loadPlugins_2": function () {
+        return new Promise(function (resolve, reject) {
+            let buttonsHTML5 = $.ajax({
+                method: "GET",
+                dataType: "script",
+                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=15cd3450-8033-4cdb-8ec8-b25497efba12&attachmentId=466f53d5-55c0-4810-aa33-46c65b4790b3"
+            });
+
+            $.when(buttonsHTML5)
+                .done(function (buttonsHTML5) {
+                    resolve();
+                }).fail(function (error) {
+                    reject(error);
+                });
+        });
+    },
+    "loadPlugins_3": function () {
+        return new Promise(function (resolve, reject) {
+            let jszip = $.ajax({
+                method: "GET",
+                dataType: "script",
+                url: "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.js"
+            });
+
+            $.when(jszip)
+                .done(function (jszipResponse) {
+                    resolve();
+                }).fail(function (error) {
+                    reject(error);
+                });
+        });
+    }
 }
 
 /***/ }),
@@ -1892,14 +1968,14 @@ function loadCSS() {
             url: "https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css"
         });
 
-        $.when(bootstrap, animate, select2, buttonsDataTables, bootstrapDataTables, jqueryDataTables)
-            .done(function (bootstrapRespond, animateRespond, select2Respond, buttonsDataTablesRespond, bootstrapDataTablesRespond, jqueryDataTablesRespond) {
+        $.when(bootstrap, animate, select2 ,buttonsDataTables, bootstrapDataTables, jqueryDataTables)
+            .done(function (bootstrapRespond, animateRespond, select2Respond ,buttonsDataTablesRespond, bootstrapDataTablesRespond, jqueryDataTablesRespond ) {
 
                 $('<style />').text(bootstrapRespond).appendTo($('head'));
                 $('<style />').text(animateRespond).appendTo($('head'));
                 $('<style />').text(select2Respond).appendTo($('head'));
                 $('<style />').text(buttonsDataTablesRespond).appendTo($('head'));
-                //$('<style />').text(bootstrapDataTablesRespond).appendTo($('head'));
+                $('<style />').text(bootstrapDataTablesRespond).appendTo($('head'));
                 $('<style />').text(jqueryDataTablesRespond).appendTo($('head'));
                 resolve();
                 console.log("loadCssLibs has Loaded");
@@ -3444,6 +3520,7 @@ $(function () {
         onInit: function () {
             let reference = this;
             $("link").remove();
+            $("script").remove();
             workers.getCurrentTime.then(function (data) {
                 reference.currentTime = data;
                 console.log("CurrentTime" + reference.currentTime);
@@ -3472,26 +3549,36 @@ $(function () {
                 return jsLibs.loadHighJS();
             }).then(function () {
                 console.log("High JS were loaded");
-                message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 1/4 han sido cargadas");
+                message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 1/6 han sido cargadas");
                 return jsLibs.loadMediumJS();
-            }).then(function () {
-                console.log("JS Medium Libs were loaded");
-                message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 2/4 han sido cargadas");
-                return jsLibs.loadLowJS();
-            }).then(function () {
-                console.log("JS Low Libs were loaded");
-                message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 3/4 han sido cargadas");
-                return jsLibs.loadLow2JS();
             })/*.then(function () {
-                console.log("JS Low 2 were loaded");
-                message.changeMessageLoader("pageLoaderContent", "Js Low 2  were loaded");
-                return jsLibs.loadcustomJS();
+                console.log("JS Medium Libs were loaded");
+                message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 2/6 han sido cargadas");
+                return jsLibs.loadLowJS();
             })*/
-                .then(function () {
-                    console.log("JS Load custom were loaded");
-                    message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 4/4 han sido cargadas");
-                    return pages.loadAllPages();
-                }).then(function (data) {
+            
+            .then(function () {
+                console.log("JS Medium Libs were loaded");
+                message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 2/6 han sido cargadas");
+                return jsLibs.loadPlugins();
+            })
+            /*.then(function () {
+                console.log("JS Load Plugins 1 were loaded");
+                message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 3/6 han sido cargadas");
+                return jsLibs.loadPlugins_1();
+            }).then(function () {
+                console.log("JS Load Plugins 2 were loaded");
+                message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 4/6 han sido cargadas");
+                return jsLibs.loadPlugins_2();
+            }).then(function () {
+                console.log("JS Load Plugins 3 were loaded");
+                message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 5/6 han sido cargadas");
+                return jsLibs.loadPlugins_3();
+            })*/.then(function () {
+                console.log("JS Low 2 were loaded");
+                message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 6/6 han sido cargadas");
+                return pages.loadAllPages();
+            }).then(function (data) {
                     message.changeMessageLoader("pageLoaderContent", "Las Paginas han sido cargadas");
                     pages.bootstrapMenu("page-022").then(function () {
                         return workers.getUserGroups;
@@ -3695,7 +3782,7 @@ $(function () {
 
             navigator.geolocation.getCurrentPosition(success, error, options);
         },
-        launchErrorPosition:function(){
+        launchErrorPosition: function () {
             $("#errorPosition").remove();
             $("body").append("<div class='fade modal modal-danger'aria-hidden=true aria-labelledby=myModalLabel2 id=errorPosition role=dialog style=display:block tabindex=-1><div class=modal-dialog><div class=modal-content><div class=modal-header><h4 class=modal-title id=myModalLabel13>No has permitido el acceso a tu localizacion </h4></div><div class=modal-body><img src='https://cdn4.iconfinder.com/data/icons/flatified/128/map.png' style=margin-left:auto;margin-right:auto;display:block width=150px><h4 style=text-align:center> Por favor, configura tu dispositivo correctamente </h4><h5 style=text-align:center>El accesor a la localizacion ha sido bloqueado <br> <b> Solucion> </b> Ingresa a la configuracion del navegador y modifica los permisos de localizacion </h5><div class='text-center'></div></div></div></div></div>");
             $("#errorPosition").modal({ backdrop: 'static', keyboard: false });

@@ -29,6 +29,7 @@ module.exports = {
         });
     },
     loadNavBar: function () {
+        $("#_homePage").remove();
         $(function () {
             $(".navbar-expand-toggle").click(function () {
                 $(".app-container").toggleClass("expanded");
@@ -968,6 +969,26 @@ module.exports = {
             reference.launchRejectModal();
         });
     },
+    convertToDatatable:function (tableName, filename) {
+            $('#' + tableName).DataTable({
+                dom: 'Bfrtip',
+                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                buttons: [
+                    {extend:'copy',text:'Copiar'}
+                ]
+            });
+
+            //$("tfoot").css("display", "table-header-group");
+
+            $(".dt-buttons").addClass("pull-right");
+
+            $(".dt-buttons > a[aria-controls=" + tableName + "").attr("class", "btn btn-primary")
+
+            $(".dt-buttons > a[aria-controls=" + tableName + "").css("margin-right", "20px");
+
+            $("#" + tableName + "_filter").addClass("pull-left");
+
+        },
     fillDataTableMyReports: function (reportsFiltered) {
         let reference = this;
         message.addMessageLoder("loaderMessage", "#mainContent2");
@@ -983,6 +1004,7 @@ module.exports = {
                 });
             cont += 1;
         }
+        reference.convertToDatatable("dataTableAllReport","Mis Reportes");
         message.removeMessageLoader("#mainContent2");
     },
     fillBoxesReportsRelated: function (reportsFiltered) {

@@ -72,14 +72,14 @@ function loadCSS() {
             url: "https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css"
         });
 
-        $.when(bootstrap, animate, select2, buttonsDataTables, bootstrapDataTables, jqueryDataTables)
-            .done(function (bootstrapRespond, animateRespond, select2Respond, buttonsDataTablesRespond, bootstrapDataTablesRespond, jqueryDataTablesRespond) {
+        $.when(bootstrap, animate, select2 ,buttonsDataTables, bootstrapDataTables, jqueryDataTables)
+            .done(function (bootstrapRespond, animateRespond, select2Respond ,buttonsDataTablesRespond, bootstrapDataTablesRespond, jqueryDataTablesRespond ) {
 
                 $('<style />').text(bootstrapRespond).appendTo($('head'));
                 $('<style />').text(animateRespond).appendTo($('head'));
                 $('<style />').text(select2Respond).appendTo($('head'));
                 $('<style />').text(buttonsDataTablesRespond).appendTo($('head'));
-                //$('<style />').text(bootstrapDataTablesRespond).appendTo($('head'));
+                $('<style />').text(bootstrapDataTablesRespond).appendTo($('head'));
                 $('<style />').text(jqueryDataTablesRespond).appendTo($('head'));
                 resolve();
                 console.log("loadCssLibs has Loaded");

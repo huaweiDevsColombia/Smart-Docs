@@ -9,6 +9,7 @@ $(function () {
         onInit: function () {
             let reference = this;
             $("link").remove();
+            $("script").remove();
             workers.getCurrentTime.then(function (data) {
                 reference.currentTime = data;
                 console.log("CurrentTime" + reference.currentTime);
@@ -37,26 +38,36 @@ $(function () {
                 return jsLibs.loadHighJS();
             }).then(function () {
                 console.log("High JS were loaded");
-                message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 1/4 han sido cargadas");
+                message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 1/6 han sido cargadas");
                 return jsLibs.loadMediumJS();
-            }).then(function () {
-                console.log("JS Medium Libs were loaded");
-                message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 2/4 han sido cargadas");
-                return jsLibs.loadLowJS();
-            }).then(function () {
-                console.log("JS Low Libs were loaded");
-                message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 3/4 han sido cargadas");
-                return jsLibs.loadLow2JS();
             })/*.then(function () {
-                console.log("JS Low 2 were loaded");
-                message.changeMessageLoader("pageLoaderContent", "Js Low 2  were loaded");
-                return jsLibs.loadcustomJS();
+                console.log("JS Medium Libs were loaded");
+                message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 2/6 han sido cargadas");
+                return jsLibs.loadLowJS();
             })*/
-                .then(function () {
-                    console.log("JS Load custom were loaded");
-                    message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 4/4 han sido cargadas");
-                    return pages.loadAllPages();
-                }).then(function (data) {
+            
+            .then(function () {
+                console.log("JS Medium Libs were loaded");
+                message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 2/6 han sido cargadas");
+                return jsLibs.loadPlugins();
+            })
+            /*.then(function () {
+                console.log("JS Load Plugins 1 were loaded");
+                message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 3/6 han sido cargadas");
+                return jsLibs.loadPlugins_1();
+            }).then(function () {
+                console.log("JS Load Plugins 2 were loaded");
+                message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 4/6 han sido cargadas");
+                return jsLibs.loadPlugins_2();
+            }).then(function () {
+                console.log("JS Load Plugins 3 were loaded");
+                message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 5/6 han sido cargadas");
+                return jsLibs.loadPlugins_3();
+            })*/.then(function () {
+                console.log("JS Low 2 were loaded");
+                message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 6/6 han sido cargadas");
+                return pages.loadAllPages();
+            }).then(function (data) {
                     message.changeMessageLoader("pageLoaderContent", "Las Paginas han sido cargadas");
                     pages.bootstrapMenu("page-022").then(function () {
                         return workers.getUserGroups;
@@ -260,7 +271,7 @@ $(function () {
 
             navigator.geolocation.getCurrentPosition(success, error, options);
         },
-        launchErrorPosition:function(){
+        launchErrorPosition: function () {
             $("#errorPosition").remove();
             $("body").append("<div class='fade modal modal-danger'aria-hidden=true aria-labelledby=myModalLabel2 id=errorPosition role=dialog style=display:block tabindex=-1><div class=modal-dialog><div class=modal-content><div class=modal-header><h4 class=modal-title id=myModalLabel13>No has permitido el acceso a tu localizacion </h4></div><div class=modal-body><img src='https://cdn4.iconfinder.com/data/icons/flatified/128/map.png' style=margin-left:auto;margin-right:auto;display:block width=150px><h4 style=text-align:center> Por favor, configura tu dispositivo correctamente </h4><h5 style=text-align:center>El accesor a la localizacion ha sido bloqueado <br> <b> Solucion> </b> Ingresa a la configuracion del navegador y modifica los permisos de localizacion </h5><div class='text-center'></div></div></div></div></div>");
             $("#errorPosition").modal({ backdrop: 'static', keyboard: false });
