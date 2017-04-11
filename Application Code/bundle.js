@@ -1115,7 +1115,7 @@ module.exports = {
                     console.log("Updating the Report");
                     idReport = reports.reportSelected.id_report;
                     reference.changeSaveModalText("Abriendo Comunicacion con @OWS");
-                    let updateReportInfo = reference.updateDatamodel(idReport,status,comments);
+                    let updateReportInfo = reference.updateDatamodel(idReport, status, comments);
                     let saveAnswerDate = reference.saveAnswerReport("date_answer", answerDate, idReport);
                     let saveAnswerDateTime = reference.saveAnswerReport("datetime_answer", answerDateTime, idReport);
                     let saveAnswerTime = reference.saveAnswerReport("time_answer", answerTime, idReport);
@@ -1128,8 +1128,8 @@ module.exports = {
                     let saveAnswerMultiSelect = reference.saveAnswerReport("multiselect_answer", answerMultiSelect, idReport);
                     let saveAnswerList = reference.saveAnswerReport("list_answer", answerList, idReport);
                     let saveAnswerTable = reference.saveAnswerReport("table_answer", answerTable, idReport);
-                    
-                    Promise.all([updateReportInfo,saveAnswerDate, saveAnswerDateTime, saveAnswerTime, saveAnswerWeek, saveAnswerMonth, saveAnswerText, saveAnswerRadio, answerCheckbox, saveAnswerSelect, saveAnswerMultiSelect, saveAnswerList, saveAnswerTable]).then(values => {
+
+                    Promise.all([updateReportInfo, saveAnswerDate, saveAnswerDateTime, saveAnswerTime, saveAnswerWeek, saveAnswerMonth, saveAnswerText, saveAnswerRadio, answerCheckbox, saveAnswerSelect, saveAnswerMultiSelect, saveAnswerList, saveAnswerTable]).then(values => {
                         let contProImg = 0; let subIdNumber = 0; let subId = "-SB";
                         let promisesUpdate = [];
                         do {
@@ -1142,7 +1142,7 @@ module.exports = {
                         }
                         while (contProImg <= contImages);
                         contProImg = 0; subIdNumber = 0;
-                        Promise.all(promisesUpdate).then(function (values){
+                        Promise.all(promisesUpdate).then(function (values) {
                             reference.changeSaveModalText("Se ha guardado exitosamente tu progreso");
                             reference.removeSaveModal();
                             if (answer.completed) {
@@ -1303,12 +1303,12 @@ module.exports = {
             });
         });
     },
-    updateDatamodel: function (idReport,status, comment) {
+    updateDatamodel: function (idReport, status, comment) {
         return new Promise(function (resolve, reject) {
             MessageProcessor.process({
                 serviceId: "co_sm_report_update",
                 data: {
-                    "id_report":idReport,
+                    "id_report": idReport,
                     "status": status,
                     "comments": JSON.stringify(comment)
                 },
@@ -1380,7 +1380,6 @@ module.exports = {
         let reference = this;
         message.addMessageLoder("loaderMessage", "#mainContent2");
         message.changeMessageLoader("loaderMessage", "Cargando Detalles del Reporte");
-        reference.enableButtonsDetailReport();
         let reportSelected = reports.reportSelected;
         let allReports = reports.allReports;
         console.log(allReports);
@@ -1392,6 +1391,7 @@ module.exports = {
         console.log(reportFiltered);
         reportFiltered = reportFiltered[0];
         reports.reportSelected = reportFiltered;
+        reference.enableButtonsDetailReport();
         reportFiltered.completed_date = (reportFiltered.completed_date == undefined) ? "" : reportFiltered.completed_date;
         reportFiltered.approval_date = (reportFiltered.approval_date == undefined) ? "" : reportFiltered.approval_date;
         reportFiltered.rejected_date = (reportFiltered.rejected_date == undefined) ? "" : reportFiltered.rejected_date;
@@ -1441,36 +1441,42 @@ module.exports = {
     enableButtonsDetailReport: function () {
         let reference = this;
         $("#detail_ticket_edit").click(function () {
-            templates.templateSelected = {"template_web":reports.reportSelected.template_web,"template_pdf":reports.reportSelected.template_pdf};
+            templates.templateSelected = { "template_web": reports.reportSelected.template_web, "template_pdf": reports.reportSelected.template_pdf };
             reference.bootstrapPage('page-005');
         });
-        $("#detail_ticket_approve").click(function () {
-            reference.launchApproveModal();
-        });
-        $("#detail_ticket_reject").click(function () {
-            reference.launchRejectModal();
-        });
-    },
-    convertToDatatable:function (tableName, filename) {
-            $('#' + tableName).DataTable({
-                dom: 'Bfrtip',
-                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
-                buttons: [
-                    {extend:'copy',text:'Copiar'}
-                ]
+        if (reports.reportSelected.status == 'SM-Status002' && reference.userGroup == 'Quality') {
+            $("#detail_ticket_approve").click(function () {
+                reference.launchApproveModal();
             });
+            $("#detail_ticket_reject").click(function () {
+                reference.launchRejectModal();
+            });
+        }
+        else {
+            $("#detail_ticket_approve").remove();
+            $("#detail_ticket_reject").remove();
+        }
+    },
+    convertToDatatable: function (tableName, filename) {
+        $('#' + tableName).DataTable({
+            dom: 'Bfrtip',
+            lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+            buttons: [
+                { extend: 'copy', text: 'Copiar' }
+            ]
+        });
 
-            //$("tfoot").css("display", "table-header-group");
+        //$("tfoot").css("display", "table-header-group");
 
-            $(".dt-buttons").addClass("pull-right");
+        $(".dt-buttons").addClass("pull-right");
 
-            $(".dt-buttons > a[aria-controls=" + tableName + "").attr("class", "btn btn-primary")
+        $(".dt-buttons > a[aria-controls=" + tableName + "").attr("class", "btn btn-primary")
 
-            $(".dt-buttons > a[aria-controls=" + tableName + "").css("margin-right", "20px");
+        $(".dt-buttons > a[aria-controls=" + tableName + "").css("margin-right", "20px");
 
-            $("#" + tableName + "_filter").addClass("pull-left");
+        $("#" + tableName + "_filter").addClass("pull-left");
 
-        },
+    },
     fillDataTableMyReports: function (reportsFiltered) {
         let reference = this;
         message.addMessageLoder("loaderMessage", "#mainContent2");
@@ -1486,7 +1492,7 @@ module.exports = {
                 });
             cont += 1;
         }
-        reference.convertToDatatable("dataTableAllReport","Mis Reportes");
+        reference.convertToDatatable("dataTableAllReport", "Mis Reportes");
         message.removeMessageLoader("#mainContent2");
     },
     fillBoxesReportsRelated: function (reportsFiltered) {
@@ -1497,7 +1503,7 @@ module.exports = {
         for (let report of reportsFiltered) {
             $("#allReportsRelatedDiv").append("<div class='col-sm-12 col-md-6 col-lg-6'><div class='pricing-table " + report.status_background + "'><div class=pt-header><div class=plan-pricing><div class=pricing style=font-size:1.5em>" + report.web_template_name + "</div><div class=pricing-type> Ultima Modificacion:" + report.last_modification + "</div></div></div><div class=pt-body><h4>" + report.status_name + "</h4><ul class=plan-detail><li><b>Autor :</b> " + report.author + "<li><b>Ultima Modificacion : </b>" + report.modified_by + "<li><b>Report Id:<br></b>" + report.id_report + "</ul></div><div class=pt-footer><button id='viewReport_" + cont + "' class='btn btn-" + report.status_class + "'type=button>Ver Detalles</button></div></div></div>");
             $("#viewReport_" + cont).on("click", {
-                val: { "id_report": report.id_report}
+                val: { "id_report": report.id_report }
             }, function (event) {
                 reports.reportSelected = { "id_report": event.data.val.id_report };
                 reference.bootstrapPage('page-021');
@@ -1546,7 +1552,14 @@ module.exports = {
         });
 
         $("#approve_report_btn").click(function () {
-            $('#approve_report_modal').modal('hide');
+            let comment = $("#approve_report_comment").val();
+            let comments = reports.reportSelected.comments;
+                workers.getCurrentTime.then(function (currentTimeResponse) {
+                comments.push({ "author": username, "comment": "El reporte fue aprobado - "+comment, "time": JSON.parse(currentTimeResponse).result.localDateTime, "status": 'SM-Status003' })
+                reference.updateDatamodel(reports.reportSelected.id_report,"SM-Status003",comments);
+                $('#approve_report_modal').modal('hide');
+                reference.bootstrapPage("page-021");
+                });
         });
     },
     launchRejectModal: function () {
