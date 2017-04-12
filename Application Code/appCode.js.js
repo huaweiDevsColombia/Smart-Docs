@@ -1078,15 +1078,15 @@
         loadFormUploadEvent: function (action) {
             let reference = this;
             reference.loadWorkerCurrentTime(false);
-            $("#btnEnviar").click(function () {  
-				console.log("Click on subir archivo");
-                  setTimeout(function(){ 
+            $("#btnEnviar").click(function () {
+                console.log("Click on subir archivo");
+                setTimeout(function () {
                     console.log("Wait 3 Seconds");
-                    if(screen.width < 576){
-                      $(".ym-body  > iframe").attr("style","position:absolute;width:45%;height:100%;top:0;left:200px;opacity:1;");
-                    } 
-                  }, 3000);
-				});
+                    if (screen.width < 576) {
+                        $(".ym-body  > iframe").attr("style", "position:absolute;width:45%;height:100%;top:0;left:200px;opacity:1;");
+                    }
+                }, 3000);
+            });
             var timer = setInterval(function () {
                 let batchId = $("#FileInput1").val();
                 console.log("Value BatchId:" + batchId);
@@ -1985,46 +1985,60 @@
             $('#' + tableName).DataTable({
                 dom: 'Bfrtip',
                 lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
-                buttons: [{
-                    extend: 'excelHtml5',
-                    responsive: true,
-                    text: '<i class="fa fa-file-excel-o" aria-hidden="true"> Excel </i>',
-                    title: filename,
-                    customize: function (xlsx) {
-                        var sheet = xlsx.xl.worksheets['sheet1.xml'];
-                        $('row:first c', sheet).attr('s', '42');
-                        var lastCol = sheet.getElementsByTagName('col').length - 1;
-                        var colRange = createCellPos(lastCol) + '1';
-                        //Has to be done this way to avoid creation of unwanted namespace atributes.
-                        var afSerializer = new XMLSerializer();
-                        var xmlString = afSerializer.serializeToString(sheet);
-                        var parser = new DOMParser();
-                        var xmlDoc = parser.parseFromString(xmlString, 'text/xml');
-                        var xlsxFilter = xmlDoc.createElementNS('http://schemas.openxmlformats.org/spreadsheetml/2006/main', 'autoFilter');
-                        var filterAttr = xmlDoc.createAttribute('ref');
-                        filterAttr.value = 'A1:' + colRange;
-                        xlsxFilter.setAttributeNode(filterAttr);
-                        sheet.getElementsByTagName('worksheet')[0].appendChild(xlsxFilter);
-                    }
-                },
-                {
-                    extend: 'copy',
-                    text: '<i class="fa fa-clipboard" aria-hidden="true"> Copiar </i>',
-                    exportOptions: {
-                        modifier: {
-                            page: 'current'
+                buttons: [
+                    {
+                        extend: 'excelHtml5',
+                        responsive: true,
+                        text: '<i class="fa fa-file-excel-o" aria-hidden="true"> Excel </i>',
+                        title: filename,
+                        key: {
+                            key: 'e',
+                            altkey: true
+                        },
+                        customize: function (xlsx) {
+                            var sheet = xlsx.xl.worksheets['sheet1.xml'];
+                            $('row:first c', sheet).attr('s', '42');
+                            var lastCol = sheet.getElementsByTagName('col').length - 1;
+                            var colRange = createCellPos(lastCol) + '1';
+                            //Has to be done this way to avoid creation of unwanted namespace atributes.
+                            var afSerializer = new XMLSerializer();
+                            var xmlString = afSerializer.serializeToString(sheet);
+                            var parser = new DOMParser();
+                            var xmlDoc = parser.parseFromString(xmlString, 'text/xml');
+                            var xlsxFilter = xmlDoc.createElementNS('http://schemas.openxmlformats.org/spreadsheetml/2006/main', 'autoFilter');
+                            var filterAttr = xmlDoc.createAttribute('ref');
+                            filterAttr.value = 'A1:' + colRange;
+                            xlsxFilter.setAttributeNode(filterAttr);
+                            sheet.getElementsByTagName('worksheet')[0].appendChild(xlsxFilter);
                         }
-                    }
-                }]
+                    },
+                    {
+                        extend: 'copy',
+                        text: '<i class="fa fa-clipboard" aria-hidden="true"> Copiar </i>',
+                        key: {
+                            key: 'p',
+                            altkey: true
+                        },
+                        exportOptions: {
+                            modifier: {
+                                page: 'current'
+                            }
+                        }
+                    },
+                    {
+                        extend: 'print',
+                        text: "<i class='fa fa-print' aria-hidden='true'> Imprimir </i>",
+                        key: {
+                            key: 'p',
+                            altkey: true
+                        }
+                    }]
             });
-
-
             function createCellPos(n) {
                 var ordA = 'A'.charCodeAt(0);
                 var ordZ = 'Z'.charCodeAt(0);
                 var len = ordZ - ordA + 1;
                 var s = "";
-
                 while (n >= 0) {
                     s = String.fromCharCode(n % len + ordA) + s;
                     n = Math.floor(n / len) - 1;
@@ -2032,22 +2046,19 @@
 
                 return s;
             }
-
             // Setup - add a text input to each footer cell
-            $('#' + tableName + ' tfoot th').each(function () {
+            /*$('#' + tableName + ' tfoot th').each(function () {
                 var title = $(this).text();
                 if (title != ".") {
                     $(this).html('<input type="text" id="' + title.replace(/\s/g, "") + 'All" class="form-control" placeholder="Buscar ' + title + '" />');
                 }
             });
-
+            */
             // DataTable
             var table = $('#' + tableName).DataTable();
-
             // Apply the search
             table.columns().every(function () {
                 var that = this;
-
                 $('input', this.footer()).on('keyup change', function () {
                     if (that.search() !== this.value) {
                         that
@@ -2058,7 +2069,7 @@
 
             });
 
-            $("tfoot").css("display", "table-header-group");
+            $("tfoot").css("display", "table-footer-group");
 
             $(".dt-buttons").addClass("pull-right");
 

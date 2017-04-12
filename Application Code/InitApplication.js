@@ -49,7 +49,7 @@ $(function () {
             .then(function () {
                 console.log("JS Medium Libs were loaded");
                 message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 2/6 han sido cargadas");
-                return jsLibs.loadPlugins();
+                return jsLibs.loadDataTables();
             })
             /*.then(function () {
                 console.log("JS Load Plugins 1 were loaded");

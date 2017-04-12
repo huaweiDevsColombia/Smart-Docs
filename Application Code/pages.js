@@ -958,7 +958,7 @@ module.exports = {
     },
     enableButtonsDetailReport: function () {
         let reference = this;
-        
+
         $("#detail_ticket_edit").click(function () {
             templates.templateSelected = { "template_web": reports.reportSelected.template_web, "template_pdf": reports.reportSelected.template_pdf };
             reference.bootstrapPage('page-005');
@@ -982,11 +982,91 @@ module.exports = {
             dom: 'Bfrtip',
             lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
             buttons: [
-                { extend: 'copy', text: 'Copiar' }
-            ]
+                {
+                    extend: 'excelHtml5',
+                    responsive: true,
+                    text: '<i class="fa fa-file-excel-o" aria-hidden="true"> Excel </i>',
+                    title: filename,
+                    key: {
+                        key: 'e',
+                        altkey: true
+                    },
+                    customize: function (xlsx) {
+                        var sheet = xlsx.xl.worksheets['sheet1.xml'];
+                        $('row:first c', sheet).attr('s', '42');
+                        var lastCol = sheet.getElementsByTagName('col').length - 1;
+                        var colRange = createCellPos(lastCol) + '1';
+                        //Has to be done this way to avoid creation of unwanted namespace atributes.
+                        var afSerializer = new XMLSerializer();
+                        var xmlString = afSerializer.serializeToString(sheet);
+                        var parser = new DOMParser();
+                        var xmlDoc = parser.parseFromString(xmlString, 'text/xml');
+                        var xlsxFilter = xmlDoc.createElementNS('http://schemas.openxmlformats.org/spreadsheetml/2006/main', 'autoFilter');
+                        var filterAttr = xmlDoc.createAttribute('ref');
+                        filterAttr.value = 'A1:' + colRange;
+                        xlsxFilter.setAttributeNode(filterAttr);
+                        sheet.getElementsByTagName('worksheet')[0].appendChild(xlsxFilter);
+                    }
+                },
+                {
+                    extend: 'copy',
+                    text: '<i class="fa fa-clipboard" aria-hidden="true"> Copiar </i>',
+                    key: {
+                        key: 'p',
+                        altkey: true
+                    },
+                    exportOptions: {
+                        modifier: {
+                            page: 'current'
+                        }
+                    }
+                },
+                {
+                    extend: 'print',
+                    text: "<i class='fa fa-print' aria-hidden='true'> Imprimir </i>",
+                    key: {
+                        key: 'p',
+                        altkey: true
+                    }
+                }],
+            colReorder: true
+        });
+        function createCellPos(n) {
+            var ordA = 'A'.charCodeAt(0);
+            var ordZ = 'Z'.charCodeAt(0);
+            var len = ordZ - ordA + 1;
+            var s = "";
+            while (n >= 0) {
+                s = String.fromCharCode(n % len + ordA) + s;
+                n = Math.floor(n / len) - 1;
+            }
+
+            return s;
+        }
+        // Setup - add a text input to each footer cell
+        /*$('#' + tableName + ' tfoot th').each(function () {
+            var title = $(this).text();
+            if (title != ".") {
+                $(this).html('<input type="text" id="' + title.replace(/\s/g, "") + 'All" class="form-control" placeholder="Buscar ' + title + '" />');
+            }
+        });
+        */
+        // DataTable
+        var table = $('#' + tableName).DataTable();
+        // Apply the search
+        table.columns().every(function () {
+            var that = this;
+            $('input', this.footer()).on('keyup change', function () {
+                if (that.search() !== this.value) {
+                    that
+                        .search(this.value)
+                        .draw();
+                }
+            });
+
         });
 
-        //$("tfoot").css("display", "table-header-group");
+        $("tfoot").css("display", "table-footer-group");
 
         $(".dt-buttons").addClass("pull-right");
 
@@ -1012,7 +1092,7 @@ module.exports = {
                 });
             cont += 1;
         }
-        reference.convertToDatatable("dataTableAllReport", "Mis Reportes");
+        reference.convertToDatatable("dataTableAllReport", "Mis Reportes - " + new Date().toString().split("GMT")[0]);
         message.removeMessageLoader("#mainContent2");
     },
     fillBoxesReportsRelated: function (reportsFiltered) {
@@ -1036,7 +1116,7 @@ module.exports = {
     launchSaveModal: function () {
         let reference = this;
         $("#save_report_modal").remove();
-        $("body").append("<div class='fade modal modal-warning'aria-hidden=true aria-labelledby=myModalLabel1 id=save_report_modal role=dialog style=display:block tabindex=-1><div class=modal-dialog><div class=modal-content><div class=modal-header><h4 class=modal-title id=myModalLabel13>Se esta guardando el reporte </h4></div><div class=modal-body><div class='loader-container text-center color-black'><div><i style='color:black' class='fa fa-spinner fa-pulse fa-3x'></i></div></div><h4 style='text-align:center'>Por favor no cierres la aplicacion, estamos guardando tu progreso .</h4><br><h5 style='text-align:center'><b> Estado : </b><div id='save_report_status'></div></h5></div></div></div></div>");
+        $("body").append("<div class='fade modal modal-warning'aria-hidden=true aria-labelledby=myModalLabel1 id=save_report_modal role=dialog style=display:block tabindex=-1><div class=modal-dialog><div class=modal-content><div class=modal-header><h4 class=modal-title id=myModalLabel13>Se esta guardando el reporte </h4></div><div class=modal-body><div class='loader-container text-center' style='color:black'><div><i style='color:black' class='fa fa-spinner fa-pulse fa-3x'></i></div></div><h4 style='text-align:center'>Por favor no cierres la aplicacion, estamos guardando tu progreso .</h4><br><h5 style='text-align:center'><b> Estado : </b><div id='save_report_status'></div></h5></div></div></div></div>");
         $("#save_report_modal").modal({ backdrop: 'static', keyboard: false });
     },
     changeSaveModalText: function (msg) {
@@ -1106,8 +1186,8 @@ module.exports = {
                 $('#reject_report_modal').modal('hide');
                 reference.bootstrapPage("page-021");
             });
-    });
-},
+        });
+    },
     enableCreateTemplateButtons: function () {
         let reference = this;
         $("#create_template").prop("disabled", false);
@@ -1147,98 +1227,98 @@ module.exports = {
             }
         });
     },
-getProjects: function () {
-    return new Promise(function (resolve, reject) {
-        var http = new XMLHttpRequest();
-        var url = "https://100l-app.teleows.com/servicecreator/pageservices/service.do?forAccessLog={serviceName:project_item_getList,userId:" + USER_ID + ",tenantId:" + tenantId + "}";
-        var params = "start=0&limit=100&csrfToken=" + csrfToken + "&serviceId=project_item_getList";
-        http.open("POST", url, true);
+    getProjects: function () {
+        return new Promise(function (resolve, reject) {
+            var http = new XMLHttpRequest();
+            var url = "https://100l-app.teleows.com/servicecreator/pageservices/service.do?forAccessLog={serviceName:project_item_getList,userId:" + USER_ID + ",tenantId:" + tenantId + "}";
+            var params = "start=0&limit=100&csrfToken=" + csrfToken + "&serviceId=project_item_getList";
+            http.open("POST", url, true);
 
-        //Send the proper header information along with the request
-        http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            //Send the proper header information along with the request
+            http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
-        http.onreadystatechange = function () {//Call a function when the state changes.
-            if (http.readyState == 4 && http.status == 200) {
-                resolve(JSON.parse(http.response).results);
+            http.onreadystatechange = function () {//Call a function when the state changes.
+                if (http.readyState == 4 && http.status == 200) {
+                    resolve(JSON.parse(http.response).results);
+                }
             }
+            http.send(params);
+        });
+    },
+    fillProjects: function (selector, projects) {
+        for (let project of projects) {
+            $("#" + selector).append("<option vaue=" + project.project + ">" + project.project_name + "</option>");
         }
-        http.send(params);
-    });
-},
-fillProjects: function (selector, projects) {
-    for (let project of projects) {
-        $("#" + selector).append("<option vaue=" + project.project + ">" + project.project_name + "</option>");
+    },
+    enableEditTemplatesButtons: function () {
+        let reference = this;
+
+        $("#template_logo_input").on('change', function () {
+            console.log("The Image changes");
+            smartEngine.imgTo64(this, "template_logo");
+        });
+
+        $("#template_web_name").add("#template_pdf_name").on('input', function () {
+
+            let template_web_name_length = $("#template_web_name").val().length;
+            let template_pdf_name_length = $("#template_pdf_name").val().length;
+            if (template_web_name_length > 5 & template_pdf_name_length > 5) {
+                $("#update_template").attr("disabled", false);
+            }
+            else {
+                $("#update_template").attr("disabled", true);
+            }
+        });
+        $("#update_template").click(function () {
+            try {
+                let template_id = $("#template_id_template").val();
+                let template_icon = $("#template_logo").attr("src");
+                let template_web_name = ($("#template_web_name").val());
+                let template_pdf_name = $("#template_pdf_name").val();
+                let template_project = $("#template_project").val();
+                let template_web = $("#template_web_route").val();
+                let template_pdf = $("#template_pdf_route").val();
+                if ($("#web_template_file_div > .filelist_cls").attr("id") != undefined) {
+                    let template_web_batchId = $("#web_template_file").val();
+                    let template_web_attachmentId = $("#web_template_file_div > .filelist_cls").attr("id").split('div_')[1];
+                    template_web = "/get?batchId=" + template_web_batchId + "&attachmentId=" + template_web_attachmentId;
+                }
+                if ($("#pdf_template_file_div > .filelist_cls").attr("id") != undefined) {
+                    let template_pdf_batchId = $("#pdf_template_file").val();
+                    let template_pdf_attachmentId = $("#pdf_template_file_div > .filelist_cls").attr("id").split('div_')[1];
+                    template_pdf = "/get?batchId=" + template_pdf_batchId + "&attachmentId=" + template_pdf_attachmentId;
+                }
+                let templateToEdit = {
+                    "id_template": template_id,
+                    "icon_template": template_icon,
+                    "template_name_web": template_web_name,
+                    "template_name_export": template_pdf_name,
+                    "template_project": template_project,
+                    "template_web": template_web,
+                    "template_pdf": template_pdf
+                };
+                templates.updateTemplate(templateToEdit).then(function () {
+                    console.log("The template was created");
+                    $("#web_template_file_div > .filelist_cls").remove();
+                    $("#pdf_template_file_div > .filelist_cls").remove()
+                    reference.bootstrapPage('page-007');
+                });
+            }
+            catch (error) {
+                $("#errorTemplate").modal('show');
+            }
+        });
+    },
+    fillTemplateData: function () {
+        let reference = this;
+        $("#template_logo").attr('src', templates.templateSelected.icon_template.substr(1).slice(0, -1));
+        $("#template_id_template").val(templates.templateSelected.id_template);
+        $("#template_web_name").val(templates.templateSelected.template_name_web);
+        $("#template_pdf_name").val(templates.templateSelected.template_name_web);
+        $("#template_project").val(templates.templateSelected.template_project);
+        $("#template_web_route").val(templates.templateSelected.template_web);
+        $("#template_pdf_route").val(templates.templateSelected.template_pdf);
+        $("#template_web_route_link").attr('href', "https://100l-app.teleows.com/servicecreator/fileservice" + templates.templateSelected.template_web);
+        $("#template_pdf_route_link").attr('href', "https://100l-app.teleows.com/servicecreator/fileservice" + templates.templateSelected.template_pdf);
     }
-},
-enableEditTemplatesButtons: function () {
-    let reference = this;
-
-    $("#template_logo_input").on('change', function () {
-        console.log("The Image changes");
-        smartEngine.imgTo64(this, "template_logo");
-    });
-
-    $("#template_web_name").add("#template_pdf_name").on('input', function () {
-
-        let template_web_name_length = $("#template_web_name").val().length;
-        let template_pdf_name_length = $("#template_pdf_name").val().length;
-        if (template_web_name_length > 5 & template_pdf_name_length > 5) {
-            $("#update_template").attr("disabled", false);
-        }
-        else {
-            $("#update_template").attr("disabled", true);
-        }
-    });
-    $("#update_template").click(function () {
-        try {
-            let template_id = $("#template_id_template").val();
-            let template_icon = $("#template_logo").attr("src");
-            let template_web_name = ($("#template_web_name").val());
-            let template_pdf_name = $("#template_pdf_name").val();
-            let template_project = $("#template_project").val();
-            let template_web = $("#template_web_route").val();
-            let template_pdf = $("#template_pdf_route").val();
-            if ($("#web_template_file_div > .filelist_cls").attr("id") != undefined) {
-                let template_web_batchId = $("#web_template_file").val();
-                let template_web_attachmentId = $("#web_template_file_div > .filelist_cls").attr("id").split('div_')[1];
-                template_web = "/get?batchId=" + template_web_batchId + "&attachmentId=" + template_web_attachmentId;
-            }
-            if ($("#pdf_template_file_div > .filelist_cls").attr("id") != undefined) {
-                let template_pdf_batchId = $("#pdf_template_file").val();
-                let template_pdf_attachmentId = $("#pdf_template_file_div > .filelist_cls").attr("id").split('div_')[1];
-                template_pdf = "/get?batchId=" + template_pdf_batchId + "&attachmentId=" + template_pdf_attachmentId;
-            }
-            let templateToEdit = {
-                "id_template": template_id,
-                "icon_template": template_icon,
-                "template_name_web": template_web_name,
-                "template_name_export": template_pdf_name,
-                "template_project": template_project,
-                "template_web": template_web,
-                "template_pdf": template_pdf
-            };
-            templates.updateTemplate(templateToEdit).then(function () {
-                console.log("The template was created");
-                $("#web_template_file_div > .filelist_cls").remove();
-                $("#pdf_template_file_div > .filelist_cls").remove()
-                reference.bootstrapPage('page-007');
-            });
-        }
-        catch (error) {
-            $("#errorTemplate").modal('show');
-        }
-    });
-},
-fillTemplateData: function () {
-    let reference = this;
-    $("#template_logo").attr('src', templates.templateSelected.icon_template.substr(1).slice(0, -1));
-    $("#template_id_template").val(templates.templateSelected.id_template);
-    $("#template_web_name").val(templates.templateSelected.template_name_web);
-    $("#template_pdf_name").val(templates.templateSelected.template_name_web);
-    $("#template_project").val(templates.templateSelected.template_project);
-    $("#template_web_route").val(templates.templateSelected.template_web);
-    $("#template_pdf_route").val(templates.templateSelected.template_pdf);
-    $("#template_web_route_link").attr('href', "https://100l-app.teleows.com/servicecreator/fileservice" + templates.templateSelected.template_web);
-    $("#template_pdf_route_link").attr('href', "https://100l-app.teleows.com/servicecreator/fileservice" + templates.templateSelected.template_pdf);
-}
 }

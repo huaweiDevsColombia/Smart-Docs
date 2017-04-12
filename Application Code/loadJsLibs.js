@@ -132,6 +132,32 @@ module.exports = {
                 });
         });
     },
+    "loadDataTables": function () {
+        return new Promise(function (resolve, reject) {
+            let dataTables = $.ajax({
+                method: "GET",
+                dataType: "script",
+                //url: "https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.10.13/b-1.2.4/b-colvis-1.2.4/b-html5-1.2.4/b-print-1.2.4/datatables.min.js"
+                url: "https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.10.13/b-1.2.4/b-colvis-1.2.4/b-html5-1.2.4/b-print-1.2.4/cr-1.3.2/r-2.1.1/datatables.min.js"
+            });
+            $.when(dataTables)
+                .done(function (dataTablesResponse) {
+                    let bootstrapDataTables = $.ajax({
+                        method: "GET",
+                        dataType: "script",
+                        url: "http://cdn.datatables.net/plug-ins/e9421181788/integration/bootstrap/3/dataTables.bootstrap.js"
+                    });
+                    $.when(bootstrapDataTables)
+                        .done(function (bootstrapDataTablesResponse) {
+                            resolve();
+                        }).fail(function (error) {
+                            reject(error);
+                        });
+                }).fail(function (error) {
+                    reject(error);
+                });
+        })
+    },
     "loadPlugins_1": function () {
         return new Promise(function (resolve, reject) {
             let buttonsDataTables = $.ajax({

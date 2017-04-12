@@ -59,28 +59,39 @@ function loadCSS() {
             method: "GET",
             url: "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css"
         });
+        
         let buttonsDataTables = $.ajax({
             method: "GET",
             url: "https://cdn.datatables.net/buttons/1.2.4/css/buttons.dataTables.min.css"
         });
         let bootstrapDataTables = $.ajax({
             method: "GET",
-            url: "https://cdn.datatables.net/1.10.13/css/dataTables.bootstrap.min.css"
+            url: "http://cdn.datatables.net/plug-ins/e9421181788/integration/bootstrap/3/dataTables.bootstrap.css"
         });
+        /*
         let jqueryDataTables = $.ajax({
             method: "GET",
             url: "https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css"
         });
+        */
+        
+        /*let dataTables = $.ajax({
+            method: "GET",
+            //url: "https://cdn.datatables.net/v/bs/jszip-2.5.0/dt-1.10.13/b-1.2.4/b-colvis-1.2.4/b-html5-1.2.4/datatables.min.css"
+            //url:"https://cdn.datatables.net/v/bs/jszip-2.5.0/dt-1.10.13/b-1.2.4/b-html5-1.2.4/b-print-1.2.4/cr-1.3.2/datatables.min.css"
+        });
+        */
 
-        $.when(bootstrap, animate, select2 ,buttonsDataTables, bootstrapDataTables, jqueryDataTables)
-            .done(function (bootstrapRespond, animateRespond, select2Respond ,buttonsDataTablesRespond, bootstrapDataTablesRespond, jqueryDataTablesRespond ) {
+        $.when(bootstrap, animate, select2 , buttonsDataTables, bootstrapDataTables/* ,jqueryDataTables, dataTables*/)
+            .done(function (bootstrapRespond, animateRespond, select2Respond , buttonsDataTablesRespond, bootstrapDataTablesRespond/*, jqueryDataTablesRespond , datatablesResponse*/) {
 
                 $('<style />').text(bootstrapRespond).appendTo($('head'));
                 $('<style />').text(animateRespond).appendTo($('head'));
                 $('<style />').text(select2Respond).appendTo($('head'));
                 $('<style />').text(buttonsDataTablesRespond).appendTo($('head'));
                 $('<style />').text(bootstrapDataTablesRespond).appendTo($('head'));
-                $('<style />').text(jqueryDataTablesRespond).appendTo($('head'));
+                //$('<style />').text(jqueryDataTablesRespond).appendTo($('head'));
+                //$('<style />').text(datatablesResponse).appendTo($('head'));
                 resolve();
                 console.log("loadCssLibs has Loaded");
             }).fail(function (error) {
