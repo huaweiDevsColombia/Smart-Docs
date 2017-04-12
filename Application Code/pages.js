@@ -1012,7 +1012,7 @@ module.exports = {
                     extend: 'copy',
                     text: '<i class="fa fa-clipboard" aria-hidden="true"> Copiar </i>',
                     key: {
-                        key: 'p',
+                        key: 'c',
                         altkey: true
                     },
                     exportOptions: {
