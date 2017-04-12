@@ -29,105 +29,114 @@ self.addEventListener('message', function (e) {
         template_PDF.watermark = { text: 'Smart Docs Preview', color: 'black', opacity: 0.3, font: 'Roboto', bold: true };
     }
 
-    template_PDF.content.forEach(function (item) {
-        if (item.table != undefined) {
-            item.table.body.forEach(function (itemBody) {
-                itemBody.forEach(function (itemSubBody) {
-                    if (itemSubBody.idSM != undefined) {
-                        //Search on answer tree and remove the item from answer tree
-                        answersTree[0].forEach(function (answerElement) {
-                            if (answerElement.sel == itemSubBody.idSM) {
-                                itemSubBody.text = answerElement.val;
-                            }
-                        });
-                    }
-                    if (itemSubBody.customer_image != undefined) {
-                        var customer_image = itemSubBody.customer_image;
-                        switch (customer_image) {
-                            case "Movistar":
-                                itemSubBody.image = customer_image_movistar;
-                                break;
-                            case "ATC":
-                                itemSubBody.image = customer_image_atc;
-                                break;
-                        }
-                    }
-
-                    if (itemSubBody.default_image == true) {
-                        itemSubBody.image = default_image;
-                    }
-                });
-            });
+    //Pass all the answer here to generate the match
+    var answers = [];
+    answers.forEach(function (answer) {
+        if (Array.isArray(answer)) {
+            matchAnswers(answer);
         }
+        console.log("Enviando Data", template_PDF);
+        self.postMessage(JSON.stringify(template_PDF));
+    });
 
-        /* Checking Columns Elements */
-        if (item.columns != undefined) {
+    function matchAnswers(answer) {
+        template_PDF.content.forEach(function (item) {
+            if (item.table != undefined) {
+                item.table.body.forEach(function (itemBody) {
+                    itemBody.forEach(function (itemSubBody) {
+                        if (itemSubBody.idSM != undefined) {
+                            //Search on answer tree and remove the item from answer tree
+                            answersTree[0].forEach(function (answerElement) {
+                                if (answerElement.sel == itemSubBody.idSM) {
+                                    itemSubBody.text = answerElement.val;
+                                }
+                            });
+                        }
+                        if (itemSubBody.customer_image != undefined) {
+                            var customer_image = itemSubBody.customer_image;
+                            switch (customer_image) {
+                                case "Movistar":
+                                    itemSubBody.image = customer_image_movistar;
+                                    break;
+                                case "ATC":
+                                    itemSubBody.image = customer_image_atc;
+                                    break;
+                            }
+                        }
 
-            item.columns.forEach(function (item) {
-                if (item.table != undefined) {
-                    console.log("Order:" + item.table.order);
-                    if (item.table.order = "ASC") {
-                        answersTree[0].forEach(function (answerElement) {
-                            if (answerElement.sel == item.table.idSM) {
-                                //var tableBodyHead = item.table.body[0];
-                                console.log("Table Original", item.table);
-                                console.log("Table Body Original", item.table.body);
-                                console.log("Table Body Head:", item.table.body[0]);
+                        if (itemSubBody.default_image == true) {
+                            itemSubBody.image = default_image;
+                        }
+                    });
+                });
+            }
 
-                                var tableBody = [];
-                                var tableBodyItem = [];
-                                console.log("Answer Element:"+  answerElement.val);
-                                console.log("Answer Element Length"+answerElement.val.length);
-                                console.log("Answer Element Type Of" + (answerElement.val == "")?"Vacio":"Con Elementos");
-                                if(answerElement.val !=""){
-                                    console.log("Entre a modificar el documento");
-                                    let answerElementTable = JSON.parse(answerElement.val);
-                                    if (answerElementTable.length > 0) {
-                                        answerElementTable.forEach(function (tableItem) {
-                                            for (var i = 1; i < tableItem.length; i++) {
-                                                tableBodyItem.push({ "text": tableItem[i], "style": "textWhiteCenter" });
-                                                console.log("Agregando Elemento", tableBodyItem);
-                                                console.log("Posicion:" + i);
-                                            }
-                                            tableBody.push(tableBodyItem);
-                                            tableBodyItem = [];
-                                        });
-                                        item.table.body = tableBody;
-                                        console.log("Table Body", tableBody);
+            /* Checking Columns Elements */
+            if (item.columns != undefined) {
+
+                item.columns.forEach(function (item) {
+                    if (item.table != undefined) {
+                        console.log("Order:" + item.table.order);
+                        if (item.table.order = "ASC") {
+                            answersTree[0].forEach(function (answerElement) {
+                                if (answerElement.sel == item.table.idSM) {
+                                    //var tableBodyHead = item.table.body[0];
+                                    console.log("Table Original", item.table);
+                                    console.log("Table Body Original", item.table.body);
+                                    console.log("Table Body Head:", item.table.body[0]);
+
+                                    var tableBody = [];
+                                    var tableBodyItem = [];
+                                    console.log("Answer Element:" + answerElement.val);
+                                    console.log("Answer Element Length" + answerElement.val.length);
+                                    console.log("Answer Element Type Of" + (answerElement.val == "") ? "Vacio" : "Con Elementos");
+                                    if (answerElement.val != "") {
+                                        console.log("Entre a modificar el documento");
+                                        let answerElementTable = JSON.parse(answerElement.val);
+                                        if (answerElementTable.length > 0) {
+                                            answerElementTable.forEach(function (tableItem) {
+                                                for (var i = 1; i < tableItem.length; i++) {
+                                                    tableBodyItem.push({ "text": tableItem[i], "style": "textWhiteCenter" });
+                                                    console.log("Agregando Elemento", tableBodyItem);
+                                                    console.log("Posicion:" + i);
+                                                }
+                                                tableBody.push(tableBodyItem);
+                                                tableBodyItem = [];
+                                            });
+                                            item.table.body = tableBody;
+                                            console.log("Table Body", tableBody);
+                                        }
+                                    }
+                                    else {
+                                        console.log("Deje el documento tal y como esta");
                                     }
                                 }
-                                else{
-                                    console.log("Deje el documento tal y como esta");
-                                }
-                            }
-                            else {
-                                item.table.body.forEach(function (itemBody) {
-                                    itemBody.forEach(function (itemSubBody) {
-                                        if (itemSubBody.customer_image != undefined) {
-                                            var customer_image = itemSubBody.customer_image;
-                                            switch (customer_image) {
-                                                case "Movistar":
-                                                    itemSubBody.image = customer_image_movistar;
-                                                    break;
-                                                case "ATC":
-                                                    itemSubBody.image = customer_image_atc;
-                                                    break;
+                                else {
+                                    item.table.body.forEach(function (itemBody) {
+                                        itemBody.forEach(function (itemSubBody) {
+                                            if (itemSubBody.customer_image != undefined) {
+                                                var customer_image = itemSubBody.customer_image;
+                                                switch (customer_image) {
+                                                    case "Movistar":
+                                                        itemSubBody.image = customer_image_movistar;
+                                                        break;
+                                                    case "ATC":
+                                                        itemSubBody.image = customer_image_atc;
+                                                        break;
+                                                }
                                             }
-                                        }
-                                        if (itemSubBody.default_image == true) {
-                                            itemSubBody.image = default_image;
-                                        }
+                                            if (itemSubBody.default_image == true) {
+                                                itemSubBody.image = default_image;
+                                            }
+                                        });
                                     });
-                                });
-                            }
-                        });
+                                }
+                            });
+                        }
                     }
-                }
-            });
-        }
-    });
-    console.log("Enviando Data", template_PDF);
-    //self.postMessage("I've create the pdf doc");
-    self.postMessage(JSON.stringify(template_PDF));
+                });
+            }
+        });
+    }
 
 }, false);
