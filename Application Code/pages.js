@@ -976,6 +976,18 @@ module.exports = {
             $("#detail_ticket_approve").remove();
             $("#detail_ticket_reject").remove();
         }
+
+        $("#view_ticket_pdf").click(function () {
+            templates.templateSelected = { "template_web": reports.reportSelected.template_web, "template_pdf": reports.reportSelected.template_pdf };
+            templates.loadTemplate(templateSelected.template_web, templateSelected.template_pdf).then(function () {
+                    reports.loadReport(reports.reportSelected.id_report).then(function(){
+                        workers.loadPDF(templates.template[0].jsonPdf,"Template Name",true,"Ticked id",reports.reportResponse,"Sebastian Guevara")
+                        .then(function(loadPdfResponse){
+                            
+                        });
+                    });                   
+            });
+        });
     },
     convertToDatatable: function (tableName, filename) {
         $('#' + tableName).DataTable({
