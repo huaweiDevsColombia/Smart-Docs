@@ -365,7 +365,7 @@ module.exports = {
             let workerloadPDF = $.ajax({
                 method: "GET",
                 dataType: "script",
-                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=ba646758-8ac5-4612-805a-de96867dd631&attachmentId=0e9ba0e7-5491-4516-8d05-c5f1e27bb333"
+                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=6ff9bed1-b302-4d78-98fd-f5cbe0bb8247&attachmentId=d8a8ee25-68f8-46e0-ab48-9ccc3dc35d06"
             });
             $.when(workerloadPDF).done(function (workerloadPDFResponse) {
                 $('<script>')
@@ -391,7 +391,7 @@ module.exports = {
                 }
                     , false);
 
-                worker.postMessage({ "template":JSON.stringify(template), "template_name":template_name, "watermark":watermark, "ticket_id":ticket_id, "answers":JSON.stringify(answers), "username":username}); // Send data to our worker.
+                worker.postMessage({ "template":JSON.stringify(template), "template_name":template_name, "watermark":watermark, "ticket":ticket_id, "answers":JSON.stringify(answers), "username":username}); // Send data to our worker.
 
                 console.log("[Wk] - Load PDF has Loaded");
 

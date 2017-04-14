@@ -57,18 +57,19 @@ module.exports = {
      */
     "loadLowJS": function () {
         return new Promise(function (resolve, reject) {
-            let bootstrapDataTables = $.ajax({
+            /*let bootstrapDataTables = $.ajax({
                 method: "GET",
                 dataType: "script",
                 url: "https://cdn.datatables.net/1.10.13/js/dataTables.bootstrap.min.js"
             });
+            */
             let vs_fonts = $.ajax({
                 method: "GET",
                 dataType: "script",
                 url: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.26/vfs_fonts.js"
             });
-            $.when(bootstrapDataTables, vs_fonts)
-                .done(function (bootstrapDataTablesResponse, vs_fontsResponse) {
+            $.when(/*bootstrapDataTables,*/ vs_fonts)
+                .done(function (/*bootstrapDataTablesResponse,*/ vs_fontsResponse) {
                     resolve();
                 }).fail(function (error) {
                     reject(error);

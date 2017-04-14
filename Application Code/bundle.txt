@@ -271,7 +271,7 @@ module.exports = {
             });
         });
     },
-     getTickets: /**
+    getTickets: /**
  * Get the Tickets from Reports Datamodel
  * Make a Ajax Request to get the worker and then call get tickets get list service
  */
@@ -316,7 +316,7 @@ module.exports = {
  * Get the templates from Templates Datamodel
  * Make a Ajax Request to get the worker and then call get templates get list service
  */
-function getTemplates(project) {
+    function getTemplates(project) {
         return new Promise(function (resolve, reject) {
             let workerTemplates = $.ajax({
                 method: "GET",
@@ -342,7 +342,7 @@ function getTemplates(project) {
                     resolve(e.data);
                 }, false);
 
-                worker.postMessage({ "username": username, "userId": USER_ID, "token": csrfToken, "tenantId": tenantId, "project":project }); // Send data to our worker.
+                worker.postMessage({ "username": username, "userId": USER_ID, "token": csrfToken, "tenantId": tenantId, "project": project }); // Send data to our worker.
 
                 console.log("[Wk] - Get Templates has Loaded");
 
@@ -352,8 +352,8 @@ function getTemplates(project) {
             });
         });
     },
-    getTemplate: 
-    function getTemplate(web_location,pdf_location) {
+    getTemplate:
+    function getTemplate(web_location, pdf_location) {
         return new Promise(function (resolve, reject) {
             let workerTemplates = $.ajax({
                 method: "GET",
@@ -379,7 +379,7 @@ function getTemplates(project) {
                     resolve(e.data);
                 }, false);
 
-                worker.postMessage({"web_location":web_location,"pdf_location":pdf_location}); // Send data to our worker.
+                worker.postMessage({ "web_location": web_location, "pdf_location": pdf_location }); // Send data to our worker.
 
                 console.log("[Wk] - Get Template has Loaded");
 
@@ -389,8 +389,8 @@ function getTemplates(project) {
             });
         });
     },
-    saveAnswer: 
-    function saveAnswer(answer,status,comment,project,region,site,supplier,ticket,template,workClient) {
+    saveAnswer:
+    function saveAnswer(answer, status, comment, project, region, site, supplier, ticket, template, workClient) {
         return new Promise(function (resolve, reject) {
             let workerSaveAnswer = $.ajax({
                 method: "GET",
@@ -416,12 +416,12 @@ function getTemplates(project) {
                     resolve(e.data);
                 }, false);
 
-                worker.addEventListener("error", function(error){
-                    console.log("Se ha producido un error : "+ error);
+                worker.addEventListener("error", function (error) {
+                    console.log("Se ha producido un error : " + error);
                 }
-                , false);
+                    , false);
 
-                worker.postMessage({"answer":JSON.stringify(answer),"status":status,"comment":JSON.stringify(comment),"project":project,"region":region,"site":site,"supplier":supplier,"ticket":ticket,"template":template,"workClient":workClient,"userId": USER_ID,"token": csrfToken, "tenantId": tenantId,}); // Send data to our worker.
+                worker.postMessage({ "answer": JSON.stringify(answer), "status": status, "comment": JSON.stringify(comment), "project": project, "region": region, "site": site, "supplier": supplier, "ticket": ticket, "template": template, "workClient": workClient, "userId": USER_ID, "token": csrfToken, "tenantId": tenantId, }); // Send data to our worker.
 
                 console.log("[Wk] - Get Template has Loaded");
 
@@ -430,8 +430,49 @@ function getTemplates(project) {
                 reject(error);
             });
         });
+    },
+    loadPDF:
+    function (template, template_name, watermark, ticket_id, answers, username) {
+        return new Promise(function (resolve, reject) {
+            let workerloadPDF = $.ajax({
+                method: "GET",
+                dataType: "script",
+                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=6ff9bed1-b302-4d78-98fd-f5cbe0bb8247&attachmentId=d8a8ee25-68f8-46e0-ab48-9ccc3dc35d06"
+            });
+            $.when(workerloadPDF).done(function (workerloadPDFResponse) {
+                $('<script>')
+                    .attr('type', 'javascript/worker')
+                    .attr('id', 'workerloadPDF')
+                    .text(workerloadPDFResponse)
+                    .appendTo('head');
+
+                let blob = new Blob([
+                    $("#workerloadPDF").text()
+                ], { type: "text/javascript" })
+
+                $("#workerloadPDF").remove();
+
+                var worker = new Worker(URL.createObjectURL(blob));
+
+                worker.addEventListener('message', function (e) {
+                    resolve(e.data);
+                }, false);
+
+                worker.addEventListener("error", function (error) {
+                    console.log("Se ha producido un error : " + error);
+                }
+                    , false);
+
+                worker.postMessage({ "template":JSON.stringify(template), "template_name":template_name, "watermark":watermark, "ticket_id":ticket_id, "answers":JSON.stringify(answers), "username":username}); // Send data to our worker.
+
+                console.log("[Wk] - Load PDF has Loaded");
+
+            }).fail(function (error) {
+                console.log("[Wk] - Load PDF has Failed");
+                reject(error);
+            });
+        });
     }
-    
 };
 
 /***/ }),
@@ -1458,6 +1499,32 @@ module.exports = {
             $("#detail_ticket_approve").remove();
             $("#detail_ticket_reject").remove();
         }
+
+        $("#view_ticket_pdf").click(function () {
+            templates.templateSelected = { "template_web": reports.reportSelected.template_web, "template_pdf": reports.reportSelected.template_pdf };
+            templates.loadTemplate(templates.templateSelected.template_web, templates.templateSelected.template_pdf).then(function () {
+                console.log("Load Template was correct");
+                reports.loadReport(reports.reportSelected.id_report).then(function () {
+                    console.log("Load Report was correct");
+                    workers.loadPDF(templates.template[0].jsonPdf, "Template Name", true, "Ticked id", reports.reportResponse, "Sebastian Guevara")
+                        .then(function (loadPdfResponse) {
+                            console.log("Pdf Response was correct");
+                            //console.log(loadPdfResponse);
+                            let preview_pdf = JSON.parse(loadPdfResponse);
+                            preview_pdf.footer = function (currentPage, pageCount) {
+                                var text = {};
+                                text["text"] = "Este reporte fue generado en Smart Docs \n HOY  - Codigo Auth: #Code \nPag " + currentPage + " de " + pageCount;
+                                text["alignment"] = "center";
+                                text["fontSize"] = 8;
+                                text["link"] = "https://100l-app.teleows.com/servicecreator/spl/CO_SMART_DOCS/CO_SMART_DOCS_WELCOME.spl";
+                                return text;
+                            };
+                            pdfMake.createPdf(preview_pdf).download("Test" + " - " + " Works" + ".pdf");
+
+                        });
+                });
+            });
+        });
     },
     convertToDatatable: function (tableName, filename) {
         $('#' + tableName).DataTable({
@@ -1494,7 +1561,7 @@ module.exports = {
                     extend: 'copy',
                     text: '<i class="fa fa-clipboard" aria-hidden="true"> Copiar </i>',
                     key: {
-                        key: 'p',
+                        key: 'c',
                         altkey: true
                     },
                     exportOptions: {
@@ -1868,18 +1935,19 @@ module.exports = {
      */
     "loadLowJS": function () {
         return new Promise(function (resolve, reject) {
-            let bootstrapDataTables = $.ajax({
+            /*let bootstrapDataTables = $.ajax({
                 method: "GET",
                 dataType: "script",
                 url: "https://cdn.datatables.net/1.10.13/js/dataTables.bootstrap.min.js"
             });
+            */
             let vs_fonts = $.ajax({
                 method: "GET",
                 dataType: "script",
                 url: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.26/vfs_fonts.js"
             });
-            $.when(bootstrapDataTables, vs_fonts)
-                .done(function (bootstrapDataTablesResponse, vs_fontsResponse) {
+            $.when(/*bootstrapDataTables,*/ vs_fonts)
+                .done(function (/*bootstrapDataTablesResponse,*/ vs_fontsResponse) {
                     resolve();
                 }).fail(function (error) {
                     reject(error);
@@ -3690,14 +3758,13 @@ $(function () {
                 console.log("High JS were loaded");
                 message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 1/6 han sido cargadas");
                 return jsLibs.loadMediumJS();
-            })/*.then(function () {
+            }).then(function () {
                 console.log("JS Medium Libs were loaded");
                 message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 2/6 han sido cargadas");
                 return jsLibs.loadLowJS();
-            })*/
-            
+            })
             .then(function () {
-                console.log("JS Medium Libs were loaded");
+                console.log("JS Low Libs were loaded");
                 message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 2/6 han sido cargadas");
                 return jsLibs.loadDataTables();
             })

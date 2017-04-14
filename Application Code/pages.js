@@ -979,13 +979,27 @@ module.exports = {
 
         $("#view_ticket_pdf").click(function () {
             templates.templateSelected = { "template_web": reports.reportSelected.template_web, "template_pdf": reports.reportSelected.template_pdf };
-            templates.loadTemplate(templateSelected.template_web, templateSelected.template_pdf).then(function () {
-                    reports.loadReport(reports.reportSelected.id_report).then(function(){
-                        workers.loadPDF(templates.template[0].jsonPdf,"Template Name",true,"Ticked id",reports.reportResponse,"Sebastian Guevara")
-                        .then(function(loadPdfResponse){
-                            
+            templates.loadTemplate(templates.templateSelected.template_web, templates.templateSelected.template_pdf).then(function () {
+                console.log("Load Template was correct");
+                reports.loadReport(reports.reportSelected.id_report).then(function () {
+                    console.log("Load Report was correct");
+                    workers.loadPDF(templates.template[0].jsonPdf, "Template Name", true, "Ticked id", reports.reportResponse, "Sebastian Guevara")
+                        .then(function (loadPdfResponse) {
+                            console.log("Pdf Response was correct");
+                            //console.log(loadPdfResponse);
+                            let preview_pdf = JSON.parse(loadPdfResponse);
+                            preview_pdf.footer = function (currentPage, pageCount) {
+                                var text = {};
+                                text["text"] = "Este reporte fue generado en Smart Docs \n HOY  - Codigo Auth: #Code \nPag " + currentPage + " de " + pageCount;
+                                text["alignment"] = "center";
+                                text["fontSize"] = 8;
+                                text["link"] = "https://100l-app.teleows.com/servicecreator/spl/CO_SMART_DOCS/CO_SMART_DOCS_WELCOME.spl";
+                                return text;
+                            };
+                            pdfMake.createPdf(preview_pdf).download("Test" + " - " + " Works" + ".pdf");
+
                         });
-                    });                   
+                });
             });
         });
     },

@@ -40,14 +40,13 @@ $(function () {
                 console.log("High JS were loaded");
                 message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 1/6 han sido cargadas");
                 return jsLibs.loadMediumJS();
-            })/*.then(function () {
+            }).then(function () {
                 console.log("JS Medium Libs were loaded");
                 message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 2/6 han sido cargadas");
                 return jsLibs.loadLowJS();
-            })*/
-            
+            })
             .then(function () {
-                console.log("JS Medium Libs were loaded");
+                console.log("JS Low Libs were loaded");
                 message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 2/6 han sido cargadas");
                 return jsLibs.loadDataTables();
             })
