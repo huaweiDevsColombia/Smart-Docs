@@ -425,7 +425,7 @@ module.exports = {
             ticketsType.splice(ticketsType.indexOf("PLM"), 1)
         }
 
-        if (PMLength > 0 || CMLength > 0 || PMlLength > 0) {
+        if (PMLength > 0 || CMLength > 0 || PMLLength > 0) {
             $("#ticketsNotFound").remove();
             let cont = 0;
             for (let ticket_type of ticketsType) {
