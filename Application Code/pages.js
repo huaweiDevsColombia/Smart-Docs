@@ -4,6 +4,7 @@ let reports = require("./reports");
 let templates = require("./templates");
 let smartEngine = require("./smartEngine");
 let message = require("./messages");
+let uid = require("./uid");
 
 module.exports = {
     loadAllPages: function () {
@@ -1050,21 +1051,24 @@ module.exports = {
                         }
                     }
 
-                    workers.loadPDF(templates.template[0].jsonPdf, "Template Name", true, "Ticked id", answerReport, "Sebastian Guevara")
+                    workers.loadPDF(templates.template[0].jsonPdf, "Template Name", true, "Ticked id", answerReport,reference.userInformation.fullname)
                         .then(function (loadPdfResponse) {
                             console.log("Pdf Response was correct");
                             //console.log(loadPdfResponse);
                             let preview_pdf = JSON.parse(loadPdfResponse);
-                            preview_pdf.footer = function (currentPage, pageCount) {
+
+                            let pdfUID = uid.generateUID().then(function(uidCode){
+                                preview_pdf.footer = function (currentPage, pageCount) {
                                 var text = {};
-                                text["text"] = "Este reporte fue generado en Smart Docs \n HOY  - Codigo Auth: #Code \nPag " + currentPage + " de " + pageCount;
+                                text["text"] = "Este reporte fue generado en Huawei Smart Docs @OWS App - "+  new Date().toString().split("GMT")[0]  + "\n Security Code : " + uidCode + " Pag " + currentPage + " de " + pageCount;
                                 text["alignment"] = "center";
-                                text["fontSize"] = 8;
+                                text["fontSize"] = 6;
                                 text["link"] = "https://100l-app.teleows.com/servicecreator/spl/CO_SMART_DOCS/CO_SMART_DOCS_WELCOME.spl";
                                 return text;
                             };
                             pdfMake.createPdf(preview_pdf).download("Test" + " - " + " Works" + ".pdf");
 
+                            });
                         });
                 });
             });
