@@ -84,6 +84,7 @@ $(function () {
                         .then(function (data) {
                             message.changeMessageLoader("pageLoaderContent", "La informacion del usuario ha sido cargada");
                             reference.userInformation = JSON.parse(data).result;
+                            pages.userInformation = reference.userInformation;
                             pages.showUserInformationNav(reference.userInformation);
                             reference.grantPermissions(reference.userGroups);
                         });

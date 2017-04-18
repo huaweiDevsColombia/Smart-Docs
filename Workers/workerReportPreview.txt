@@ -60,11 +60,31 @@ self.addEventListener('message', function (e) {
                                 var tablesValues = JSON.parse(answerVal.val);
                                 console.log("Dynamic Table : " + item.table.idSM + " - Values to Add [Arr]: ", tablesValues);
                                 if (tablesValues.length > 0) {
-                                    tablesValues[0].forEach(function (tableItem) {
-                                        for (var i = 0; i < tablesValues[0].length; i++) {
-                                            tableBodyItem.push({ "text": i, "style": "textWhiteCenter" });
+                                    tablesValues.forEach(function (tableItem) {
+                                        /* Order Array ASCEDENT or DESCENDENT */
+                                        if (item.table.order == 'ASC') {
+                                            tableItem.sort();
+                                        }
+                                        else if (item.table.order == 'DESC') {
+                                            tableItem.reverse();
+                                        }
+
+                                        /* Adding the first column to row */
+                                        tableBodyItem.push({ "text": item.table.startNumber, "style": "textWhite" });
+                                        console.log("Agregando Elemento", tableBodyItem);
+
+                                        /* Sum start number for next columns. Integer - Float*/
+                                        if (item.table.sequence == "integer") {
+                                            item.table.startNumber += 1
+                                        }
+                                        else if (item.table.sequence == "float") {
+                                            item.table.starNumber = (parseFloat(item.table.startNumber) + 0.1).toPrecision(2)
+                                        }
+
+                                        for (var i = 1; i < tableItem.length; i++) {
+
+                                            tableBodyItem.push({ "text": tableItem[i], "style": "textWhite" });
                                             console.log("Agregando Elemento", tableBodyItem);
-                                            console.log("Posicion:" + i);
                                         }
                                         tableBody.push(tableBodyItem);
                                         tableBodyItem = [];
@@ -74,7 +94,6 @@ self.addEventListener('message', function (e) {
                                     console.log("Table Body", tableBody);
                                 }
                             }
-
                         }
                     });
                 }
@@ -128,11 +147,29 @@ self.addEventListener('message', function (e) {
                                         var tablesValues = JSON.parse(answerVal.val);
                                         console.log("Dynamic Table : " + item.table.idSM + " - Values to Add [Arr]: ", tablesValues);
                                         if (tablesValues.length > 0) {
-                                            tablesValues[0].forEach(function (tableItem) {
-                                                for (var i = 0; i < tablesValues[0].length; i++) {
-                                                    tableBodyItem.push({ "text": i, "style": "textWhiteCenter" });
+                                            tablesValues.forEach(function (tableItem) {
+                                                /* Order Array ASCEDENT or DESCENDENT */
+                                                if (item.table.order == 'ASC') {
+                                                    tableItem.sort();
+                                                }
+                                                else if (item.table.order == 'DESC') {
+                                                    tableItem.reverse();
+                                                }
+
+                                                /* Adding the first column to row */
+                                                tableBodyItem.push({ "text": item.table.startNumber, "style": "textWhite" });
+                                                console.log("Agregando Elemento", tableBodyItem);
+
+                                                /* Sum start number for next columns. Integer - Float*/
+                                                if (item.table.sequence == "integer") {
+                                                    item.table.startNumber += 1
+                                                }
+                                                else if (item.table.sequence == "float") {
+                                                    item.table.starNumber = (parseFloat(item.table.startNumber) + 0.1).toPrecision(2)
+                                                }
+                                                for (var i = 1; i < tableItem.length; i++) {
+                                                    tableBodyItem.push({ "text": tableItem[i], "style": "textWhite" });
                                                     console.log("Agregando Elemento", tableBodyItem);
-                                                    console.log("Posicion:" + i);
                                                 }
                                                 tableBody.push(tableBodyItem);
                                                 tableBodyItem = [];
@@ -142,7 +179,6 @@ self.addEventListener('message', function (e) {
                                             console.log("Table Body", tableBody);
                                         }
                                     }
-
                                 }
                                 else {
                                     item.table.body.forEach(function (itemBody) {

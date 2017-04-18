@@ -53,6 +53,7 @@ module.exports = {
     },
     pages: "",
     userGroup: "",
+    userInformation: "",
     filterPage: function (id_page) {
         let reference = this;
         return new Promise(function (resolve, reject) {
@@ -156,11 +157,16 @@ module.exports = {
         let reference = this;
         for (let menu_item of reference.menuItems()) {
             $("#" + menu_item.id).click(function () {
+                reference.hideNavBar();
                 reference.bootstrapPage(menu_item.id_page).then(function () {
                     reference.changeActiveMenu(menu_item.id);
                 });
             });
         }
+    },
+    hideNavBar: function () {
+        $(".app-container").removeClass("expanded");
+        $(".navbar-expand-toggle").removeClass("fa-rotate-90");
     },
     changeActiveMenu: function (id_page) {
         $(".active").removeClass("active");
@@ -285,34 +291,36 @@ module.exports = {
                     smartEngine.executeEngine(templates.template[0].jsonWeb);
                     $('#templateNavTabs a:first').tab('show');
                     reference.loadEventSaveReport();
-                    message.removeMessageLoader("#mainContent2");
-                    console.log("Loading Report From DataModel");
-                if (reports.reportSelected.id_report != undefined) {
-                    message.addMessageLoder("loaderMessage2", "#mainContent2");
-                    message.changeMessageLoader("loaderMessage2", "Cargando Reporte Almacenado");
-                    reports.loadReport().then(function () {
-                        console.log("Load Report: ", reports.reportResponse);
-                        console.log("Load Report Images: ", reports.reportResponseImages);
-                        for (let reportAnswer of reports.reportResponseImages) {
-                            if (Array.isArray(reportAnswer.images)) {
-                                smartEngine.matchAnswers(reportAnswer.images[0]);
-                                if (Array.isArray(reportAnswer.images_1)) {
-                                    smartEngine.matchAnswers(reportAnswer.images_1[0]);
-                                }
-                            }
-                        }
 
-                        for (let reportAnswer of reports.reportResponse) {
-                            if (Array.isArray(reportAnswer)) {
-                                if (reportAnswer.length > 0) {
-                                    smartEngine.matchAnswers(reportAnswer[0]);
+                    if (reports.reportSelected.id_report != undefined) {
+                        message.changeMessageLoader("loaderMessage", "Cargando Reporte Almacenado");
+                        reports.loadReport().then(function () {
+                            console.log("Load Report: ", reports.reportResponse);
+                            console.log("Load Report Images: ", reports.reportResponseImages);
+                            for (let reportAnswer of reports.reportResponseImages) {
+                                if (Array.isArray(reportAnswer.images)) {
+                                    smartEngine.matchAnswers(reportAnswer.images[0]);
+                                    if (Array.isArray(reportAnswer.images_1)) {
+                                        smartEngine.matchAnswers(reportAnswer.images_1[0]);
+                                    }
                                 }
                             }
-                        }
-                    });
-                    message.removeMessageLoader("#mainContent2");
-                }
-                    
+
+                            for (let reportAnswer of reports.reportResponse) {
+                                if (Array.isArray(reportAnswer)) {
+                                    if (reportAnswer.length > 0) {
+                                        smartEngine.matchAnswers(reportAnswer[0]);
+                                    }
+                                }
+                            }
+                            message.removeMessageLoader("#mainContent2");
+                        });
+                    }
+                    else {
+                        message.removeMessageLoader("#mainContent2");
+                        console.log("Loading Report From DataModel");
+                    }
+
                 });
                 break;
             //My Reports    
@@ -605,10 +613,10 @@ module.exports = {
                 workers.getCurrentTime.then(function (currentTimeResponse) {
                     switch (status) {
                         case "SM-Status001":
-                            comments.push({ "author": username, "comment": "El reporte ha sido modificado", "time": JSON.parse(currentTimeResponse).result.localDateTime, "status": status })
+                            comments.push({ "author": reference.userInformation.fullname, "comment": "El reporte ha sido modificado exitosamente en el sistema", "time": JSON.parse(currentTimeResponse).result.localDateTime, "status": status })
                             break;
                         case "SM-Status002":
-                            comments.push({ "author": username, "comment": "El reporte ha sido completado", "time": JSON.parse(currentTimeResponse).result.localDateTime, "status": status })
+                            comments.push({ "author": reference.userInformation.fullname, "comment": "El reporte ha sido completado exitosamente en el sistema", "time": JSON.parse(currentTimeResponse).result.localDateTime, "status": status })
                             break;
                     }
                     var answersArr = JSON.parse(answer.userAnswer);
