@@ -30,17 +30,21 @@ self.addEventListener('message', function (e) {
     var answers = JSON.parse(data.answers);
     //Pass all the answer here to generate the match
     answers.forEach(function (answer, index) {
+        console.log("Continua Index : " + index);
         if (Array.isArray(answer[0])) {
             matchAnswers(answer[0]);
         }
         if (index == answers.length - 1) {
+            console.log("Finaliza Index: " + index);
+            if (Array.isArray(answer[0])) {
+                matchAnswers(answer[0]);
+            }
             console.log("Enviando Data", template_PDF);
             self.postMessage(JSON.stringify(template_PDF));
         }
     });
 
     function matchAnswers(answer) {
-        console.log("Answer is : ", answer);
         template_PDF.content.forEach(function (item) {
             //Get the elements - All Elements are built using tables 
             if (item.table != undefined) {
@@ -101,17 +105,20 @@ self.addEventListener('message', function (e) {
                 else {
                     item.table.body.forEach(function (itemBody) {
                         itemBody.forEach(function (itemSubBody) {
-                            if (itemSubBody.idSM != undefined) {
-                                console.log("Static Table : " + item.table.idSM);
-                                //Search on answer tree and remove the item from answer tree
-                                answer.forEach(function (answerElement) {
-                                    if (answerElement.sel == itemSubBody.idSM) {
-                                        itemSubBody.text = answerElement.val;
-                                    }
-                                });
-                            }
+                            /*
                             if (itemSubBody.default_image == true) {
                                 itemSubBody.image = default_image;
+                            }*/
+                            if (itemSubBody.idSM != undefined) {
+                                console.log("Static Table : " + itemSubBody.idSM);
+                                //Search on answer tree and remove the item from answer tree
+                                answer.forEach(function (answerElement) {
+                                    console.log("Answer Element : " + answerElement.sel);
+                                    if (answerElement.sel == itemSubBody.idSM) {
+                                        itemSubBody.text = answerElement.val;
+                                        console.log("Se ha realizado el Match : " + answerElement.type);
+                                    }
+                                });
                             }
                             if (itemSubBody.customer_image != undefined) {
                                 var customer_image = itemSubBody.customer_image;
@@ -131,41 +138,43 @@ self.addEventListener('message', function (e) {
             //Colums Elements
 
             if (item.columns != undefined) {
-                item.columns.forEach(function (item) {
-                    if (item.table != undefined) {
-                        console.log("Order:" + item.table.order);
-                        if (item.table.order = "ASC") {
+                console.log("Columns Element is present");
+                item.columns.forEach(function (itemColumn) {
+                    console.log("Item Column : " + JSON.stringify(itemColumn));
+                    if (itemColumn.table != undefined) {
+                        console.log("Order:" + itemColumn.table.order);
+                        if (itemColumn.table.order == "ASC") {
                             answer.forEach(function (answerVal) {
-                                if (item.table.idSM == answerVal.sel) {
-                                    console.log("Dynamic Table : " + item.table.idSM);
-                                    var tableBodyHead = item.table.body[0];
-                                    console.log("Dynamic Table : " + item.table.idSM + " - Table Body Head : ", tableBodyHead);
+                                if (itemColumn.table.idSM == answerVal.sel) {
+                                    console.log("Dynamic Table : " + itemColumn.table.idSM);
+                                    var tableBodyHead = itemColumn.table.body[0];
+                                    console.log("Dynamic Table : " + itemColumn.table.idSM + " - Table Body Head : ", tableBodyHead);
                                     var tableBody = [];
                                     var tableBodyItem = [];
-                                    console.log("Dynamic Table : " + item.table.idSM + " - Values to Add [String]: ", answerVal.val);
+                                    console.log("Dynamic Table : " + itemColumn.table.idSM + " - Values to Add [String]: ", answerVal.val);
                                     if (answerVal.val != "") {
                                         var tablesValues = JSON.parse(answerVal.val);
-                                        console.log("Dynamic Table : " + item.table.idSM + " - Values to Add [Arr]: ", tablesValues);
+                                        console.log("Dynamic Table : " + itemColumn.table.idSM + " - Values to Add [Arr]: ", tablesValues);
                                         if (tablesValues.length > 0) {
                                             tablesValues.forEach(function (tableItem) {
                                                 /* Order Array ASCEDENT or DESCENDENT */
-                                                if (item.table.order == 'ASC') {
+                                                if (itemColumn.table.order == 'ASC') {
                                                     tableItem.sort();
                                                 }
-                                                else if (item.table.order == 'DESC') {
+                                                else if (itemColumn.table.order == 'DESC') {
                                                     tableItem.reverse();
                                                 }
 
                                                 /* Adding the first column to row */
-                                                tableBodyItem.push({ "text": item.table.startNumber, "style": "textWhite" });
+                                                tableBodyItem.push({ "text": itemColumn.table.startNumber, "style": "textWhite" });
                                                 console.log("Agregando Elemento", tableBodyItem);
 
                                                 /* Sum start number for next columns. Integer - Float*/
-                                                if (item.table.sequence == "integer") {
-                                                    item.table.startNumber += 1
+                                                if (itemColumn.table.sequence == "integer") {
+                                                    itemColumn.table.startNumber += 1
                                                 }
-                                                else if (item.table.sequence == "float") {
-                                                    item.table.starNumber = (parseFloat(item.table.startNumber) + 0.1).toPrecision(2)
+                                                else if (itemColumn.table.sequence == "float") {
+                                                    itemColumn.table.starNumber = (parseFloat(item.table.startNumber) + 0.1).toPrecision(2)
                                                 }
                                                 for (var i = 1; i < tableItem.length; i++) {
                                                     tableBodyItem.push({ "text": tableItem[i], "style": "textWhite" });
@@ -175,13 +184,13 @@ self.addEventListener('message', function (e) {
                                                 tableBodyItem = [];
                                             });
                                             tableBody.splice(0, 0, tableBodyHead);
-                                            item.table.body = tableBody;
+                                            itemColumn.table.body = tableBody;
                                             console.log("Table Body", tableBody);
                                         }
                                     }
                                 }
                                 else {
-                                    item.table.body.forEach(function (itemBody) {
+                                    itemColumn.table.body.forEach(function (itemBody) {
                                         itemBody.forEach(function (itemSubBody) {
                                             if (itemSubBody.customer_image != undefined) {
                                                 var customer_image = itemSubBody.customer_image;
@@ -202,7 +211,42 @@ self.addEventListener('message', function (e) {
                                 }
                             });
                         }
+                        else {
+                            console.log("It´s an image on the column");
+                            //It's an Image
+                            item.table.body.forEach(function (itemBody) {
+                                itemBody.forEach(function (itemSubBody) {
+                                    /*
+                                    if (itemSubBody.default_image == true) {
+                                        itemSubBody.image = default_image;
+                                    }*/
+                                    if (itemSubBody.idSM != undefined) {
+                                        console.log("Static Table - Columns : " + itemSubBody.idSM);
+                                        //Search on answer tree and remove the item from answer tree
+                                        answer.forEach(function (answerElement) {
+                                            console.log("Answer Element : " + answerElement.sel);
+                                            if (answerElement.sel == itemSubBody.idSM) {
+                                                itemSubBody.text = answerElement.val;
+                                                console.log("Se ha realizado el Match : " + answerElement.type);
+                                            }
+                                        });
+                                    }
+                                    if (itemSubBody.customer_image != undefined) {
+                                        var customer_image = itemSubBody.customer_image;
+                                        switch (customer_image) {
+                                            case "Movistar":
+                                                itemSubBody.image = customer_image_movistar;
+                                                break;
+                                            case "ATC":
+                                                itemSubBody.image = customer_image_atc;
+                                                break;
+                                        }
+                                    }
+                                });
+                            });
+                        }
                     }
+
                 });
             }
 

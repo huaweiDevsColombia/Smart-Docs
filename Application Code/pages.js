@@ -994,7 +994,17 @@ module.exports = {
                 console.log("Load Template was correct");
                 reports.loadReport(reports.reportSelected.id_report).then(function () {
                     console.log("Load Report was correct");
-                    workers.loadPDF(templates.template[0].jsonPdf, "Template Name", true, "Ticked id", reports.reportResponse, "Sebastian Guevara")
+                    let answerReport = reports.reportResponse;
+                    for (let reportAnswer of reports.reportResponseImages) {
+                        if (Array.isArray(reportAnswer.images)) {
+                            answerReport.push([reportAnswer.images[0]]);
+                            if (Array.isArray(reportAnswer.images_1)) {
+                                answerReport.push([reportAnswer.images_1[0]]);
+                            }
+                        }
+                    }
+
+                    workers.loadPDF(templates.template[0].jsonPdf, "Template Name", true, "Ticked id", answerReport, "Sebastian Guevara")
                         .then(function (loadPdfResponse) {
                             console.log("Pdf Response was correct");
                             //console.log(loadPdfResponse);

@@ -365,7 +365,7 @@ module.exports = {
             let workerloadPDF = $.ajax({
                 method: "GET",
                 dataType: "script",
-                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=ca40bca4-0814-48b4-99a9-257a29379764&attachmentId=f152e386-adc2-4a96-8382-0d49deb70661"
+                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=363902f3-6a73-4c10-b8a9-7223c82e22f8&attachmentId=6fe45630-56fa-49dc-98c8-5ff4543b03d0"
             });
             $.when(workerloadPDF).done(function (workerloadPDFResponse) {
                 $('<script>')
