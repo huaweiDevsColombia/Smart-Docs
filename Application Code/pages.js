@@ -649,6 +649,7 @@ module.exports = {
                     let saveAnswerWeek = reference.saveAnswerReport("week_answer", answerWeek, idReport);
                     let saveAnswerMonth = reference.saveAnswerReport("month_answer", answerMonth, idReport);
                     let saveAnswerText = reference.saveAnswerReport("text_answer", answerText, idReport);
+                    let saveAnswerNumber = reference.saveAnswerReport("number_answer", answerNumber, idReport);
                     let saveAnswerRadio = reference.saveAnswerReport("radio_answer", answerRadio, idReport);
                     let saveAnswerCheckBox = reference.saveAnswerReport("radio_answer", answerCheckbox, idReport);
                     let saveAnswerSelect = reference.saveAnswerReport("select_answer", answerSelect, idReport);
@@ -658,7 +659,7 @@ module.exports = {
 
                     //Check save images must be equals like creation - Currently is not working 
 
-                    Promise.all([updateReportInfo, saveAnswerDate, saveAnswerDateTime, saveAnswerTime, saveAnswerWeek, saveAnswerMonth, saveAnswerText, saveAnswerRadio, answerCheckbox, saveAnswerSelect, saveAnswerMultiSelect, saveAnswerList, saveAnswerTable]).then(values => {
+                    Promise.all([updateReportInfo, saveAnswerDate, saveAnswerDateTime, saveAnswerTime, saveAnswerWeek, saveAnswerMonth, saveAnswerText, saveAnswerNumber, saveAnswerRadio, answerCheckbox, saveAnswerSelect, saveAnswerMultiSelect, saveAnswerList, saveAnswerTable]).then(values => {
                         let contProImg = 0; let subIdNumber = 0; let subId = "-SB";
                         let promisesUpdate = [];
                         do {
@@ -733,6 +734,7 @@ module.exports = {
                     let saveAnswerWeek = reference.saveAnswerReport("week_answer", answerWeek, idReport);
                     let saveAnswerMonth = reference.saveAnswerReport("month_answer", answerMonth, idReport);
                     let saveAnswerText = reference.saveAnswerReport("text_answer", answerText, idReport);
+                    let saveAnswerNumber = reference.saveAnswerReport("number_answer", answerNumber, idReport);
                     let saveAnswerRadio = reference.saveAnswerReport("radio_answer", answerRadio, idReport);
                     //let saveAnswerCheckBox = reference.saveAnswerReport("radio_answer", answerCheckbox, idReport);
                     let saveAnswerSelect = reference.saveAnswerReport("select_answer", answerSelect, idReport);
@@ -741,7 +743,7 @@ module.exports = {
                     let saveAnswerTable = reference.saveAnswerReport("table_answer", answerTable, idReport);
 
                     let contProImg = 0; let subIdNumber = 0; let subId = "-SB";
-                    let promisesSave = [saveAnswerDate, saveAnswerDateTime, saveAnswerTime, saveAnswerWeek, saveAnswerMonth, saveAnswerText, saveAnswerRadio, saveAnswerSelect, saveAnswerMultiSelect, saveAnswerList, saveAnswerTable];
+                    let promisesSave = [saveAnswerDate, saveAnswerDateTime, saveAnswerTime, saveAnswerWeek, saveAnswerMonth, saveAnswerNumber, saveAnswerText, saveAnswerRadio, saveAnswerSelect, saveAnswerMultiSelect, saveAnswerList, saveAnswerTable];
                     do {
                         console.log(this["answerImages_" + contProImg]);
                         if (contProImg % 2 == 0) {

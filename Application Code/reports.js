@@ -31,6 +31,7 @@ module.exports = {
             let getAnswerWeek = reference.getAnswer("week_answer", idReport);
             let getAnswerMonth = reference.getAnswer("month_answer", idReport);
             let getAnswerText = reference.getAnswer("text_answer", idReport);
+            let getAnswerNumber = reference.getAnswer("number_answer", idReport);
             let getAnswerRadio = reference.getAnswer("radio_answer", idReport);
             let getAnswerCheckbox = reference.getAnswer("radio_answer", idReport);
             let getAnswerSelect = reference.getAnswer("select_answer", idReport);
@@ -39,7 +40,7 @@ module.exports = {
             let getAnswerTable = reference.getAnswer("table_answer", idReport);
             let totalImages = reference.getAnswerImageTotal(idReport);
             let getAnswerImages = [];
-            Promise.all([getAnswerDate, getAnswerDateTime, getAnswerTime, getAnswerWeek, getAnswerMonth, getAnswerText, getAnswerRadio, getAnswerCheckbox, getAnswerSelect, getAnswerMultiSelect, getAnswerList, getAnswerTable,totalImages]).then(values => {
+            Promise.all([getAnswerDate, getAnswerDateTime, getAnswerTime, getAnswerWeek, getAnswerMonth, getAnswerText, getAnswerNumber, getAnswerRadio, getAnswerCheckbox, getAnswerSelect, getAnswerMultiSelect, getAnswerList, getAnswerTable,totalImages]).then(values => {
                 let contProImg = 0; let subIdNumber = 0; let subId = "-SB";
                 reference.reportResponse = values;
                 do{

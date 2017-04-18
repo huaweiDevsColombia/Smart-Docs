@@ -84,15 +84,21 @@ self.addEventListener('message', function (e) {
                                         else if (item.table.sequence == "float") {
                                             item.table.starNumber = (parseFloat(item.table.startNumber) + 0.1).toPrecision(2)
                                         }
-
                                         for (var i = 1; i < tableItem.length; i++) {
-
                                             tableBodyItem.push({ "text": tableItem[i], "style": "textWhite" });
                                             console.log("Agregando Elemento", tableBodyItem);
                                         }
                                         tableBody.push(tableBodyItem);
                                         tableBodyItem = [];
                                     });
+                                    /* Add minColumns  */
+                                    if(tableBody.length < item.table.minCol){
+                                    
+                                    /*    var tableBodyRest = item.table.body[0].slice(tablesValues.length-1,item.table.minCol);
+                                        tableBody.splice(tablesValues.length-1,0,tableBodyRest);
+                                    */    
+                                    }
+                                    
                                     tableBody.splice(0, 0, tableBodyHead);
                                     item.table.body = tableBody;
                                     console.log("Table Body", tableBody);
@@ -214,7 +220,7 @@ self.addEventListener('message', function (e) {
                         else {
                             console.log("It´s an image on the column");
                             //It's an Image
-                            item.table.body.forEach(function (itemBody) {
+                            itemColumn.table.body.forEach(function (itemBody) {
                                 itemBody.forEach(function (itemSubBody) {
                                     /*
                                     if (itemSubBody.default_image == true) {
@@ -226,7 +232,7 @@ self.addEventListener('message', function (e) {
                                         answer.forEach(function (answerElement) {
                                             console.log("Answer Element : " + answerElement.sel);
                                             if (answerElement.sel == itemSubBody.idSM) {
-                                                itemSubBody.text = answerElement.val;
+                                                itemSubBody.image = answerElement.val;
                                                 console.log("Se ha realizado el Match : " + answerElement.type);
                                             }
                                         });
