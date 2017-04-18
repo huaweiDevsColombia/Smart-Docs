@@ -437,7 +437,7 @@ module.exports = {
             let workerloadPDF = $.ajax({
                 method: "GET",
                 dataType: "script",
-                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=6ff9bed1-b302-4d78-98fd-f5cbe0bb8247&attachmentId=d8a8ee25-68f8-46e0-ab48-9ccc3dc35d06"
+                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=60855d85-6868-423f-bfa8-deff5c8df4dd&attachmentId=f11e63c5-3c93-4ba8-88a3-a8106db4697a"
             });
             $.when(workerloadPDF).done(function (workerloadPDFResponse) {
                 $('<script>')
@@ -463,7 +463,7 @@ module.exports = {
                 }
                     , false);
 
-                worker.postMessage({ "template":JSON.stringify(template), "template_name":template_name, "watermark":watermark, "ticket_id":ticket_id, "answers":JSON.stringify(answers), "username":username}); // Send data to our worker.
+                worker.postMessage({ "template":JSON.stringify(template), "template_name":template_name, "watermark":watermark, "ticket":ticket_id, "answers":JSON.stringify(answers), "username":username}); // Send data to our worker.
 
                 console.log("[Wk] - Load PDF has Loaded");
 
@@ -809,8 +809,7 @@ module.exports = {
                     $('#templateNavTabs a:first').tab('show');
                     reference.loadEventSaveReport();
                     message.removeMessageLoader("#mainContent2");
-                });
-                console.log("Loading Report From DataModel");
+                    console.log("Loading Report From DataModel");
                 if (reports.reportSelected.id_report != undefined) {
                     message.addMessageLoder("loaderMessage2", "#mainContent2");
                     message.changeMessageLoader("loaderMessage2", "Cargando Reporte Almacenado");
@@ -836,6 +835,8 @@ module.exports = {
                     });
                     message.removeMessageLoader("#mainContent2");
                 }
+                    
+                });
                 break;
             //My Reports    
             case "page-014":
@@ -948,7 +949,7 @@ module.exports = {
             ticketsType.splice(ticketsType.indexOf("PLM"), 1)
         }
 
-        if (PMLength > 0 || CMLength > 0 || PMlLength > 0) {
+        if (PMLength > 0 || CMLength > 0 || PMLLength > 0) {
             $("#ticketsNotFound").remove();
             let cont = 0;
             for (let ticket_type of ticketsType) {
@@ -1169,6 +1170,8 @@ module.exports = {
                     let saveAnswerMultiSelect = reference.saveAnswerReport("multiselect_answer", answerMultiSelect, idReport);
                     let saveAnswerList = reference.saveAnswerReport("list_answer", answerList, idReport);
                     let saveAnswerTable = reference.saveAnswerReport("table_answer", answerTable, idReport);
+
+                    //Check save images must be equals like creation - Currently is not working 
 
                     Promise.all([updateReportInfo, saveAnswerDate, saveAnswerDateTime, saveAnswerTime, saveAnswerWeek, saveAnswerMonth, saveAnswerText, saveAnswerRadio, answerCheckbox, saveAnswerSelect, saveAnswerMultiSelect, saveAnswerList, saveAnswerTable]).then(values => {
                         let contProImg = 0; let subIdNumber = 0; let subId = "-SB";
@@ -2400,7 +2403,7 @@ module.exports = {
                 if (index == tableVal.length - 1) {
                     $("#" + tableId + " > tbody > tr[id='" + tableId + tableVal[0] + "']").append("<td><div id='" + tableVal[0] + "Del'> <i class='fa fa-trash-o'></i>Eliminar</div></td>");
 
-                    $("#" + tableVal[0] + "Del").click(() => {
+                    $("#" + tableVal[0] + "Del").click(function () {
                         let id = this.id;
                         let dataSearch = id.replace("Del", "");
                         let tableData = JSON.parse($("#" + tableId + "Value").val());
@@ -2440,8 +2443,8 @@ module.exports = {
         }
         let doIt = false;
         let temp = 0;
-        tableValues.forEach((tableVal, indexBig) => {
-            tableVal.forEach((val, index) => {
+        tableValues.forEach(function (tableVal, indexBig) {
+            tableVal.forEach( function (val, index) {
                 if (index == 0) {
                     console.log("Imprimir TR con IndexInterno:" + val);
                     $("#" + tableId + " > tbody").append("<tr id='" + tableId + + tableVal[0] + "' value='" + tableVal + "'><td>" + indexBig + "</td></tr>");
@@ -2453,11 +2456,11 @@ module.exports = {
                 if (index == tableVal.length - 1) {
                     $("#" + tableId + " > tbody > tr[id='" + tableId + tableVal[0] + "']").append("<td><div id='" + tableVal[0] + "Del'> <i class='fa fa-trash-o'></i>Eliminar</div></td>");
 
-                    $("#" + tableVal[0] + "Del").click(() => {
+                    $("#" + tableVal[0] + "Del").click( function () {
                         let id = this.id;
                         let dataSearch = id.replace("Del", "");
                         let tableData = JSON.parse($("#" + tableId + "Value").val());
-                        tableData.forEach((value, indexData) => {
+                        tableData.forEach( function (value, indexData) {
                             if (dataSearch == value[0]) {
                                 console.log("I found the value", tableData[indexData]);
                                 tableData.splice(indexData, 1);
@@ -3201,7 +3204,7 @@ module.exports = {
                                                     var values = [];
                                                     var qtyEle = 0;
 
-                                                    values.push($("#" + valueSubPanelEle.id + "Index").val());
+                                                    values.push(($("#" + valueSubPanelEle.id + "Index").val() == "") ? 0 : parseInt($("#" + valueSubPanelEle.id + "Index").val()) );
                                                     valueSubPanelEle.elements.forEach(function (valueEle2, indexEle2) {
 
                                                         switch (valueEle2.type) {
@@ -3230,8 +3233,8 @@ module.exports = {
                                                     });
                                                     console.log("Value sent" + values);
                                                     if (values.length == qtyEle + 1) {
-                                                        $("#" + valueSubPanelEle.id + "Index").val(parseInt($("#" + valueSubPanelEle.id + "Index").val()) + 1);
-                                                        var index = $("#" + valueSubPanelEle.id + "Index").val();
+                                                        $("#" + valueSubPanelEle.id + "Index").val( ($("#" + valueSubPanelEle.id + "Index").val() == "")? 1 : parseInt($("#" + valueSubPanelEle.id + "Index").val()) + 1);
+                                                        var index = parseInt ($("#" + valueSubPanelEle.id + "Index").val());
                                                         reference.addToTable(valueSubPanelEle.id, values, index);
                                                     }
                                                     else {

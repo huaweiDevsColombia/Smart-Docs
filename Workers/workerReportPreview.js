@@ -29,90 +29,120 @@ self.addEventListener('message', function (e) {
 
     var answers = JSON.parse(data.answers);
     //Pass all the answer here to generate the match
-    answers.forEach(function (answer,index) {
+    answers.forEach(function (answer, index) {
         if (Array.isArray(answer[0])) {
             matchAnswers(answer[0]);
         }
-        if(index == answers.length-1){
-         console.log("Enviando Data", template_PDF);
-        self.postMessage(JSON.stringify(template_PDF));   
+        if (index == answers.length - 1) {
+            console.log("Enviando Data", template_PDF);
+            self.postMessage(JSON.stringify(template_PDF));
         }
     });
 
     function matchAnswers(answer) {
         console.log("Answer is : ", answer);
         template_PDF.content.forEach(function (item) {
+            //Get the elements - All Elements are built using tables 
             if (item.table != undefined) {
-                item.table.body.forEach(function (itemBody) {
-                    itemBody.forEach(function (itemSubBody) {
-                        if (itemSubBody.idSM != undefined) {
-                            //Search on answer tree and remove the item from answer tree
-                            answer.forEach(function (answerElement) {
-                                console.log("AnswerElement Sel : " + answerElement.sel);
-                                console.log("itemSubBody.idSM : "+ itemSubBody.idSM);
-                                if (answerElement.sel == itemSubBody.idSM) {
-                                    itemSubBody.text = answerElement.val;
-                                }
-                            });
-                        }
-                        if (itemSubBody.customer_image != undefined) {
-                            var customer_image = itemSubBody.customer_image;
-                            switch (customer_image) {
-                                case "Movistar":
-                                    itemSubBody.image = customer_image_movistar;
-                                    break;
-                                case "ATC":
-                                    itemSubBody.image = customer_image_atc;
-                                    break;
-                            }
-                        }
+                /*For into answer and found the table thath match width the idSM */
 
-                        if (itemSubBody.default_image == true) {
-                            itemSubBody.image = default_image;
+                /* Check if it's a dynamic table */
+                if (item.table.idSM != undefined) {
+                    answer.forEach(function (answerVal) {
+                        if (item.table.idSM == answerVal.sel) {
+                            console.log("Dynamic Table : " + item.table.idSM);
+                            var tableBodyHead = item.table.body[0];
+                            console.log("Dynamic Table : " + item.table.idSM + " - Table Body Head : ", tableBodyHead);
+                            var tableBody = [];
+                            var tableBodyItem = [];
+                            console.log("Dynamic Table : " + item.table.idSM + " - Values to Add [String]: ", answerVal.val);
+                            if (answerVal.val != "") {
+                                var tablesValues = JSON.parse(answerVal.val);
+                                console.log("Dynamic Table : " + item.table.idSM + " - Values to Add [Arr]: ", tablesValues);
+                                if (tablesValues.length > 0) {
+                                    tablesValues[0].forEach(function (tableItem) {
+                                        for (var i = 0; i < tablesValues[0].length; i++) {
+                                            tableBodyItem.push({ "text": i, "style": "textWhiteCenter" });
+                                            console.log("Agregando Elemento", tableBodyItem);
+                                            console.log("Posicion:" + i);
+                                        }
+                                        tableBody.push(tableBodyItem);
+                                        tableBodyItem = [];
+                                    });
+                                    tableBody.splice(0, 0, tableBodyHead);
+                                    item.table.body = tableBody;
+                                    console.log("Table Body", tableBody);
+                                }
+                            }
+
                         }
                     });
-                });
+                }
+                /* It's a static table  - not table on web*/
+                else {
+                    item.table.body.forEach(function (itemBody) {
+                        itemBody.forEach(function (itemSubBody) {
+                            if (itemSubBody.idSM != undefined) {
+                                console.log("Static Table : " + item.table.idSM);
+                                //Search on answer tree and remove the item from answer tree
+                                answer.forEach(function (answerElement) {
+                                    if (answerElement.sel == itemSubBody.idSM) {
+                                        itemSubBody.text = answerElement.val;
+                                    }
+                                });
+                            }
+                            if (itemSubBody.default_image == true) {
+                                itemSubBody.image = default_image;
+                            }
+                            if (itemSubBody.customer_image != undefined) {
+                                var customer_image = itemSubBody.customer_image;
+                                switch (customer_image) {
+                                    case "Movistar":
+                                        itemSubBody.image = customer_image_movistar;
+                                        break;
+                                    case "ATC":
+                                        itemSubBody.image = customer_image_atc;
+                                        break;
+                                }
+                            }
+                        });
+                    });
+                }
             }
+            //Colums Elements
 
-            /* Checking Columns Elements */
             if (item.columns != undefined) {
-
                 item.columns.forEach(function (item) {
                     if (item.table != undefined) {
                         console.log("Order:" + item.table.order);
                         if (item.table.order = "ASC") {
-                            answer.forEach(function (answerElement) {
-                                if (answerElement.sel == item.table.idSM) {
-                                    //var tableBodyHead = item.table.body[0];
-                                    console.log("Table Original", item.table);
-                                    console.log("Table Body Original", item.table.body);
-                                    console.log("Table Body Head:", item.table.body[0]);
-
+                            answer.forEach(function (answerVal) {
+                                if (item.table.idSM == answerVal.sel) {
+                                    console.log("Dynamic Table : " + item.table.idSM);
+                                    var tableBodyHead = item.table.body[0];
+                                    console.log("Dynamic Table : " + item.table.idSM + " - Table Body Head : ", tableBodyHead);
                                     var tableBody = [];
                                     var tableBodyItem = [];
-                                    console.log("Answer Element:" + answerElement.val);
-                                    console.log("Answer Element Length" + answerElement.val.length);
-                                    console.log("Answer Element Type Of" + (answerElement.val == "") ? "Vacio" : "Con Elementos");
-                                    if (answerElement.val != "") {
-                                        console.log("Entre a modificar el documento");
-                                        let answerElementTable = JSON.parse(answerElement.val);
-                                        if (answerElementTable.length > 0) {
-                                            answerElementTable.forEach(function (tableItem) {
-                                                for (var i = 1; i < tableItem.length; i++) {
-                                                    tableBodyItem.push({ "text": tableItem[i], "style": "textWhiteCenter" });
+                                    console.log("Dynamic Table : " + item.table.idSM + " - Values to Add [String]: ", answerVal.val);
+                                    if (answerVal.val != "") {
+                                        var tablesValues = JSON.parse(answerVal.val);
+                                        console.log("Dynamic Table : " + item.table.idSM + " - Values to Add [Arr]: ", tablesValues);
+                                        if (tablesValues.length > 0) {
+                                            tablesValues[0].forEach(function (tableItem) {
+                                                for (var i = 0; i < tablesValues[0].length; i++) {
+                                                    tableBodyItem.push({ "text": i, "style": "textWhiteCenter" });
                                                     console.log("Agregando Elemento", tableBodyItem);
                                                     console.log("Posicion:" + i);
                                                 }
                                                 tableBody.push(tableBodyItem);
                                                 tableBodyItem = [];
                                             });
+                                            tableBody.splice(0, 0, tableBodyHead);
                                             item.table.body = tableBody;
                                             console.log("Table Body", tableBody);
                                         }
                                     }
-                                    else {
-                                        console.log("Deje el documento tal y como esta");
-                                    }
+
                                 }
                                 else {
                                     item.table.body.forEach(function (itemBody) {
@@ -139,6 +169,7 @@ self.addEventListener('message', function (e) {
                     }
                 });
             }
+
         });
     }
 

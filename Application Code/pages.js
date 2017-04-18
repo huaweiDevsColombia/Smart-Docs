@@ -286,8 +286,7 @@ module.exports = {
                     $('#templateNavTabs a:first').tab('show');
                     reference.loadEventSaveReport();
                     message.removeMessageLoader("#mainContent2");
-                });
-                console.log("Loading Report From DataModel");
+                    console.log("Loading Report From DataModel");
                 if (reports.reportSelected.id_report != undefined) {
                     message.addMessageLoder("loaderMessage2", "#mainContent2");
                     message.changeMessageLoader("loaderMessage2", "Cargando Reporte Almacenado");
@@ -313,6 +312,8 @@ module.exports = {
                     });
                     message.removeMessageLoader("#mainContent2");
                 }
+                    
+                });
                 break;
             //My Reports    
             case "page-014":
@@ -646,6 +647,8 @@ module.exports = {
                     let saveAnswerMultiSelect = reference.saveAnswerReport("multiselect_answer", answerMultiSelect, idReport);
                     let saveAnswerList = reference.saveAnswerReport("list_answer", answerList, idReport);
                     let saveAnswerTable = reference.saveAnswerReport("table_answer", answerTable, idReport);
+
+                    //Check save images must be equals like creation - Currently is not working 
 
                     Promise.all([updateReportInfo, saveAnswerDate, saveAnswerDateTime, saveAnswerTime, saveAnswerWeek, saveAnswerMonth, saveAnswerText, saveAnswerRadio, answerCheckbox, saveAnswerSelect, saveAnswerMultiSelect, saveAnswerList, saveAnswerTable]).then(values => {
                         let contProImg = 0; let subIdNumber = 0; let subId = "-SB";

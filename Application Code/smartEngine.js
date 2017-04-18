@@ -39,7 +39,7 @@ module.exports = {
                 if (index == tableVal.length - 1) {
                     $("#" + tableId + " > tbody > tr[id='" + tableId + tableVal[0] + "']").append("<td><div id='" + tableVal[0] + "Del'> <i class='fa fa-trash-o'></i>Eliminar</div></td>");
 
-                    $("#" + tableVal[0] + "Del").click(() => {
+                    $("#" + tableVal[0] + "Del").click(function () {
                         let id = this.id;
                         let dataSearch = id.replace("Del", "");
                         let tableData = JSON.parse($("#" + tableId + "Value").val());
@@ -79,8 +79,8 @@ module.exports = {
         }
         let doIt = false;
         let temp = 0;
-        tableValues.forEach((tableVal, indexBig) => {
-            tableVal.forEach((val, index) => {
+        tableValues.forEach(function (tableVal, indexBig) {
+            tableVal.forEach( function (val, index) {
                 if (index == 0) {
                     console.log("Imprimir TR con IndexInterno:" + val);
                     $("#" + tableId + " > tbody").append("<tr id='" + tableId + + tableVal[0] + "' value='" + tableVal + "'><td>" + indexBig + "</td></tr>");
@@ -92,11 +92,11 @@ module.exports = {
                 if (index == tableVal.length - 1) {
                     $("#" + tableId + " > tbody > tr[id='" + tableId + tableVal[0] + "']").append("<td><div id='" + tableVal[0] + "Del'> <i class='fa fa-trash-o'></i>Eliminar</div></td>");
 
-                    $("#" + tableVal[0] + "Del").click(() => {
+                    $("#" + tableVal[0] + "Del").click( function () {
                         let id = this.id;
                         let dataSearch = id.replace("Del", "");
                         let tableData = JSON.parse($("#" + tableId + "Value").val());
-                        tableData.forEach((value, indexData) => {
+                        tableData.forEach( function (value, indexData) {
                             if (dataSearch == value[0]) {
                                 console.log("I found the value", tableData[indexData]);
                                 tableData.splice(indexData, 1);
@@ -840,7 +840,7 @@ module.exports = {
                                                     var values = [];
                                                     var qtyEle = 0;
 
-                                                    values.push($("#" + valueSubPanelEle.id + "Index").val());
+                                                    values.push(($("#" + valueSubPanelEle.id + "Index").val() == "") ? 0 : parseInt($("#" + valueSubPanelEle.id + "Index").val()) );
                                                     valueSubPanelEle.elements.forEach(function (valueEle2, indexEle2) {
 
                                                         switch (valueEle2.type) {
@@ -869,8 +869,8 @@ module.exports = {
                                                     });
                                                     console.log("Value sent" + values);
                                                     if (values.length == qtyEle + 1) {
-                                                        $("#" + valueSubPanelEle.id + "Index").val(parseInt($("#" + valueSubPanelEle.id + "Index").val()) + 1);
-                                                        var index = $("#" + valueSubPanelEle.id + "Index").val();
+                                                        $("#" + valueSubPanelEle.id + "Index").val( ($("#" + valueSubPanelEle.id + "Index").val() == "")? 1 : parseInt($("#" + valueSubPanelEle.id + "Index").val()) + 1);
+                                                        var index = parseInt ($("#" + valueSubPanelEle.id + "Index").val());
                                                         reference.addToTable(valueSubPanelEle.id, values, index);
                                                     }
                                                     else {
