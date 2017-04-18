@@ -638,7 +638,6 @@ module.exports = {
                     answerMultiSelect = reference.filterByAnswerType('multiSelect');
                     answerList = reference.filterByAnswerType('list');
                     answerTable = reference.filterByAnswerType('table');
-                    answerImages = reference.filterByAnswerTypeImage();
                     console.log("Updating the Report");
                     idReport = reports.reportSelected.id_report;
                     reference.changeSaveModalText("Abriendo Comunicacion con @OWS");
@@ -656,22 +655,66 @@ module.exports = {
                     let saveAnswerMultiSelect = reference.saveAnswerReport("multiselect_answer", answerMultiSelect, idReport);
                     let saveAnswerList = reference.saveAnswerReport("list_answer", answerList, idReport);
                     let saveAnswerTable = reference.saveAnswerReport("table_answer", answerTable, idReport);
+                    answerImages = reference.filterByAnswerTypeImage();
+                    contImages = 0;
+                    do {
+                        this["answerImages_" + contImages] = answerImages.splice(0, 2);
+                        contImages++;
+                    }
+                    while (answerImages.length > 0);
+                    reports.reportTemp["total_images"] = contImages;
+                    reports.reportTemp["total_images_saved"] = 0;
 
                     //Check save images must be equals like creation - Currently is not working 
 
                     Promise.all([updateReportInfo, saveAnswerDate, saveAnswerDateTime, saveAnswerTime, saveAnswerWeek, saveAnswerMonth, saveAnswerText, saveAnswerNumber, saveAnswerRadio, answerCheckbox, saveAnswerSelect, saveAnswerMultiSelect, saveAnswerList, saveAnswerTable]).then(values => {
                         let contProImg = 0; let subIdNumber = 0; let subId = "-SB";
-                        let promisesUpdate = [];
+                        let promisesSave = [saveAnswerDate, saveAnswerDateTime, saveAnswerTime, saveAnswerWeek, saveAnswerMonth, saveAnswerNumber, saveAnswerText, saveAnswerRadio, saveAnswerSelect, saveAnswerMultiSelect, saveAnswerList, saveAnswerTable];
                         do {
                             console.log(this["answerImages_" + contProImg]);
-                            this["saveAnswerImage_" + contProImg] = reference.saveAnswerReportImagesUpdate("[" + JSON.stringify(this["answerImages_" + contProImg]) + "]", idReport + subId + subIdNumber, idReport);
-                            promisesUpdate.push(this["saveAnswerImage_" + contProImg]);
-                            subIdNumber++;
+                            if (contProImg % 2 == 0) {
+                                this["saveAnswerImage_" + contProImg] = reference.saveAnswerReportImagesCreate("[" + JSON.stringify(this["answerImages_" + contProImg]) + "]", idReport + subId + subIdNumber, idReport);
+                                promisesSave.push(this["saveAnswerImage_" + contProImg]);
+                                subIdNumber++;
+                            }
                             console.log(contProImg);
                             contProImg++;
                         }
                         while (contProImg <= contImages);
                         contProImg = 0; subIdNumber = 0;
+
+
+
+                        console.log(promisesSave);
+                        Promise.all(promisesSave).then(function (values) {
+                            let promisesUpdate = [];
+                            do {
+                                console.log(this["answerImages_" + contProImg]);
+                                if (contProImg % 2 != 0) {
+                                    this["saveAnswerImage_" + contProImg] = reference.saveAnswerReportImagesUpdate("[" + JSON.stringify(this["answerImages_" + contProImg]) + "]", idReport + subId + subIdNumber, idReport);
+                                    promisesUpdate.push(this["saveAnswerImage_" + contProImg]);
+                                    subIdNumber++;
+                                }
+                                console.log(contProImg);
+                                contProImg++;
+                            }
+                            while (contProImg <= contImages);
+
+                            Promise.all(promisesUpdate).then(function (values) {
+                            reference.changeSaveModalText("Se ha guardado exitosamente tu progreso");
+                            reference.removeSaveModal();
+                            if (answer.completed) {
+                                reference.launchAnswerCompletedModal();
+                            }
+                            else {
+                                reference.launchAnswerInCompleteModal(answer.fieldsEmpty);
+                            }
+                            reference.bootstrapPage('page-021');
+                        });
+
+                        });
+
+                        /*
                         Promise.all(promisesUpdate).then(function (values) {
                             reference.changeSaveModalText("Se ha guardado exitosamente tu progreso");
                             reference.removeSaveModal();
@@ -683,6 +726,7 @@ module.exports = {
                             }
                             reference.bootstrapPage('page-021');
                         });
+                        */
                     });
                 })
             }
