@@ -702,16 +702,16 @@ module.exports = {
                             while (contProImg <= contImages);
 
                             Promise.all(promisesUpdate).then(function (values) {
-                            reference.changeSaveModalText("Se ha guardado exitosamente tu progreso");
-                            reference.removeSaveModal();
-                            if (answer.completed) {
-                                reference.launchAnswerCompletedModal();
-                            }
-                            else {
-                                reference.launchAnswerInCompleteModal(answer.fieldsEmpty);
-                            }
-                            reference.bootstrapPage('page-021');
-                        });
+                                reference.changeSaveModalText("Se ha guardado exitosamente tu progreso");
+                                reference.removeSaveModal();
+                                if (answer.completed) {
+                                    reference.launchAnswerCompletedModal();
+                                }
+                                else {
+                                    reference.launchAnswerInCompleteModal(answer.fieldsEmpty);
+                                }
+                                reference.bootstrapPage('page-021');
+                            });
 
                         });
 
@@ -1012,7 +1012,24 @@ module.exports = {
             }
             $("#showComments").append("<li class='" + class_background_comment + "'><span class='badge'>" + comment.time + "<br>" + status + "</span>" + comment.comment + "<br>" + comment.author + "</li>");
         }
-        message.removeMessageLoader("#mainContent2");
+        
+        templates.templateSelected = { "template_web": reports.reportSelected.template_web, "template_pdf": reports.reportSelected.template_pdf };
+
+        let templateSelected = templates.templateSelected;
+        message.changeMessageLoader("loaderMessage", "Consultando Reporte en @OWS Datamodel");
+        templates.loadTemplate(templateSelected.template_web, templateSelected.template_pdf).then(function () {
+            if (reports.reportSelected.id_report != undefined) {
+                message.changeMessageLoader("loaderMessage", "Consultando Datos Almacenados en @OWS Datamodel");
+                reports.loadReport().then(function () {
+                    console.log("Load Report: ", reports.reportResponse);
+                    console.log("Load Report Images: ", reports.reportResponseImages);
+                    message.removeMessageLoader("#mainContent2");
+                });
+            }
+            else {
+                message.removeMessageLoader("#mainContent2");
+            }
+        });
     },
     enableButtonsDetailReport: function () {
         let reference = this;
@@ -1051,22 +1068,22 @@ module.exports = {
                         }
                     }
 
-                    workers.loadPDF(templates.template[0].jsonPdf, "Template Name", true, "Ticked id", answerReport,reference.userInformation.fullname)
+                    workers.loadPDF(templates.template[0].jsonPdf, "Template Name", true, "Ticked id", answerReport, reference.userInformation.fullname)
                         .then(function (loadPdfResponse) {
                             console.log("Pdf Response was correct");
                             //console.log(loadPdfResponse);
                             let preview_pdf = JSON.parse(loadPdfResponse);
 
-                            let pdfUID = uid.generateUID().then(function(uidCode){
+                            let pdfUID = uid.generateUID().then(function (uidCode) {
                                 preview_pdf.footer = function (currentPage, pageCount) {
-                                var text = {};
-                                text["text"] = "Este reporte fue generado en Huawei Smart Docs @OWS App - "+  new Date().toString().split("GMT")[0]  + "\n Security Code : " + uidCode + " Pag " + currentPage + " de " + pageCount;
-                                text["alignment"] = "center";
-                                text["fontSize"] = 6;
-                                text["link"] = "https://100l-app.teleows.com/servicecreator/spl/CO_SMART_DOCS/CO_SMART_DOCS_WELCOME.spl";
-                                return text;
-                            };
-                            pdfMake.createPdf(preview_pdf).download("Test" + " - " + " Works" + ".pdf");
+                                    var text = {};
+                                    text["text"] = "Este reporte fue generado en Huawei Smart Docs @OWS App - " + new Date().toString().split("GMT")[0] + "\n Security Code : " + uidCode + " Pag " + currentPage + " de " + pageCount;
+                                    text["alignment"] = "center";
+                                    text["fontSize"] = 6;
+                                    text["link"] = "https://100l-app.teleows.com/servicecreator/spl/CO_SMART_DOCS/CO_SMART_DOCS_WELCOME.spl";
+                                    return text;
+                                };
+                                pdfMake.createPdf(preview_pdf).download("Test" + " - " + " Works" + ".pdf");
 
                             });
                         });
