@@ -520,7 +520,10 @@ module.exports = {
                     reports.reportResponse = [];
                     reports.reportResponseImages = [];
                     let templateSelected = { "template_web": templates.templateSelected.template_web, "template_pdf": templates.templateSelected.template_pdf };
+                    message.addMessageLoder("loaderMessage", "#mainContent2");
+                    message.changeMessageLoader("loaderMessage", "Obteniendo Plantilla desde @OWS Datamodel");
                     templates.loadTemplate(templateSelected.template_web, templateSelected.template_pdf).then(function () {
+                        message.removeMessageLoader("#mainContent2");
                         reference.bootstrapPage("page-005");
                     });
                 });
@@ -1082,6 +1085,9 @@ module.exports = {
                     console.log("Load Report: ", reports.reportResponse);
                     console.log("Load Report Images: ", reports.reportResponseImages);
                     reference.generateReportDatatable();
+                    reference.convertToDatatable("dataTableReport", "Report Detail");
+                    //Locate the excel button on the correct position - Card Header
+                    $("#view_report_buttons").append($(".dt-buttons :eq(0)"));
                     message.removeMessageLoader("#mainContent2");
                 });
             }
@@ -1096,9 +1102,9 @@ module.exports = {
             if (Array.isArray(answerType)) {
                 if (Array.isArray(answerType[0])) {
                     for (let answer of answerType[0]) {
-                        $("#dataTableReport > thead > tr").append("<th>" + answer.sel + "</th>");
+                        $("#dataTableReport > thead > tr").append("<th>" + answer.name + "</th>");
                         $("#dataTableReport > tbody > tr").append("<td>" + answer.val + "</td>");
-                        $("#dataTableReport > tfoot > tr").append("<th>" + answer.sel + "</th>");
+                        $("#dataTableReport > tfoot > tr").append("<th>" + answer.name + "</th>");
                     }
                 }
             }

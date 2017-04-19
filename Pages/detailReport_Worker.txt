@@ -3,7 +3,7 @@
         <div class="col-sm-12">
             <div class="card">
                 <div class="card-header">
-                    <div class="pull-right">
+                    <div id="view_report_buttons" class="pull-right">
 
                         <button id="detail_ticket_approve" class="btn btn-primary"><span class="fa fa-check"></span> Aprobar</button>
                         <button id="detail_ticket_reject" class="btn btn-primary"><span class="fa fa-times"></span> Rechazar</button>
@@ -38,7 +38,7 @@
                         </div>
                     </div>
                     -->
-                    <div class="row text-center" id="detail_report_table">
+                    <div class="row text-center" id="detail_report_table" style="display: none">
                         <div class="col-md-12">
                             <div class="card">
 
