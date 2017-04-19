@@ -6,11 +6,13 @@ function loadFonts() {
     return new Promise(function (resolve, reject) {
         let latoFonts = $.ajax({
             method: "GET",
-            url: "https://fonts.googleapis.com/css?family=Lato"
+            url: "https://fonts.googleapis.com/css?family=Lato",
+            cache: false
         });
         let robotoFonts = $.ajax({
             method: "GET",
-            url: "https://fonts.googleapis.com/css?family=Roboto"
+            url: "https://fonts.googleapis.com/css?family=Roboto",
+            cache: false
         });
         $.when(latoFonts, robotoFonts).done(function (latoFontsResponse, robotoFontsResponse) {
             $('<style />').text(latoFontsResponse).appendTo($('head'));
@@ -31,7 +33,8 @@ function loadIcons() {
         let fontAwesome = $.ajax({
             method: "GET",
             dataType: "script",
-            url: "https://use.fontawesome.com/4e0d3cfdd0.js"
+            url: "https://use.fontawesome.com/4e0d3cfdd0.js",
+            cache: false
         });
         $.when(fontAwesome).done(function (fontAwesomeResponse) {
             resolve();
@@ -49,24 +52,29 @@ function loadCSS() {
     return new Promise(function (resolve, reject) {
         let bootstrap = $.ajax({
             method: "GET",
-            url: "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+            url: "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css",
+            cache: false
         });
         let animate = $.ajax({
             method: "GET",
-            url: "https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css"
+            url: "https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css",
+            cache: false
         });
         let select2 = $.ajax({
             method: "GET",
-            url: "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css"
+            url: "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css",
+            cache: false
         });
         
         let buttonsDataTables = $.ajax({
             method: "GET",
-            url: "https://cdn.datatables.net/buttons/1.2.4/css/buttons.dataTables.min.css"
+            url: "https://cdn.datatables.net/buttons/1.2.4/css/buttons.dataTables.min.css",
+            cache: false
         });
         let bootstrapDataTables = $.ajax({
             method: "GET",
-            url: "http://cdn.datatables.net/plug-ins/e9421181788/integration/bootstrap/3/dataTables.bootstrap.css"
+            url: "http://cdn.datatables.net/plug-ins/e9421181788/integration/bootstrap/3/dataTables.bootstrap.css",
+            cache: false
         });
         /*
         let jqueryDataTables = $.ajax({
@@ -107,11 +115,13 @@ function loadCustomLibs(){
     return new Promise(function(resolve,reject){
         let style = $.ajax({
                 method: "GET",
-                url: "https://100l-app.teleows.com/servicecreator/pageruntime/pageScript.action?appName=CO_SMART_DOCS&name=style%20&type=css"
+                url: "https://100l-app.teleows.com/servicecreator/pageruntime/pageScript.action?appName=CO_SMART_DOCS&name=style%20&type=css",
+                cache: false
             });
             let flat_blue = $.ajax({
                 method: "GET",
-                url: "https://100l-app.teleows.com/servicecreator/pageruntime/pageScript.action?appName=CO_SMART_DOCS&name=flat%20blue&type=css"
+                url: "https://100l-app.teleows.com/servicecreator/pageruntime/pageScript.action?appName=CO_SMART_DOCS&name=flat%20blue&type=css",
+                cache: false
             });
             $.when(style, flat_blue).done(function (styleResponse, flat_blueResponse) {
                 $('<style />').text(styleResponse).appendTo($('head'));

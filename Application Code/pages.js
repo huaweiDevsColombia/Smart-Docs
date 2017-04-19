@@ -287,6 +287,29 @@ module.exports = {
                 let templateSelected = templates.templateSelected;
                 message.addMessageLoder("loaderMessage", "#mainContent2");
                 message.changeMessageLoader("loaderMessage", "Consultando Plantilla en @OWS Datamodel");
+                message.changeMessageLoader("loaderMessage", "Generando Plantilla");
+                smartEngine.executeEngine(templates.template[0].jsonWeb);
+                $('#templateNavTabs a:first').tab('show');
+                reference.loadEventSaveReport();
+                message.changeMessageLoader("loaderMessage", "Cargando Reporte Almacenado");
+                for (let reportAnswer of reports.reportResponseImages) {
+                    if (Array.isArray(reportAnswer.images)) {
+                        smartEngine.matchAnswers(reportAnswer.images[0]);
+                        if (Array.isArray(reportAnswer.images_1)) {
+                            smartEngine.matchAnswers(reportAnswer.images_1[0]);
+                        }
+                    }
+                }
+
+                for (let reportAnswer of reports.reportResponse) {
+                    if (Array.isArray(reportAnswer)) {
+                        if (reportAnswer.length > 0) {
+                            smartEngine.matchAnswers(reportAnswer[0]);
+                        }
+                    }
+                }
+                message.removeMessageLoader("#mainContent2");
+                /*
                 templates.loadTemplate(templateSelected.template_web, templateSelected.template_pdf).then(function () {
                     message.changeMessageLoader("loaderMessage", "Generando Plantilla");
                     smartEngine.executeEngine(templates.template[0].jsonWeb);
@@ -323,6 +346,7 @@ module.exports = {
                     }
 
                 });
+                */
                 break;
             //My Reports    
             case "page-014":
@@ -493,7 +517,12 @@ module.exports = {
                     templates.templateSelected = event.data.val;
                     reports.reportSelected = "";
                     console.log(templates.templateSelected);
-                    reference.bootstrapPage("page-005");
+                    reports.reportResponse = [];
+                    reports.reportResponseImages = [];
+                    let templateSelected = { "template_web": templates.templateSelected.template_web, "template_pdf": templates.templateSelected.template_pdf };
+                    templates.loadTemplate(templateSelected.template_web, templateSelected.template_pdf).then(function () {
+                        reference.bootstrapPage("page-005");
+                    });
                 });
                 cont += 1;
             }
@@ -602,6 +631,7 @@ module.exports = {
             let id_reportResponse = "";
             let answer = smartEngine.saveAnswer();
             let comments = [];
+            let moreInformation;
             let status = (answer.completed) ? "SM-Status002" : "SM-Status001";
             let idReport; let contImages;
             let answerDate; let answerDateTime; let answerTime; let answerWeek; let answerMonth;
@@ -615,9 +645,11 @@ module.exports = {
                     switch (status) {
                         case "SM-Status001":
                             comments.push({ "author": reference.userInformation.fullname, "comment": "El reporte ha sido modificado exitosamente en el sistema", "time": JSON.parse(currentTimeResponse).result.localDateTime, "status": status })
+                            moreInformation = {}
                             break;
                         case "SM-Status002":
                             comments.push({ "author": reference.userInformation.fullname, "comment": "El reporte ha sido completado exitosamente en el sistema", "time": JSON.parse(currentTimeResponse).result.localDateTime, "status": status })
+                            moreInformation = { "completed_date": JSON.parse(currentTimeResponse).result.localDateTime }
                             break;
                     }
                     var answersArr = JSON.parse(answer.userAnswer);
@@ -642,7 +674,7 @@ module.exports = {
                     console.log("Updating the Report");
                     idReport = reports.reportSelected.id_report;
                     reference.changeSaveModalText("Abriendo Comunicacion con @OWS");
-                    let updateReportInfo = reference.updateDatamodel(idReport, status, comments);
+                    let updateReportInfo = reference.updateDatamodel(idReport, status, comments, moreInformation);
                     let saveAnswerDate = reference.saveAnswerReport("date_answer", answerDate, idReport);
                     let saveAnswerDateTime = reference.saveAnswerReport("datetime_answer", answerDateTime, idReport);
                     let saveAnswerTime = reference.saveAnswerReport("time_answer", answerTime, idReport);
@@ -879,15 +911,41 @@ module.exports = {
             });
         });
     },
-    updateDatamodel: function (idReport, status, comment) {
+    updateDatamodel: function (idReport, status, comment, moreInformation) {
+        let data = {
+            "id_report": idReport,
+            "status": status,
+            "comments": JSON.stringify(comment),
+        };
+        switch (status) {
+            case "SM-Status002":
+                data["completed_date"] = moreInformation["completed_date"];
+                data["approval_date"] = "";
+                data["approver"] = "";
+                data["rejected_date"] = "";
+                data["rejecter"] = "";
+                break;
+            case "SM-Status003":
+                data["completed_date"] = "";
+                data["approval_date"] = moreInformation["approval_date"];
+                data["approver"] = moreInformation["approver"];
+                data["rejected_date"] = "";
+                data["rejecter"] = "";
+                break;
+            case "SM-Status004":
+                data["completed_date"] = "";
+                data["approval_date"] = "";
+                data["approver"] = "";
+                data["rejected_date"] = moreInformation["rejected_date"];
+                data["rejecter"] = moreInformation["rejecter"];
+                break;
+
+        }
+
         return new Promise(function (resolve, reject) {
             MessageProcessor.process({
                 serviceId: "co_sm_report_update",
-                data: {
-                    "id_report": idReport,
-                    "status": status,
-                    "comments": JSON.stringify(comment)
-                },
+                data: data,
                 success: function (data) {
                     console.log(data);
                     resolve();
@@ -1012,7 +1070,7 @@ module.exports = {
             }
             $("#showComments").append("<li class='" + class_background_comment + "'><span class='badge'>" + comment.time + "<br>" + status + "</span>" + comment.comment + "<br>" + comment.author + "</li>");
         }
-        
+
         templates.templateSelected = { "template_web": reports.reportSelected.template_web, "template_pdf": reports.reportSelected.template_pdf };
 
         let templateSelected = templates.templateSelected;
@@ -1023,6 +1081,7 @@ module.exports = {
                 reports.loadReport().then(function () {
                     console.log("Load Report: ", reports.reportResponse);
                     console.log("Load Report Images: ", reports.reportResponseImages);
+                    reference.generateReportDatatable();
                     message.removeMessageLoader("#mainContent2");
                 });
             }
@@ -1030,6 +1089,21 @@ module.exports = {
                 message.removeMessageLoader("#mainContent2");
             }
         });
+    },
+    generateReportDatatable: function () {
+        let answerReport = reports.reportResponse;
+        for (let answerType of answerReport) {
+            if (Array.isArray(answerType)) {
+                if (Array.isArray(answerType[0])) {
+                    for (let answer of answerType[0]) {
+                        $("#dataTableReport > thead > tr").append("<th>" + answer.sel + "</th>");
+                        $("#dataTableReport > tbody > tr").append("<td>" + answer.val + "</td>");
+                        $("#dataTableReport > tfoot > tr").append("<th>" + answer.sel + "</th>");
+                    }
+                }
+            }
+        }
+        console.log("I've finish generate Report Datatable");
     },
     enableButtonsDetailReport: function () {
         let reference = this;
@@ -1053,43 +1127,48 @@ module.exports = {
         }
 
         $("#view_ticket_pdf").click(function () {
-            templates.templateSelected = { "template_web": reports.reportSelected.template_web, "template_pdf": reports.reportSelected.template_pdf };
-            templates.loadTemplate(templates.templateSelected.template_web, templates.templateSelected.template_pdf).then(function () {
-                console.log("Load Template was correct");
-                reports.loadReport(reports.reportSelected.id_report).then(function () {
-                    console.log("Load Report was correct");
-                    let answerReport = reports.reportResponse;
-                    for (let reportAnswer of reports.reportResponseImages) {
-                        if (Array.isArray(reportAnswer.images)) {
-                            answerReport.push([reportAnswer.images[0]]);
-                            if (Array.isArray(reportAnswer.images_1)) {
-                                answerReport.push([reportAnswer.images_1[0]]);
-                            }
-                        }
+            //templates.templateSelected = { "template_web": reports.reportSelected.template_web, "template_pdf": reports.reportSelected.template_pdf };
+            message.addMessageLoder("loaderMessage", "#mainContent2");
+            message.changeMessageLoader("loaderMessage", "Generando PDF del Reporte");
+            let answerReport = reports.reportResponse;
+            for (let reportAnswer of reports.reportResponseImages) {
+                if (Array.isArray(reportAnswer.images)) {
+                    answerReport.push([reportAnswer.images[0]]);
+                    if (Array.isArray(reportAnswer.images_1)) {
+                        answerReport.push([reportAnswer.images_1[0]]);
                     }
+                }
+            }
 
-                    workers.loadPDF(templates.template[0].jsonPdf, "Template Name", true, "Ticked id", answerReport, reference.userInformation.fullname)
-                        .then(function (loadPdfResponse) {
-                            console.log("Pdf Response was correct");
-                            //console.log(loadPdfResponse);
-                            let preview_pdf = JSON.parse(loadPdfResponse);
+            workers.loadPDF(templates.template[0].jsonPdf, "Template Name", true, "Ticked id", answerReport, reference.userInformation.fullname)
+                .then(function (loadPdfResponse) {
+                    console.log("Pdf Response was correct");
+                    //console.log(loadPdfResponse);
+                    let preview_pdf = JSON.parse(loadPdfResponse);
 
-                            let pdfUID = uid.generateUID().then(function (uidCode) {
-                                preview_pdf.footer = function (currentPage, pageCount) {
-                                    var text = {};
-                                    text["text"] = "Este reporte fue generado en Huawei Smart Docs @OWS App - " + new Date().toString().split("GMT")[0] + "\n Security Code : " + uidCode + " Pag " + currentPage + " de " + pageCount;
-                                    text["alignment"] = "center";
-                                    text["fontSize"] = 6;
-                                    text["link"] = "https://100l-app.teleows.com/servicecreator/spl/CO_SMART_DOCS/CO_SMART_DOCS_WELCOME.spl";
-                                    return text;
-                                };
-                                pdfMake.createPdf(preview_pdf).download("Test" + " - " + " Works" + ".pdf");
-
-                            });
-                        });
+                    let pdfUID = uid.generateUID().then(function (uidCode) {
+                        preview_pdf.footer = function (currentPage, pageCount) {
+                            var text = {};
+                            text["text"] = "Este reporte fue generado en Huawei Smart Docs @OWS App - " + new Date().toString().split("GMT")[0] + "\n Security Code : " + uidCode + " Pag " + currentPage + " de " + pageCount;
+                            text["alignment"] = "center";
+                            text["fontSize"] = 6;
+                            text["link"] = "https://100l-app.teleows.com/servicecreator/spl/CO_SMART_DOCS/CO_SMART_DOCS_WELCOME.spl";
+                            return text;
+                        };
+                        pdfMake.createPdf(preview_pdf).download("Test" + " - " + " Works" + ".pdf");
+                        message.removeMessageLoader("#mainContent2");
+                    });
                 });
+        });
+
+        /*
+        templates.loadTemplate(templates.templateSelected.template_web, templates.templateSelected.template_pdf).then(function () {
+            console.log("Load Template was correct");
+            reports.loadReport(reports.reportSelected.id_report).then(function () {
+                console.log("Load Report was correct");
             });
         });
+        */
     },
     convertToDatatable: function (tableName, filename) {
         $('#' + tableName).DataTable({
@@ -1143,7 +1222,13 @@ module.exports = {
                         altkey: true
                     }
                 }],
-            colReorder: true
+            colReorder: true,
+            responsive: {
+                details: {
+                    display: $.fn.dataTable.Responsive.display.childRowImmediate,
+                    type: ''
+                }
+            }
         });
         function createCellPos(n) {
             var ordA = 'A'.charCodeAt(0);
@@ -1269,8 +1354,12 @@ module.exports = {
             let comment = $("#approve_report_comment").val();
             let comments = reports.reportSelected.comments;
             workers.getCurrentTime.then(function (currentTimeResponse) {
-                comments.push({ "author": username, "comment": "El reporte fue aprobado - " + comment, "time": JSON.parse(currentTimeResponse).result.localDateTime, "status": 'SM-Status003' })
-                reference.updateDatamodel(reports.reportSelected.id_report, "SM-Status003", comments);
+                comments.push({ "author": reference.userInformation.fullname, "comment": "El reporte se ha aprobado correctamente en el sitema - Comentario:  " + comment, "time": JSON.parse(currentTimeResponse).result.localDateTime, "status": 'SM-Status003' })
+                let moreInformation = {
+                    "approval_date": JSON.parse(currentTimeResponse).result.localDateTime,
+                    "approver": reference.userInformation.fullname
+                }
+                reference.updateDatamodel(reports.reportSelected.id_report, "SM-Status003", comments, moreInformation);
                 $('#approve_report_modal').modal('hide');
                 reference.bootstrapPage("page-021");
             });
@@ -1295,8 +1384,12 @@ module.exports = {
             let comment = $("#reject_report_comment").val();
             let comments = reports.reportSelected.comments;
             workers.getCurrentTime.then(function (currentTimeResponse) {
-                comments.push({ "author": username, "comment": "El reporte fue rechazado - " + comment, "time": JSON.parse(currentTimeResponse).result.localDateTime, "status": 'SM-Status004' })
-                reference.updateDatamodel(reports.reportSelected.id_report, "SM-Status004", comments);
+                comments.push({ "author": reference.userInformation.fullname, "comment": "El reporte fue rechazado exitosamente en el sistema - Comentario :  " + comment, "time": JSON.parse(currentTimeResponse).result.localDateTime, "status": 'SM-Status004' })
+                let moreInformation = {
+                    "rejected_date": JSON.parse(currentTimeResponse).result.localDateTime,
+                    "rejecter": reference.userInformation.fullname
+                }
+                reference.updateDatamodel(reports.reportSelected.id_report, "SM-Status004", comments, moreInformation);
                 $('#reject_report_modal').modal('hide');
                 reference.bootstrapPage("page-021");
             });

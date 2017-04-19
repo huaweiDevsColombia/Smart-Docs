@@ -1,0 +1,158 @@
+<div class="side-body">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="pull-right">
+
+                        <button id="detail_ticket_approve" class="btn btn-primary"><span class="fa fa-check"></span> Aprobar</button>
+                        <button id="detail_ticket_reject" class="btn btn-primary"><span class="fa fa-times"></span> Rechazar</button>
+                        <button id="view_ticket_pdf" class="btn btn-primary"><span class="fa fa-file-pdf-o"></span> Visualizar </button>
+                        <button id="detail_ticket_edit" class="btn btn-primary"><span class="fa fa-edit"></span> Editar</button>
+                        <!--<button id="detail_ticket_delete" class="btn btn-primary"><span class="fa fa-trash"></span> Eliminar</button>-->
+                    </div>
+                    <div class="card-title">
+                        <div class="title">Detalle del Reporte</div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!--<div class="row text-center" id="detail_ticket_row">
+                        <div class="col-md-12">
+                            <div class="card">
+
+                                <div class="card-header">
+                                    <div class="pull-right">
+                                     </div>
+                                    <div class="card-title">
+                                        <div class="title"> Smart View: PDF</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="card-body ">
+                                    
+                                    <div class="embed-responsive embed-responsive-16by9">
+                                        <object class="embed-responsive-item" id="detail_ticket_preview2" type="application/pdf"></object>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    -->
+                    <div class="row text-center" id="detail_report_table">
+                        <div class="col-md-12">
+                            <div class="card">
+
+                                <div class="card-header">
+                                    <div class="pull-right">
+                                    </div>
+                                    <div class="card-title">
+                                        <div class="title"> Datos del Report: Tabla</div>
+                                    </div>
+                                </div>
+
+                                <div class="card-body ">
+
+                                    <div class="table-responsive">
+                                    <table class="table table-hover" cellspacing="0" width="100%" id="dataTableReport">
+                                        <thead>
+                                            <tr>
+                                            </tr>
+                                        </thead>
+                                        <tfoot>
+                                            <tr>
+                                            </tr>
+                                        </tfoot>
+                                        <tbody>
+                                            <tr>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row text-center">
+                        <div class="col-sm-5">
+                            <div id="ticketBackground" class="pricing-table">
+                                <div class="pt-header">
+                                    <div class="plan-pricing">
+                                        <div id="templateName" class="pricing"></div>
+                                        <div id="reportStatus" class="pricing-type"></div>
+                                    </div>
+                                </div>
+                                <div class="pt-body" style="text-align: left">
+                                    <i class="fa fa-calendar pull-left " style="font-size: 8em"></i>
+                                    <h5><b>Creation Date : </b> 26/12/2016 17:23:35</h5>
+                                    <h5 id="reportCompletedDate"><b>Completed Date : </b> </h5>
+                                    <h5 id="reportApprovalDate"><b>Approval Date : </b> </h5>
+                                    <h5 id="reportRejectedDate"><b>Rejected Date : </b> </h5>
+
+                                    <ul class="plan-detail">
+                                        <i class="fa fa-info-circle pull-left " style="font-size: 8em;"></i>
+
+                                        <li id="reportId"><b>Id Report: </b></li>
+                                        <li id="reportTicketId"><b>Id Ticket: </b></li>
+                                        <li id="reportTicketCustomer"><b>Id Ticket Cliente: </b></li>
+                                        <li id="reportProject"><b>Project: </b></li>
+                                        <li id="reportRegion"><b>Region: </b></li>
+                                        <li id="reportSiteId"><b>Id Site: </b></li>
+                                        <!-- <li id="reportSiteName"><b>Site Name: </b></li> -->
+
+
+                                    </ul>
+                                    <ul class="plan-detail">
+                                        <i class="fa fa-flag-checkered pull-left " style="font-size: 8em;"></i>
+
+                                        <li id="reportAuthor"><b>Author: </b> </li>
+                                        <li id="reportLastUpdate"><b>Ultima Modificacion: </b></li>
+                                        <li id="reportModifiedBy"><b>Usuario Modificacion: </b></li>
+                                        <li id="reportApprover">&nbsp</li>
+                                        <li id="reportRejecter">&nbsp</li>
+
+                                    </ul>
+
+
+                                </div>
+
+                            </div>
+                        </div>
+
+
+
+
+
+                        <div class="col-sm-7 ">
+                            <div class="pricing-table">
+                                <div class="pt-header">
+                                    <div class="plan-pricing">
+                                        <div class="pricing">HISTORIA </div>
+                                        <div class="pricing-type">AUTOMATICA</div>
+                                    </div>
+                                </div>
+                                <div class="pt-body" style="text-align: center">
+                                    <div>
+                                        <h5 style="
+    font-weight: bold;
+    text-align: left;
+">Comentarios:</h5>
+                                        <ul class="list-group" id="showComments">
+                                            <li class="list-group-item list-group-item-warning">
+                                                <span class="badge">Ahora</span> Este reporte todavia no tiene un comentario
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

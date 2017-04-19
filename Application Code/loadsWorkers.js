@@ -8,7 +8,8 @@ function checkUserSmart() {
         let workerUserRegister = $.ajax({
             method: "GET",
             dataType: "script",
-            url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=5a564cec-9b0e-4a96-a74a-2fbb9bbac180&attachmentId=fcd25cd8-9e5e-470d-8f33-3b5a51421a2f"
+            url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=5a564cec-9b0e-4a96-a74a-2fbb9bbac180&attachmentId=fcd25cd8-9e5e-470d-8f33-3b5a51421a2f",
+            cache: false
         });
         $.when(workerUserRegister).done(function (workerUserRegisterResponse) {
             $('<script>')
@@ -46,7 +47,8 @@ function getUserInformation() {
         let workerUserInformation = $.ajax({
             method: "GET",
             dataType: "script",
-            url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=3e9d8bc0-999e-434f-aeeb-dda673659611&attachmentId=88315474-b2b2-4751-9e8a-2ab077c8ac94"
+            url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=3e9d8bc0-999e-434f-aeeb-dda673659611&attachmentId=88315474-b2b2-4751-9e8a-2ab077c8ac94",
+            cache: false
         });
         $.when(workerUserInformation).done(function (workerUserInformationResponse) {
             $('<script>')
@@ -84,7 +86,8 @@ function getUserGroups() {
         let workerUserGroups = $.ajax({
             method: "GET",
             dataType: "script",
-            url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=77d6e69f-f30e-4519-804e-65e5ec407dbf&attachmentId=350e4762-971a-4651-a771-b326b710f0eb"
+            url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=77d6e69f-f30e-4519-804e-65e5ec407dbf&attachmentId=350e4762-971a-4651-a771-b326b710f0eb",
+            cache: false
         });
         $.when(workerUserGroups).done(function (workerUserGroupsResponse) {
             $('<script>')
@@ -125,7 +128,8 @@ function currentTime() {
         let workerCurrentTime = $.ajax({
             method: "GET",
             dataType: "script",
-            url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=425c4286-6102-43b0-9833-b151990734f5&attachmentId=19293cb6-5f7e-48a0-8e48-ab92abbfb207"
+            url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=425c4286-6102-43b0-9833-b151990734f5&attachmentId=19293cb6-5f7e-48a0-8e48-ab92abbfb207",
+            cache: false
         });
         $.when(workerCurrentTime).done(function (workerCurrentTimeResponse) {
             $('<script>')
@@ -137,6 +141,8 @@ function currentTime() {
             let blob = new Blob([
                 $("#workerCurrentTime").text()
             ], { type: "text/javascript" })
+
+            $("#workerCurrentTime").remove();
 
             var worker = new Worker(URL.createObjectURL(blob));
             worker.addEventListener('message', function (e) {
@@ -168,7 +174,8 @@ module.exports = {
             let workerReports = $.ajax({
                 method: "GET",
                 dataType: "script",
-                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=323a10d1-c070-4c7b-b9f7-f13056e5043c&attachmentId=377833db-d7f8-4292-bbbe-744a82568070"
+                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=323a10d1-c070-4c7b-b9f7-f13056e5043c&attachmentId=377833db-d7f8-4292-bbbe-744a82568070",
+                cache: false
             });
             $.when(workerReports).done(function (workerReportsResponse) {
                 $('<script>')
@@ -208,7 +215,8 @@ module.exports = {
             let workerTickets = $.ajax({
                 method: "GET",
                 dataType: "script",
-                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=36b8f29d-79cf-488a-9e6d-70d118e81dec&attachmentId=689fcf33-651c-4345-bf20-97c738c2dc13"
+                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=36b8f29d-79cf-488a-9e6d-70d118e81dec&attachmentId=689fcf33-651c-4345-bf20-97c738c2dc13",
+                cache: false
             });
             $.when(workerTickets).done(function (workerTicketsResponse) {
                 $('<script>')
@@ -249,7 +257,8 @@ module.exports = {
             let workerTemplates = $.ajax({
                 method: "GET",
                 dataType: "script",
-                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=015b8292-ebcc-40e6-8601-fbddeb2c0ef5&attachmentId=c24a203d-005f-4d20-ad92-4cd8b14b2cf8"
+                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=015b8292-ebcc-40e6-8601-fbddeb2c0ef5&attachmentId=c24a203d-005f-4d20-ad92-4cd8b14b2cf8",
+                cache: false
             });
             $.when(workerTemplates).done(function (workerTemplatesResponse) {
                 $('<script>')
@@ -286,7 +295,8 @@ module.exports = {
             let workerTemplates = $.ajax({
                 method: "GET",
                 dataType: "script",
-                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=8117dc95-0e34-4ac6-abd4-530eefcaafb4&attachmentId=ad1b3ab2-6f5f-4049-a78b-9201a38de3a3"
+                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=8117dc95-0e34-4ac6-abd4-530eefcaafb4&attachmentId=ad1b3ab2-6f5f-4049-a78b-9201a38de3a3",
+                cache: false
             });
             $.when(workerTemplates).done(function (workerTemplatesResponse) {
                 $('<script>')
@@ -323,7 +333,8 @@ module.exports = {
             let workerSaveAnswer = $.ajax({
                 method: "GET",
                 dataType: "script",
-                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=ba646758-8ac5-4612-805a-de96867dd631&attachmentId=0e9ba0e7-5491-4516-8d05-c5f1e27bb333"
+                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=ba646758-8ac5-4612-805a-de96867dd631&attachmentId=0e9ba0e7-5491-4516-8d05-c5f1e27bb333",
+                cache: false
             });
             $.when(workerSaveAnswer).done(function (workerSaveAnswerResponse) {
                 $('<script>')
@@ -365,7 +376,8 @@ module.exports = {
             let workerloadPDF = $.ajax({
                 method: "GET",
                 dataType: "script",
-                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=79885403-0c7e-4e3a-aad2-a6cbe9021b51&attachmentId=b9e232c4-7a32-47db-b0a0-983d782d3448"
+                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=79885403-0c7e-4e3a-aad2-a6cbe9021b51&attachmentId=b9e232c4-7a32-47db-b0a0-983d782d3448",
+                cache: false
             });
             $.when(workerloadPDF).done(function (workerloadPDFResponse) {
                 $('<script>')

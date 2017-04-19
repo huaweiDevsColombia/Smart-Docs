@@ -286,3 +286,4 @@ $(function () {
     smart.onInit();
 
 });
+
