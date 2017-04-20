@@ -3961,6 +3961,7 @@ $(function () {
             let reference = this;
             $("link").remove();
             $("script").remove();
+            reference.disabledBackButton();
             workers.getCurrentTime.then(function (data) {
                 reference.currentTime = data;
                 console.log("CurrentTime" + reference.currentTime);
@@ -3996,11 +3997,11 @@ $(function () {
                 message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 2/6 han sido cargadas");
                 return jsLibs.loadLowJS();
             })
-            .then(function () {
-                console.log("JS Low Libs were loaded");
-                message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 2/6 han sido cargadas");
-                return jsLibs.loadDataTables();
-            })
+                .then(function () {
+                    console.log("JS Low Libs were loaded");
+                    message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 2/6 han sido cargadas");
+                    return jsLibs.loadDataTables();
+                })
             /*.then(function () {
                 console.log("JS Load Plugins 1 were loaded");
                 message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 3/6 han sido cargadas");
@@ -4014,10 +4015,10 @@ $(function () {
                 message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 5/6 han sido cargadas");
                 return jsLibs.loadPlugins_3();
             })*/.then(function () {
-                console.log("JS Low 2 were loaded");
-                message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 6/6 han sido cargadas");
-                return pages.loadAllPages();
-            }).then(function (data) {
+                    console.log("JS Low 2 were loaded");
+                    message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 6/6 han sido cargadas");
+                    return pages.loadAllPages();
+                }).then(function (data) {
                     message.changeMessageLoader("pageLoaderContent", "Las Paginas han sido cargadas");
                     pages.bootstrapMenu("page-022").then(function () {
                         return workers.getUserGroups;
@@ -4051,6 +4052,11 @@ $(function () {
         userGroups: "",
         userGroup: "",
         groupSelected: "",
+        disabledBackButton: function () {
+            window.location.hash = "no-back-button";
+            window.location.hash = "Again-No-back-button";//again because google chrome don't insert first hash into history
+            window.onhashchange = function () { window.location.hash = "no-back-button"; }
+        },
         grantPermissions: function (userGroups) {
             let reference = this;
             let groups = "";
