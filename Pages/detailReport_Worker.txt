@@ -7,6 +7,7 @@
 
                         <button id="detail_ticket_approve" class="btn btn-primary"><span class="fa fa-check"></span> Aprobar</button>
                         <button id="detail_ticket_reject" class="btn btn-primary"><span class="fa fa-times"></span> Rechazar</button>
+                        <button id="view_ticket_zip" class="btn btn-primary"><span class="fa fa-file-archive-o"></span> Descargar </button>
                         <button id="view_ticket_pdf" class="btn btn-primary"><span class="fa fa-file-pdf-o"></span> Visualizar </button>
                         <button id="detail_ticket_edit" class="btn btn-primary"><span class="fa fa-edit"></span> Editar</button>
                         <!--<button id="detail_ticket_delete" class="btn btn-primary"><span class="fa fa-trash"></span> Eliminar</button>-->
@@ -53,21 +54,21 @@
                                 <div class="card-body ">
 
                                     <div class="table-responsive">
-                                    <table class="table table-hover" cellspacing="0" width="100%" id="dataTableReport">
-                                        <thead>
-                                            <tr>
-                                            </tr>
-                                        </thead>
-                                        <tfoot>
-                                            <tr>
-                                            </tr>
-                                        </tfoot>
-                                        <tbody>
-                                            <tr>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
+                                        <table class="table table-hover" cellspacing="0" width="100%" id="dataTableReport">
+                                            <thead>
+                                                <tr>
+                                                </tr>
+                                            </thead>
+                                            <tfoot>
+                                                <tr>
+                                                </tr>
+                                            </tfoot>
+                                            <tbody>
+                                                <tr>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>

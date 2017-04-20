@@ -1,4 +1,5 @@
 let ticket = require('./tickets.js');
+let message = require('./messages');
 
 module.exports = {
     "imgTo64": function (input) {
@@ -908,6 +909,7 @@ module.exports = {
 
                         $("#" + valueSubPanelEle.id + "Event").on('change', function (event) {
 
+                            message.launchProcessImageModal();
                             var myCanvas = $('#canvasRezise')[0];
                             var ctx = myCanvas.getContext('2d');
                             var img = new Image();
@@ -965,6 +967,7 @@ module.exports = {
                                         ctx.fillText('Este Imagen fue cargada en Smart Docs', 10, (myCanvas.height - 30));
                                         ctx.fillText('Huawei @OWS', 80, (myCanvas.height - 10));
                                         $("#" + valueSubPanelEle.id).attr("src", myCanvas.toDataURL());
+                                        message.removeProcessImageModal();
                                     });
                                 });
 
@@ -1011,15 +1014,16 @@ module.exports = {
 
     $("#" + valueSubPanelEle.id + "Event").on('change', function(event) {
 
+       message.launchProcessImageModal(); 
         var myCanvas = $('#canvasRezise')[0];
         var ctx = myCanvas.getContext('2d');
         var img = new Image();
 
         img.onload = function () {
 
-            myCanvas.width = 450;
+            myCanvas.width = 600;
             myCanvas.height = 600;
-            ctx.drawImage(img, 0, 0, 450, 600);
+            ctx.drawImage(img, 0, 0, 600, 600);
 
             ctx.font = "bold 8pt sans-serif";
             ctx.shadowColor = 'black';
@@ -1068,6 +1072,7 @@ module.exports = {
                     ctx.fillText('Este Imagen fue cargada en Smart Docs', 10, (myCanvas.height - 30));
                     ctx.fillText('Huawei @OWS', 80, (myCanvas.height - 10));
                     $("#" + valueSubPanelEle.id).attr("src", myCanvas.toDataURL());
+                    message.removeProcessImageModal();
                 });
             });
 

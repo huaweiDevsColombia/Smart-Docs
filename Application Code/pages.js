@@ -5,6 +5,7 @@ let templates = require("./templates");
 let smartEngine = require("./smartEngine");
 let message = require("./messages");
 let uid = require("./uid");
+let zip = require ("./zip");
 
 module.exports = {
     loadAllPages: function () {
@@ -1165,6 +1166,19 @@ module.exports = {
                         message.removeMessageLoader("#mainContent2");
                     });
                 });
+        });
+
+        $("#view_ticket_zip").click(function(){
+            let answerReport = [];
+            for (let reportAnswer of reports.reportResponseImages) {
+            if (Array.isArray(reportAnswer.images)) {
+                answerReport.push([reportAnswer.images[0]]);
+                if (Array.isArray(reportAnswer.images_1)) {
+                    answerReport.push([reportAnswer.images_1[0]]);
+                }
+            }
+        }
+        zip.generateZipFile(answerReport);
         });
 
         /*

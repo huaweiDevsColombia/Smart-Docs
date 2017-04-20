@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 10);
+/******/ 	return __webpack_require__(__webpack_require__.s = 11);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -489,6 +489,34 @@ module.exports = {
 
 /***/ }),
 /* 1 */
+/***/ (function(module, exports) {
+
+module.exports = {
+    addMessageLoder: function (selector,location) {
+        $(location).addClass("loader");
+        $(location).append("<div id='loader' class='loader-container text-center color-white'><div><i style='color:white' class='fa fa-spinner fa-pulse fa-3x'></i></div><div style='color:white'><h4>Smart Docs <br> <small> Cargando Recursos <div id='"+selector+"'> </div> </small> <br><small>... Se esta preparando para ti ...</small></h4><h5>Desarollado por: Huawei Colombia  <br> OSS IT Team </h5></div></div>");
+    },
+    changeMessageLoader: function (selector, msg) {
+        console.log("Selector: "+ selector);
+        console.log("Message: " + msg);
+        $("#" + selector).text(msg);
+    },
+    removeMessageLoader: function (location){
+        $("#loader").remove();
+        $(location).removeClass("loader");
+    },
+    launchProcessImageModal: function(){
+        $("#process_image_modal").remove();
+        $("body").append("<div class='fade modal modal-warning'aria-hidden=true aria-labelledby=myModalLabel1 id=process_image_modal role=dialog style=display:block tabindex=-1><div class=modal-dialog><div class=modal-content><div class=modal-header><h4 class=modal-title id=myModalLabel13>La imagen esta siendo procesada </h4></div><div class=modal-body> <img src='https://image.flaticon.com/icons/svg/143/143984.svg' style='margin-left:auto;margin-right:auto;display:block' width='150px'><h4 style='text-align:center'> Espera un momento, este proceso puede tomar algunos segundos </h4></div></div></div></div>");
+        $("#process_image_modal").modal({ backdrop: 'static', keyboard: false });
+    },
+    removeProcessImageModal:function(){
+        $("#process_image_modal").modal('hide');
+    }
+}
+
+/***/ }),
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 let workers = __webpack_require__(0);
@@ -510,36 +538,17 @@ module.exports = {
 }
 
 /***/ }),
-/* 2 */
-/***/ (function(module, exports) {
-
-module.exports = {
-    addMessageLoder: function (selector,location) {
-        $(location).addClass("loader");
-        $(location).append("<div id='loader' class='loader-container text-center color-white'><div><i style='color:white' class='fa fa-spinner fa-pulse fa-3x'></i></div><div style='color:white'><h4>Smart Docs <br> <small> Cargando Recursos <div id='"+selector+"'> </div> </small> <br><small>... Se esta preparando para ti ...</small></h4><h5>Desarollado por: Huawei Colombia  <br> OSS IT Team </h5></div></div>");
-    },
-    changeMessageLoader: function (selector, msg) {
-        console.log("Selector: "+ selector);
-        console.log("Message: " + msg);
-        $("#" + selector).text(msg);
-    },
-    removeMessageLoader: function (location){
-        $("#loader").remove();
-        $(location).removeClass("loader");
-    }
-}
-
-/***/ }),
 /* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 let workers = __webpack_require__(0);
-let tickets = __webpack_require__(1);
+let tickets = __webpack_require__(2);
 let reports = __webpack_require__(6);
 let templates = __webpack_require__(8);
 let smartEngine = __webpack_require__(7);
-let message = __webpack_require__(2);
+let message = __webpack_require__(1);
 let uid = __webpack_require__(9);
+let zip = __webpack_require__ (10);
 
 module.exports = {
     loadAllPages: function () {
@@ -1702,6 +1711,19 @@ module.exports = {
                 });
         });
 
+        $("#view_ticket_zip").click(function(){
+            let answerReport = [];
+            for (let reportAnswer of reports.reportResponseImages) {
+            if (Array.isArray(reportAnswer.images)) {
+                answerReport.push([reportAnswer.images[0]]);
+                if (Array.isArray(reportAnswer.images_1)) {
+                    answerReport.push([reportAnswer.images_1[0]]);
+                }
+            }
+        }
+        zip.generateZipFile(answerReport);
+        });
+
         /*
         templates.loadTemplate(templates.templateSelected.template_web, templates.templateSelected.template_pdf).then(function () {
             console.log("Load Template was correct");
@@ -2573,7 +2595,8 @@ module.exports = {
 /* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
-let ticket = __webpack_require__(1);
+let ticket = __webpack_require__(2);
+let message = __webpack_require__(1);
 
 module.exports = {
     "imgTo64": function (input) {
@@ -3483,6 +3506,7 @@ module.exports = {
 
                         $("#" + valueSubPanelEle.id + "Event").on('change', function (event) {
 
+                            message.launchProcessImageModal();
                             var myCanvas = $('#canvasRezise')[0];
                             var ctx = myCanvas.getContext('2d');
                             var img = new Image();
@@ -3540,6 +3564,7 @@ module.exports = {
                                         ctx.fillText('Este Imagen fue cargada en Smart Docs', 10, (myCanvas.height - 30));
                                         ctx.fillText('Huawei @OWS', 80, (myCanvas.height - 10));
                                         $("#" + valueSubPanelEle.id).attr("src", myCanvas.toDataURL());
+                                        message.removeProcessImageModal();
                                     });
                                 });
 
@@ -3586,15 +3611,16 @@ module.exports = {
 
     $("#" + valueSubPanelEle.id + "Event").on('change', function(event) {
 
+       message.launchProcessImageModal(); 
         var myCanvas = $('#canvasRezise')[0];
         var ctx = myCanvas.getContext('2d');
         var img = new Image();
 
         img.onload = function () {
 
-            myCanvas.width = 450;
+            myCanvas.width = 600;
             myCanvas.height = 600;
-            ctx.drawImage(img, 0, 0, 450, 600);
+            ctx.drawImage(img, 0, 0, 600, 600);
 
             ctx.font = "bold 8pt sans-serif";
             ctx.shadowColor = 'black';
@@ -3643,6 +3669,7 @@ module.exports = {
                     ctx.fillText('Este Imagen fue cargada en Smart Docs', 10, (myCanvas.height - 30));
                     ctx.fillText('Huawei @OWS', 80, (myCanvas.height - 10));
                     $("#" + valueSubPanelEle.id).attr("src", myCanvas.toDataURL());
+                    message.removeProcessImageModal();
                 });
             });
 
@@ -3838,7 +3865,7 @@ module.exports = {
 /***/ (function(module, exports, __webpack_require__) {
 
 let workers = __webpack_require__(0);
-let tickets = __webpack_require__(1);
+let tickets = __webpack_require__(2);
 module.exports = {
     allTemplates: "",
     templateSelected: "",
@@ -3947,13 +3974,45 @@ module.exports = {
 
 /***/ }),
 /* 10 */
+/***/ (function(module, exports) {
+
+module.exports = {
+    "generateZipFile": function (answerImages) {
+        let reference = this;
+        reference.disabledPromptRefreshMessage();
+        var zip = new JSZip();
+        // Add a text file with content about the report
+        zip.file("details.txt", "Este archivo fue descargado el " + new Date().toString().split("GMT")[0], 10 + " \n Huawei Smart Docs @OWS");
+        var img = zip.folder("images");
+
+        answerImages.forEach(function (answer) {
+            answer[0].forEach(function (answerVal) {
+                img.file(answerVal.sel + ".png", answerVal.val.replace("data:image/png;base64,", ""), { base64: true });
+            });
+        });
+        var content = zip.generate();
+        location.href = "data:application/zip;base64," + content;
+        reference.promptRefreshMessage();
+    },
+    disabledPromptRefreshMessage: function () {
+        window.onbeforeunload = "";
+    },
+    promptRefreshMessage: function () {
+        window.onbeforeunload = function () {
+            return "";
+        };
+    }
+}
+
+/***/ }),
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 $(function () {
     let workers = __webpack_require__(0);
     let cssLibs = __webpack_require__(5);
     let jsLibs = __webpack_require__(4);
-    let message = __webpack_require__(2);
+    let message = __webpack_require__(1);
     let pages = __webpack_require__(3);
 
     let smart = {
@@ -3962,6 +4021,7 @@ $(function () {
             $("link").remove();
             $("script").remove();
             reference.disabledBackButton();
+            reference.promptRefreshMessage();
             workers.getCurrentTime.then(function (data) {
                 reference.currentTime = data;
                 console.log("CurrentTime" + reference.currentTime);
@@ -4056,6 +4116,11 @@ $(function () {
             window.location.hash = "no-back-button";
             window.location.hash = "Again-No-back-button";//again because google chrome don't insert first hash into history
             window.onhashchange = function () { window.location.hash = "no-back-button"; }
+        },
+        promptRefreshMessage: function () {
+            window.onbeforeunload = function () {
+                return "";
+            };
         },
         grantPermissions: function (userGroups) {
             let reference = this;
