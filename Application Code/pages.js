@@ -296,8 +296,8 @@ module.exports = {
                 for (let reportAnswer of reports.reportResponseImages) {
                     if (Array.isArray(reportAnswer.images)) {
                         smartEngine.matchAnswers(reportAnswer.images[0]);
-                        if (Array.isArray(reportAnswer.images_1)) {
-                            smartEngine.matchAnswers(reportAnswer.images_1[0]);
+                        if (Array.isArray(reportAnswer.image_1)) {
+                            smartEngine.matchAnswers(reportAnswer.image_1[0]);
                         }
                     }
                 }
@@ -409,7 +409,7 @@ module.exports = {
             { status: "SM-Status003", selector: "statisticApproved", labelSel: "labelStatisticApproved", label: "Reportes Aprobados (EN EL SISTEMA)" },
             { status: "SM-Status004", selector: "statisticRejected", labelSel: "labelStatisticRejected", label: "Reportes Rechazados (EN EL SISTEMA)" },
         ]
-
+        //Revisar desde aqui
         switch (reference.userGroup) {
             case "FME":
 
@@ -695,7 +695,7 @@ module.exports = {
                     answerImages = reference.filterByAnswerTypeImage();
                     contImages = 0;
                     do {
-                        this["answerImages_" + contImages] = answerImages.splice(0, 2);
+                        this["answerImages_" + contImages] = answerImages.splice(0, 1);
                         contImages++;
                     }
                     while (answerImages.length > 0);
@@ -719,8 +719,6 @@ module.exports = {
                         }
                         while (contProImg <= contImages);
                         contProImg = 0; subIdNumber = 0;
-
-
 
                         console.log(promisesSave);
                         Promise.all(promisesSave).then(function (values) {
@@ -790,7 +788,7 @@ module.exports = {
                     answerImages = reference.filterByAnswerTypeImage();
                     contImages = 0;
                     do {
-                        this["answerImages_" + contImages] = answerImages.splice(0, 2);
+                        this["answerImages_" + contImages] = answerImages.splice(0, 1);
                         contImages++;
                     }
                     while (answerImages.length > 0);
@@ -987,7 +985,7 @@ module.exports = {
                 data: data,
                 success: function (data) {
                     console.log(data);
-                    reports.reportTemp.total_images_saved += 2;
+                    reports.reportTemp.total_images_saved += 1;
                     reference.changeSaveModalText("Se han guardado " + reports.reportTemp.total_images_saved + " imagenes de " + reports.reportTemp.total_images * 2);
                     //message.changeMessageLoader("mainContent2", "Se han guardado algunas imagenes");
                     resolve();
@@ -1006,7 +1004,7 @@ module.exports = {
                 data: data,
                 success: function (data) {
                     console.log(data);
-                    reports.reportTemp.total_images_saved += 2;
+                    reports.reportTemp.total_images_saved += 1;
                     reference.changeSaveModalText("Se han guardado " + reports.reportTemp.total_images_saved + " imagenes de " + reports.reportTemp.total_images * 2);
                     //message.changeMessageLoader("mainContent2", "Se han guardado algunas imagenes");
                     resolve();
@@ -1141,8 +1139,8 @@ module.exports = {
             for (let reportAnswer of reports.reportResponseImages) {
                 if (Array.isArray(reportAnswer.images)) {
                     answerReport.push([reportAnswer.images[0]]);
-                    if (Array.isArray(reportAnswer.images_1)) {
-                        answerReport.push([reportAnswer.images_1[0]]);
+                    if (Array.isArray(reportAnswer.image_1)) {
+                        answerReport.push([reportAnswer.image_1[0]]);
                     }
                 }
             }
@@ -1173,8 +1171,8 @@ module.exports = {
             for (let reportAnswer of reports.reportResponseImages) {
             if (Array.isArray(reportAnswer.images)) {
                 answerReport.push([reportAnswer.images[0]]);
-                if (Array.isArray(reportAnswer.images_1)) {
-                    answerReport.push([reportAnswer.images_1[0]]);
+                if (Array.isArray(reportAnswer.image_1)) {
+                    answerReport.push([reportAnswer.image_1[0]]);
                 }
             }
         }

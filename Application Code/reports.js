@@ -49,7 +49,7 @@ module.exports = {
                      subIdNumber ++;
                      contProImg ++; 
                 }
-                while(contProImg < values[12]);
+                while(contProImg < parseInt(values[values.length-1]));
                 Promise.all(getAnswerImages).then(function (values) {
                 console.log("Promise Resolve", values);
                 reference.reportResponseImages = values;
