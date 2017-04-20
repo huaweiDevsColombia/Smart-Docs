@@ -11,6 +11,7 @@ $(function () {
             $("link").remove();
             $("script").remove();
             reference.disabledBackButton();
+            reference.promptRefreshMessage();
             workers.getCurrentTime.then(function (data) {
                 reference.currentTime = data;
                 console.log("CurrentTime" + reference.currentTime);
@@ -105,6 +106,11 @@ $(function () {
             window.location.hash = "no-back-button";
             window.location.hash = "Again-No-back-button";//again because google chrome don't insert first hash into history
             window.onhashchange = function () { window.location.hash = "no-back-button"; }
+        },
+        promptRefreshMessage: function () {
+            window.onbeforeunload = function () {
+                return "";
+            };
         },
         grantPermissions: function (userGroups) {
             let reference = this;
