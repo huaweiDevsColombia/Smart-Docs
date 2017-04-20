@@ -1310,7 +1310,7 @@ module.exports = {
             }
             else {
                 workers.getCurrentTime.then(function (currentTimeResponse) {
-                    comments.push({ "author": username, "comment": "El reporte ha sido creado exitosamente en el sistema", "time": JSON.parse(currentTimeResponse).result.localDateTime, "status": status })
+                    comments.push({ "author": reference.userInformation.fullname, "comment": "El reporte ha sido creado exitosamente en el sistema", "time": JSON.parse(currentTimeResponse).result.localDateTime, "status": status })
                     var answersArr = JSON.parse(answer.userAnswer);
                     reference.userAnswer = answersArr;
                     answerDate = reference.filterByAnswerType('date');
