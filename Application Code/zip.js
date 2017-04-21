@@ -9,7 +9,7 @@ module.exports = {
 
         answerImages.forEach(function (answer) {
             answer[0].forEach(function (answerVal) {
-                img.file(answerVal.sel + ".png", answerVal.val.replace("data:image/png;base64,", ""), { base64: true });
+                img.file(answerVal.name + ".png", answerVal.val.replace("data:image/png;base64,", ""), { base64: true });
             });
         });
         var content = zip.generate({ type: "blob" });

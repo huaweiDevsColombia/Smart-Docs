@@ -5,7 +5,7 @@ let templates = require("./templates");
 let smartEngine = require("./smartEngine");
 let message = require("./messages");
 let uid = require("./uid");
-let zip = require ("./zip");
+let zip = require("./zip");
 
 module.exports = {
     loadAllPages: function () {
@@ -416,9 +416,10 @@ module.exports = {
                 $("#labelStatisticTotal").text("Total Reportes (Solo Yo)");
                 $("#statisticTotal").text(allReports.length);
 
+                console.log("Estado FME: " + statusFME);
                 for (let statusFilter of statusFME) {
                     var reportFiltered = allReports.filter(function (report) {
-                        return report.status_id == statusFilter.status;
+                        return report.status == statusFilter.status;
                     });
                     $("#" + statusFilter.labelSel).text(reportFiltered.label);
                     $("#" + statusFilter.selector).text(reportFiltered.length);
@@ -432,7 +433,7 @@ module.exports = {
 
                 for (let statusFilter of statusFME) {
                     var reportFiltered = allReports.filter(function (report) {
-                        return report.status_id == statusFilter.status;
+                        return report.status == statusFilter.status;
                     });
                     $("#" + statusFilter.labelSel).text();
                     $("#" + statusFilter.selector).text(reportFiltered.length);
@@ -466,7 +467,7 @@ module.exports = {
             for (let ticket_type of ticketsType) {
                 for (let ticket of allTickets[ticket_type].results) {
                     ticket.ticket_priority = (ticket.ticket_priority == undefined) ? " N/A" : ticket.ticket_priority;
-                    $("#allTicketsDiv").append("<div class='col-sm-12 col-md-6 col-lg-6'><div class='pricing-table'><div class=pt-header style='background-color:#dbdbdb'><div class=plan-pricing><div class=pricing style=font-size:1.5em>" + ticket.subject + "</div><div class=pricing-type> Reportes Asociados: 0 </div></div></div><div class=pt-body style='background-color:#aeaeae'><h4>" + ticket.type + " - " + ticket.project + "</h4><ul class=plan-detail><li><b>Region :</b> " + ticket.region + " - " + ticket.city + "<li><b>Prioridad : </b>" + ticket.ticket_priority + "<li><b>Estado : </b>" + ticket.status + "<li><b>Ticket Id:<br></b>CM-" + ticket.orderid + "</ul></div><div class=pt-footer><button id='doReport_" + cont + "' class='btn btn-primary'type=button>Seleccionar Plantilla</button></div></div></div>");
+                    $("#allTicketsDiv").append("<div class='col-sm-12 col-md-6 col-lg-6'><div class='pricing-table'><div class=pt-header style='background-color:#dbdbdb'><div class=plan-pricing><div class=pricing style=font-size:1.5em>" + ticket.subject + "</div><div class=pricing-type> Reportes Asociados: 0 </div></div></div><div class=pt-body style='background-color:#aeaeae'><h4>" + ticket.type + " - " + ticket.project + "</h4><ul class=plan-detail><li><b>Region :</b> " + ticket.region + " - " + ticket.city + "<li><b>Prioridad : </b>" + ticket.ticket_priority + "<li><b>Estado : </b>" + ticket.status + "<li><b>Ticket Id:<br></b>CM-" + ticket.orderid + "</ul></div><div class=pt-footer><button id='doReport_" + cont + "' class='btn btn-primary' style='box-shadow: 2px 2px 2px #888888;'  type=button>Seleccionar Plantilla</button></div></div></div>");
                     $("#doReport_" + cont).on("click", {
                         val:
                         {
@@ -500,7 +501,7 @@ module.exports = {
         if (allTemplates.length > 0) {
             $("#templatesNotFound").remove();
             for (let template of allTemplates) {
-                $("#allTemplatesDiv").append("<div class='col-sm-12 col-md-6 col-lg-6'><div class=pricing-table><div class=pt-header style=background-color:#fff><div class=plan-pricing><div class=pricing style=font-size:1.5em>" + template.template_name_web + "</div><img src='" + template.icon_template.substr(1).slice(0, -1) + "'style=padding:10px><div class=pricing-type><!--<b>Id:</b>" + template.id_template + "!--></div></div></div><div class=pt-footer><p><b>Ultima Actualizacion: </b> " + template.template_date + " </p><button id='createTemplate_" + cont + "'class='btn btn-primary' style='margin-right:5px' type=button>Crear Reporte</button></div></div></div>");
+                $("#allTemplatesDiv").append("<div class='col-sm-12 col-md-6 col-lg-6'><div class=pricing-table><div class=pt-header style=background-color:#fff><div class=plan-pricing><div class=pricing style=font-size:1.5em>" + template.template_name_web + "</div><img src='" + template.icon_template.substr(1).slice(0, -1) + "'style=padding:10px><div class=pricing-type><!--<b>Id:</b>" + template.id_template + "!--></div></div></div><div class=pt-footer><p><b>Ultima Actualizacion: </b> " + template.template_date + " </p><button id='createTemplate_" + cont + "'class='btn btn-primary' style='margin-right:5px;box-shadow: 2px 2px 2px #888888;' type=button>Crear Reporte</button></div></div></div>");
                 $("#createTemplate_" + cont).on("click", {
                     val:
                     {
@@ -553,7 +554,7 @@ module.exports = {
             if (allTemplates.length > 0) {
                 $("#templatesNotFound").remove();
                 for (let template of allTemplates) {
-                    $("#allTemplatesDiv").append("<div class='col-sm-12 col-md-6 col-lg-6'><div class=pricing-table><div class=pt-header style=background-color:#fff><div class=plan-pricing><div class=pricing style=font-size:1.5em>" + template.template_name_web + "</div><img src='" + template.icon_template.substr(1).slice(0, -1) + "'style=padding:10px><div class=pricing-type><!--<b>Id:</b>" + template.id_template + "!--></div></div></div><div class=pt-footer><p><b>Ultima Actualizacion: </b> " + template.template_date + " </p><button id='previewTemplate_" + cont + "'class='btn btn-primary' style='margin-right:5px' type=button> <i class='fa fa-eye' aria-hidden=true></i> Visualizar </button><button id='editTemplate_" + cont + "'class='btn btn-primary' style='margin-right:5px' type=button><i class='fa fa-pencil-square-o' aria-hidden=true></i> Editar</button><button id='deleteTemplate_" + cont + "'class='btn btn-danger' style='margin-right:5px' type=button><i class='fa fa-trash-o' aria-hidden=true></i> Eliminar</button></div></div></div>");
+                    $("#allTemplatesDiv").append("<div class='col-sm-12 col-md-6 col-lg-6'><div class=pricing-table><div class=pt-header style=background-color:#fff><div class=plan-pricing><div class=pricing style=font-size:1.5em>" + template.template_name_web + "</div><img src='" + template.icon_template.substr(1).slice(0, -1) + "'style=padding:10px><div class=pricing-type><!--<b>Id:</b>" + template.id_template + "!--></div></div></div><div class=pt-footer><p><b>Ultima Actualizacion: </b> " + template.template_date + " </p><button id='previewTemplate_" + cont + "'class='btn btn-primary' style='margin-right:5px;box-shadow: 2px 2px 2px #888888;' type=button> <i class='fa fa-eye' aria-hidden=true></i> Visualizar </button><button id='editTemplate_" + cont + "'class='btn btn-primary' style='margin-right:5px;box-shadow: 2px 2px 2px #888888;' type=button><i class='fa fa-pencil-square-o' aria-hidden=true></i> Editar</button><button id='deleteTemplate_" + cont + "'class='btn btn-danger' style='margin-right:5px;box-shadow: 2px 2px 2px #888888;' type=button><i class='fa fa-trash-o' aria-hidden=true></i> Eliminar</button></div></div></div>");
                     $("#editTemplate_" + cont).on("click", {
                         val:
                         {
@@ -744,11 +745,11 @@ module.exports = {
                                 else {
                                     reference.launchAnswerInCompleteModal(answer.fieldsEmpty);
                                 }
-                                reference.bootstrapPage('page-021');
+                                reference.sendAutomaticEmail(idReport, "send_email_update").then(function () {
+                                    reference.bootstrapPage('page-021');
+                                });
                             });
-
                         });
-
                         /*
                         Promise.all(promisesUpdate).then(function (values) {
                             reference.changeSaveModalText("Se ha guardado exitosamente tu progreso");
@@ -860,11 +861,26 @@ module.exports = {
                             else {
                                 reference.launchAnswerInCompleteModal(answer.fieldsEmpty);
                             }
-                            reference.bootstrapPage('page-021');
+                            reference.sendAutomaticEmail(idReport, "send_email_create").then(function () {
+                                reference.bootstrapPage('page-021');
+                            });
                         });
                     });
                 });
             }
+        });
+    },
+    "sendAutomaticEmail": function (id_report, service) {
+        return new Promise(function (resolve, reject) {
+            MessageProcessor.process({
+                serviceId: service,
+                data: {
+                    id_report: id_report
+                },
+                success: function () {
+                    resolve();
+                }
+            });
         });
     },
     userAnswer: "",
@@ -941,7 +957,6 @@ module.exports = {
                 data["rejected_date"] = moreInformation["rejected_date"];
                 data["rejecter"] = moreInformation["rejecter"];
                 break;
-
         }
 
         return new Promise(function (resolve, reject) {
@@ -986,7 +1001,7 @@ module.exports = {
                 success: function (data) {
                     console.log(data);
                     reports.reportTemp.total_images_saved += 1;
-                    reference.changeSaveModalText("Se han guardado " + reports.reportTemp.total_images_saved + " imagenes de " + reports.reportTemp.total_images * 2);
+                    reference.changeSaveModalText("Se han guardado " + reports.reportTemp.total_images_saved + " imagenes de " + reports.reportTemp.total_images);
                     //message.changeMessageLoader("mainContent2", "Se han guardado algunas imagenes");
                     resolve();
                 }
@@ -1166,17 +1181,17 @@ module.exports = {
                 });
         });
 
-        $("#view_ticket_zip").click(function(){
+        $("#view_ticket_zip").click(function () {
             let answerReport = [];
             for (let reportAnswer of reports.reportResponseImages) {
-            if (Array.isArray(reportAnswer.images)) {
-                answerReport.push([reportAnswer.images[0]]);
-                if (Array.isArray(reportAnswer.image_1)) {
-                    answerReport.push([reportAnswer.image_1[0]]);
+                if (Array.isArray(reportAnswer.images)) {
+                    answerReport.push([reportAnswer.images[0]]);
+                    if (Array.isArray(reportAnswer.image_1)) {
+                        answerReport.push([reportAnswer.image_1[0]]);
+                    }
                 }
             }
-        }
-        zip.generateZipFile(answerReport);
+            zip.generateZipFile(answerReport);
         });
 
         /*
@@ -1377,9 +1392,12 @@ module.exports = {
                     "approval_date": JSON.parse(currentTimeResponse).result.localDateTime,
                     "approver": reference.userInformation.fullname
                 }
-                reference.updateDatamodel(reports.reportSelected.id_report, "SM-Status003", comments, moreInformation);
-                $('#approve_report_modal').modal('hide');
-                reference.bootstrapPage("page-021");
+                reference.updateDatamodel(reports.reportSelected.id_report, "SM-Status003", comments, moreInformation).then(function () {
+                    reference.sendAutomaticEmail(reports.reportSelected.id_report, "send_email_update").then(function () {
+                        $('#approve_report_modal').modal('hide');
+                        reference.bootstrapPage("page-021");
+                    });
+                });
             });
         });
     },
@@ -1407,9 +1425,12 @@ module.exports = {
                     "rejected_date": JSON.parse(currentTimeResponse).result.localDateTime,
                     "rejecter": reference.userInformation.fullname
                 }
-                reference.updateDatamodel(reports.reportSelected.id_report, "SM-Status004", comments, moreInformation);
-                $('#reject_report_modal').modal('hide');
-                reference.bootstrapPage("page-021");
+                reference.updateDatamodel(reports.reportSelected.id_report, "SM-Status004", comments, moreInformation).then(function () {
+                    reference.sendAutomaticEmail(reports.reportSelected.id_report, "send_email_update").then(function () {
+                        $('#reject_report_modal').modal('hide');
+                        reference.bootstrapPage("page-021");
+                    });
+                });
             });
         });
     },
