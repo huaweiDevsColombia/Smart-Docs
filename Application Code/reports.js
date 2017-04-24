@@ -6,8 +6,8 @@ module.exports = {
     allTickets: "",
     userGroup: "",
     reportSelected: "",
-    reportTemp:{"total_images":0,"total_images_saved":0},
-    reportResponse:"",
+    reportTemp: { "total_images": 0, "total_images_saved": 0 },
+    reportResponse: "",
     reportResponseImages: "",
     loadStatistic: function (userGroup) {
         let reference = this;
@@ -40,30 +40,30 @@ module.exports = {
             let getAnswerTable = reference.getAnswer("table_answer", idReport);
             let totalImages = reference.getAnswerImageTotal(idReport);
             let getAnswerImages = [];
-            Promise.all([getAnswerDate, getAnswerDateTime, getAnswerTime, getAnswerWeek, getAnswerMonth, getAnswerText, getAnswerNumber, getAnswerRadio, getAnswerCheckbox, getAnswerSelect, getAnswerMultiSelect, getAnswerList, getAnswerTable,totalImages]).then(values => {
+            Promise.all([getAnswerDate, getAnswerDateTime, getAnswerTime, getAnswerWeek, getAnswerMonth, getAnswerText, getAnswerNumber, getAnswerRadio, getAnswerCheckbox, getAnswerSelect, getAnswerMultiSelect, getAnswerList, getAnswerTable, totalImages]).then(values => {
                 let contProImg = 0; let subIdNumber = 0; let subId = "-SB";
                 reference.reportResponse = values;
-                do{
-                     this["getAnswerImage_" + contProImg] = reference.getAnswerImage(idReport + subId + subIdNumber);
-                     getAnswerImages.push(this["getAnswerImage_" + contProImg]);
-                     subIdNumber ++;
-                     contProImg ++; 
+                do {
+                    this["getAnswerImage_" + contProImg] = reference.getAnswerImage(idReport + subId + subIdNumber);
+                    getAnswerImages.push(this["getAnswerImage_" + contProImg]);
+                    subIdNumber++;
+                    contProImg++;
                 }
-                while(contProImg < parseInt(values[values.length-1]));
+                while (contProImg < parseInt(values[values.length - 1]));
                 Promise.all(getAnswerImages).then(function (values) {
-                console.log("Promise Resolve", values);
-                reference.reportResponseImages = values;
-                resolve();
+                    console.log("Promise Resolve", values);
+                    reference.reportResponseImages = values;
+                    resolve();
                 });
             });
         });
     },
-    getAnswer: function (service,idReport) {
+    getAnswer: function (service, idReport) {
         return new Promise(function (resolve, reject) {
             let data = {};
             data["id_report"] = idReport;
             MessageProcessor.process({
-                serviceId: "co_sm_report_get_"+service,
+                serviceId: "co_sm_report_get_" + service,
                 data: data,
                 success: function (data) {
                     resolve(data.result[service]);
@@ -71,7 +71,7 @@ module.exports = {
             });
         });
     },
-    getAnswerImage: function(idReportImg){
+    getAnswerImage: function (idReportImg) {
         return new Promise(function (resolve, reject) {
             let data = {};
             data["report_img_id"] = idReportImg;
@@ -84,12 +84,12 @@ module.exports = {
             });
         });
     },
-    getAnswerImageTotal: function(idReport){
+    getAnswerImageTotal: function (idReport) {
         return new Promise(function (resolve, reject) {
             let data = {};
             data["id_report"] = idReport;
-            data["start"]=0;
-            data["limit"]=100;
+            data["start"] = 0;
+            data["limit"] = 100;
             MessageProcessor.process({
                 serviceId: "co_sm_report_images_getList",
                 data: data,
@@ -99,18 +99,40 @@ module.exports = {
             });
         });
     },
-    fillMyReports: function () {
+    fillMyReports: function (userGroup, userSubGroup) {
+        console.log("User Group:" + userGroup);
+        console.log("User SubGroup:" + userSubGroup);
         let reference = this;
         //Save the reference of one report to don't add again
         let wrapReports = [];
-
+        console.log("All Reports ", reference.allReports);
         let reportsFiltered = reference.allReports.filter(function (report) {
             console.log(wrapReports.indexOf(report.ticket_id));
-            if (wrapReports.indexOf(report.ticket_id) == -1) {
-                wrapReports.push(report.ticket_id);
-                return report;
+            if (userGroup == "FME") {
+                if (wrapReports.indexOf(report.ticket_id) == -1) {
+                    wrapReports.push(report.ticket_id);
+                    return report.author_user == username;
+                }
+            }
+            else if (userGroup == "Quality") {
+                if (userSubGroup != "") {
+                    console.log("User Sub Group is not empty");
+                    if (wrapReports.indexOf(report.ticket_id) == -1) {
+                        wrapReports.push(report.ticket_id);
+                        console.log("Retornado Reporte QualitySUB");
+                        return report.supplier == userSubGroup;
+                    }
+                }
+                else {
+                    if (wrapReports.indexOf(report.ticket_id) == -1) {
+                        wrapReports.push(report.ticket_id);
+                        console.log("Retornado Reporte Quality");
+                        return report;
+                    }
+                }
             }
         });
+
         return reportsFiltered;
     },
     fillMyReportsRelated: function () {
@@ -122,7 +144,7 @@ module.exports = {
             if (report.ticket_id == reference.reportSelected.ticket_id) {
                 return report;
             }
-        });    
+        });
         return reportsFiltered;
     }
 }

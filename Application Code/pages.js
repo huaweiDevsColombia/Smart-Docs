@@ -203,9 +203,10 @@ module.exports = {
         let reference = this;
         console.log("User Group : " + userGroup);
         console.log("User SubGroup : " + userSubGroup);
-        reference.userSubGroup = userSubGroup;
         //reference.translatePage();
         reference.userGroup = userGroup;
+        reference.userSubGroup = userSubGroup;
+
         switch (userGroup) {
             case "Quality":
                 $("#itemInicio").show();
@@ -375,7 +376,7 @@ module.exports = {
                 message.changeMessageLoader("loaderMessage", "Consultando Reportes en @OWS Datamodel");
                 reports.loadStatistic(reference.userGroup).then(function () {
                     message.removeMessageLoader("#mainContent2");
-                    reference.fillDataTableMyReports(reports.fillMyReports());
+                    reference.fillDataTableMyReports(reports.fillMyReports(reference.userGroup, reference.userSubGroup));
                     $('#allReportsNavTab a:first').tab('show');
                 });
                 break;
@@ -473,24 +474,24 @@ module.exports = {
                                 if (report.status == statusFilter.status && report.supplier == reference.userSubGroup)
                                     return report;
                             }
-                            else{
+                            else {
                                 if (report.status == statusFilter.status)
                                     return report;
                             }
                         }
 
                         if (statusFilter.status == "SM-Status003") {
-                                if (reference.userSubGroup != "") {
-                                    if (report. status == statusFilter.status && report.supplier == reference.userSubGroup && report.approver == username) {
-                                        return report;
-                                    }
-                                }
-                                else {
-                                    if(report.status == statusFilter.status && report.approver == username){
-                                        return report;
-                                    }
+                            if (reference.userSubGroup != "") {
+                                if (report.status == statusFilter.status && report.supplier == reference.userSubGroup && report.approver == username) {
+                                    return report;
                                 }
                             }
+                            else {
+                                if (report.status == statusFilter.status && report.approver == username) {
+                                    return report;
+                                }
+                            }
+                        }
 
                         if (statusFilter.status == "SM-Status004") {
                             if (reference.userSubGroup != "") {
