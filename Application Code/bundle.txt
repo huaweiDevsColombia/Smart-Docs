@@ -2281,6 +2281,23 @@ module.exports = {
                 });
         })
     },
+    "loadTranslate": function () {
+        return new Promise(function (resolve, reject) {
+            let translate = $.ajax({
+                method: "GET",
+                dataType: "script",
+                url: "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit",
+                cache: false
+            });
+            $.when(translate)
+                .done(function (translateResponse) {
+                    resolve();
+                })
+                .fail(function (error) {
+                    reject(error);
+                });
+        });
+    },
     "loadPlugins_1": function () {
         return new Promise(function (resolve, reject) {
             let buttonsDataTables = $.ajax({
@@ -4143,18 +4160,22 @@ $(function () {
                 }).then(function (data) {
                     message.changeMessageLoader("pageLoaderContent", "Las Paginas han sido cargadas");
                     pages.bootstrapMenu("page-022").then(function () {
-                        return workers.getUserGroups;
-                    }).then(function (data) {
-                        message.changeMessageLoader("pageLoaderContent", "Se ha obtenido los grupos del usuario");
-                        let userGroups = JSON.parse(data).results;
-                        let userGroupsEdited = []
-                        for (let group of userGroups) {
-                            userGroupsEdited.push({ group_id: group.group_id, group_fullname: group.group_fullname });
-                        }
-                        reference.userGroups = userGroupsEdited;
-                        console.log("User Groups: " + reference.userGroups);
-                        return workers.getUserInformation;
+                        return jsLibs.loadTranslate();
                     })
+                        .then(function () {
+                            return workers.getUserGroups;
+                        })
+                        .then(function (data) {
+                            message.changeMessageLoader("pageLoaderContent", "Se ha obtenido los grupos del usuario");
+                            let userGroups = JSON.parse(data).results;
+                            let userGroupsEdited = []
+                            for (let group of userGroups) {
+                                userGroupsEdited.push({ group_id: group.group_id, group_fullname: group.group_fullname });
+                            }
+                            reference.userGroups = userGroupsEdited;
+                            console.log("User Groups: " + reference.userGroups);
+                            return workers.getUserInformation;
+                        })
                         .then(function (data) {
                             message.changeMessageLoader("pageLoaderContent", "La informacion del usuario ha sido cargada");
                             reference.userInformation = JSON.parse(data).result;

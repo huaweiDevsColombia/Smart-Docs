@@ -163,6 +163,23 @@ module.exports = {
                 });
         })
     },
+    "loadTranslate": function () {
+        return new Promise(function (resolve, reject) {
+            let translate = $.ajax({
+                method: "GET",
+                dataType: "script",
+                url: "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit",
+                cache: false
+            });
+            $.when(translate)
+                .done(function (translateResponse) {
+                    resolve();
+                })
+                .fail(function (error) {
+                    reject(error);
+                });
+        });
+    },
     "loadPlugins_1": function () {
         return new Promise(function (resolve, reject) {
             let buttonsDataTables = $.ajax({

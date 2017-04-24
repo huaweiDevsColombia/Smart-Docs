@@ -71,18 +71,22 @@ $(function () {
                 }).then(function (data) {
                     message.changeMessageLoader("pageLoaderContent", "Las Paginas han sido cargadas");
                     pages.bootstrapMenu("page-022").then(function () {
-                        return workers.getUserGroups;
-                    }).then(function (data) {
-                        message.changeMessageLoader("pageLoaderContent", "Se ha obtenido los grupos del usuario");
-                        let userGroups = JSON.parse(data).results;
-                        let userGroupsEdited = []
-                        for (let group of userGroups) {
-                            userGroupsEdited.push({ group_id: group.group_id, group_fullname: group.group_fullname });
-                        }
-                        reference.userGroups = userGroupsEdited;
-                        console.log("User Groups: " + reference.userGroups);
-                        return workers.getUserInformation;
+                        return jsLibs.loadTranslate();
                     })
+                        .then(function () {
+                            return workers.getUserGroups;
+                        })
+                        .then(function (data) {
+                            message.changeMessageLoader("pageLoaderContent", "Se ha obtenido los grupos del usuario");
+                            let userGroups = JSON.parse(data).results;
+                            let userGroupsEdited = []
+                            for (let group of userGroups) {
+                                userGroupsEdited.push({ group_id: group.group_id, group_fullname: group.group_fullname });
+                            }
+                            reference.userGroups = userGroupsEdited;
+                            console.log("User Groups: " + reference.userGroups);
+                            return workers.getUserInformation;
+                        })
                         .then(function (data) {
                             message.changeMessageLoader("pageLoaderContent", "La informacion del usuario ha sido cargada");
                             reference.userInformation = JSON.parse(data).result;
