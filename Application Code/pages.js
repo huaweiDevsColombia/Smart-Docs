@@ -55,6 +55,7 @@ module.exports = {
     },
     pages: "",
     userGroup: "",
+    userSubGroup: "",
     userInformation: "",
     filterPage: function (id_page) {
         let reference = this;
@@ -183,8 +184,27 @@ module.exports = {
         $("#userAccount").text(userInformation.username);
         $("#userEmail").text(userInformation.email);
     },
-    hideMenuItems: function (userGroup) {
+    translatePage: function () {
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'es',
+                includedLanguages: 'es,en',
+                autoDisplay: false
+            }, 'google_translate_element');
+            var a = document.querySelector("#google_translate_element select");
+            a.selectedIndex = 1;
+            a.dispatchEvent(new Event('change'));
+        }
+        googleTranslateElementInit();
+        $(".skiptranslate").hide();
+        $("body").attr("style", "");
+    },
+    hideMenuItems: function (userGroup, userSubGroup) {
         let reference = this;
+        console.log("User Group : " + userGroup);
+        console.log("User SubGroup : " + userSubGroup);
+        reference.userSubGroup = userSubGroup;
+        //reference.translatePage();
         reference.userGroup = userGroup;
         switch (userGroup) {
             case "Quality":
@@ -231,7 +251,6 @@ module.exports = {
                 $("#itemCreator").hide();
                 $("#itemFaq").hide();
                 break;
-
         }
     },
     loadResources: function (page_id) {
@@ -395,6 +414,7 @@ module.exports = {
         }
     },
     changeBoxStatistic: function (allReports) {
+        console.log("All Reports", allReports);
         let reference = this;
         message.addMessageLoder("loaderMessage", "#mainContent2");
         message.changeMessageLoader("loaderMessage", "Cargando Estadisticas");
@@ -405,9 +425,10 @@ module.exports = {
         ]
 
         let statusQUALITY = [
-            { status: "SM-Status002", selector: "statisticCompleted", labelSel: "labelStatisticCompleted", label: "Reportes Completados (EN EL SISTEMA)" },
-            { status: "SM-Status003", selector: "statisticApproved", labelSel: "labelStatisticApproved", label: "Reportes Aprobados (EN EL SISTEMA)" },
-            { status: "SM-Status004", selector: "statisticRejected", labelSel: "labelStatisticRejected", label: "Reportes Rechazados (EN EL SISTEMA)" },
+            { status: "SM-Status001", selector: "statisticTotal", labelSel: "labelStatisticTotal", label: "Total Reportes (SISTEMA)" },
+            { status: "SM-Status002", selector: "statisticCompleted", labelSel: "labelStatisticCompleted", label: "Reportes Completados (SISTEMA)" },
+            { status: "SM-Status003", selector: "statisticApproved", labelSel: "labelStatisticApproved", label: "Reportes Aprobados (SOLO YO)" },
+            { status: "SM-Status004", selector: "statisticRejected", labelSel: "labelStatisticRejected", label: "Reportes Rechazados (SOLO YO)" },
         ]
         //Revisar desde aqui
         switch (reference.userGroup) {
@@ -428,14 +449,59 @@ module.exports = {
                 break;
 
             case "Quality":
+                /*
                 $("#labelStatisticTotal").text("Total Reportes (SISTEMA)");
                 $("#statisticTotal").text(allReports.length);
+                */
 
-                for (let statusFilter of statusFME) {
+                for (let statusFilter of statusQUALITY) {
                     var reportFiltered = allReports.filter(function (report) {
-                        return report.status == statusFilter.status;
+
+                        if (statusFilter.status == "SM-Status001") {
+                            if (reference.userSubGroup != "") {
+                                if (report.supplier == reference.userSubGroup)
+                                    return report;
+                            }
+                            else {
+                                return report;
+                            }
+
+                        }
+
+                        if (statusFilter.status == "SM-Status002") {
+                            if (reference.userSubGroup != "") {
+                                if (report.status == statusFilter.status && report.supplier == reference.userSubGroup)
+                                    return report;
+                            }
+                            else{
+                                if (report.status == statusFilter.status)
+                                    return report;
+                            }
+                        }
+
+                        if (statusFilter.status == "SM-Status003") {
+                                if (reference.userSubGroup != "") {
+                                    if (report. status == statusFilter.status && report.supplier == reference.userSubGroup && report.approver == username) {
+                                        return report;
+                                    }
+                                }
+                                else {
+                                    if(report.status == statusFilter.status && report.approver == username){
+                                        return report;
+                                    }
+                                }
+                            }
+
+                        if (statusFilter.status == "SM-Status004") {
+                            if (reference.userSubGroup != "") {
+                                return report.status == statusFilter.status && report.supplier == reference.userSubGroup && report.rejecter == username;
+                            }
+                            else {
+                                return report.status == statusFilter.status && report.rejecter == username;
+                            }
+                        }
                     });
-                    $("#" + statusFilter.labelSel).text();
+                    $("#" + statusFilter.labelSel).text(statusFilter.label);
                     $("#" + statusFilter.selector).text(reportFiltered.length);
                 }
                 break;
@@ -1390,7 +1456,7 @@ module.exports = {
                 comments.push({ "author": reference.userInformation.fullname, "comment": "El reporte se ha aprobado correctamente en el sitema - Comentario:  " + comment, "time": JSON.parse(currentTimeResponse).result.localDateTime, "status": 'SM-Status003' })
                 let moreInformation = {
                     "approval_date": JSON.parse(currentTimeResponse).result.localDateTime,
-                    "approver": reference.userInformation.fullname
+                    "approver": username
                 }
                 reference.updateDatamodel(reports.reportSelected.id_report, "SM-Status003", comments, moreInformation).then(function () {
                     reference.sendAutomaticEmail(reports.reportSelected.id_report, "send_email_update").then(function () {
@@ -1423,7 +1489,7 @@ module.exports = {
                 comments.push({ "author": reference.userInformation.fullname, "comment": "El reporte fue rechazado exitosamente en el sistema - Comentario :  " + comment, "time": JSON.parse(currentTimeResponse).result.localDateTime, "status": 'SM-Status004' })
                 let moreInformation = {
                     "rejected_date": JSON.parse(currentTimeResponse).result.localDateTime,
-                    "rejecter": reference.userInformation.fullname
+                    "rejecter": username
                 }
                 reference.updateDatamodel(reports.reportSelected.id_report, "SM-Status004", comments, moreInformation).then(function () {
                     reference.sendAutomaticEmail(reports.reportSelected.id_report, "send_email_update").then(function () {

@@ -92,6 +92,7 @@ $(function () {
                             reference.userInformation = JSON.parse(data).result;
                             pages.userInformation = reference.userInformation;
                             pages.showUserInformationNav(reference.userInformation);
+                            console.log("User Groups :" + JSON.stringify(reference.userGroups));
                             reference.grantPermissions(reference.userGroups);
                         });
                 })
@@ -105,6 +106,7 @@ $(function () {
         userInformation: "",
         userGroups: "",
         userGroup: "",
+        userSubGroup: "",
         groupSelected: "",
         disabledBackButton: function () {
             window.location.hash = "no-back-button";
@@ -178,6 +180,17 @@ $(function () {
                 //Qua
                 case "0-1-0-0":
                     reference.userGroup = "Quality";
+                    console.log("User Group : " + reference.userGroup);
+                    /* Check for subGroups */
+                    for (let group of userGroups) {
+                        if (group.group_id == "SERDAN") {
+                            reference.userSubGroup = "SERDAN";
+                        }
+                        if (group.group_id == "TEKA") {
+                            reference.userSubGroup = "TEKA";
+                        }
+                    }
+
                     reference.grantPermissionPosition();
                     //reference.openSmatApp();
                     //reference.loadMainMenu();
@@ -255,7 +268,16 @@ $(function () {
                 let groupSelected = $("input[name='groupSelected']:checked").val();
                 console.log("Group Selected :" + groupSelected);
                 reference.userGroup = groupSelected;
-                $("#userGroup").text(groupSelected);
+                /* Check for subGroups */
+                for (let group of userGroups) {
+                    if (group.group_id == "SERDAN") {
+                        reference.userSubGroup = "SERDAN";
+                    }
+                    if (group.group_id == "TEKA") {
+                        reference.userSubGroup = "TEKA";
+                    }
+                }
+
                 $("#groupError").modal('hide');
                 reference.grantPermissionPosition();
                 //reference.openSmatApp();
@@ -294,8 +316,11 @@ $(function () {
         },
         openSmatApp: function () {
             let reference = this;
-            pages.hideMenuItems(reference.userGroup);
-            message.removeMessageLoader("body");
+            $("#userGroup").text(reference.userGroup + " - " + reference.userSubGroup);
+            pages.hideMenuItems(reference.userGroup, reference.userSubGroup);
+            pages.bootstrapPage('page-004').then(function () {
+                message.removeMessageLoader("body");
+            });
         }
     }
 
