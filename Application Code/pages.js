@@ -84,6 +84,7 @@ module.exports = {
                 reference.loadNavBar();
                 reference.makeProgressive();
                 return reference.filterPage("page-004");
+
             }).then(function (pageCode) {
                 reference.changeMainContent(pageCode);
                 //reference.loadResources("page-004");
@@ -149,9 +150,8 @@ module.exports = {
             { id: "itemTareas", id_page: "page-008" },
             { id: "itemReportes", id_page: "page-014" },
             { id: "itemTemplates", id_page: "page-007" },
-            { id: "itemDeveloper", id_page: "" },
-            { id: "itemTesting", id_page: "" },
-            { id: "itemCreator", id_page: "" },
+            { id: "itemUsers", id_page: "page-017" },
+            { id: "itemCreator", id_page: "page-027" },
             { id: "itemFaq", id_page: "" }
         ];
         return items;
@@ -173,7 +173,7 @@ module.exports = {
     },
     changeActiveMenu: function (id_page) {
         $(".active").removeClass("active");
-        $("#" + id).addClass("active");
+        $("#" + id_page).addClass("active");
     },
     showUserInformationNav: function (userInformation) {
         if (screen.width < 576) {
@@ -217,7 +217,7 @@ module.exports = {
                 $("#itemTareas").hide();
                 $("#itemReportes").show();
                 $("#itemTemplates").show();
-                $("#itemUsers").hide();
+                $("#itemUsers").show();
                 $("#itemDeveloper").hide();
                 $("#itemTesting").hide();
                 $("#itemCreator").show();
@@ -1009,6 +1009,7 @@ module.exports = {
             "id_report": idReport,
             "status": status,
             "comments": JSON.stringify(comment),
+            
         };
         switch (status) {
             case "SM-Status002":
@@ -1136,6 +1137,8 @@ module.exports = {
         $("#reportSiteName").html("<b>Site Name: </b>" + reportFiltered.site_name);
         $("#reportApprover").html("<b>Approver: </b>" + reportFiltered.approver);
         $("#reportAuthor").html("<b>Author: </b>" + reportFiltered.author);
+        $("#reportLastUpdate").html("<b>Ultima Modificacion: </b>" + reportFiltered.last_modification);
+        $("#reportModifiedBy").html("<b>Ultima Modificacion: </b>" + reportFiltered.modified_by);
         $("#ticketBackground").addClass(reportFiltered.status_background);
 
         let class_background_comment = "";
@@ -1391,7 +1394,7 @@ module.exports = {
         console.log("Wrap Reports: ", reportsFiltered)
         let cont = 0;
         for (let report of reportsFiltered) {
-            $("#dataTableAllReport > tbody").append("<tr><td style='cursor:pointer' id='allReports" + cont + "'>" + report.ticket_id + "</td><td>" + 0 + "</td><td>" + report.site_id + "</td><td>" + report.site_name + "</td><td>" + report.project + "</td><td>" + report.region + "</td><td style='text-align:-webkit-center'>" + report.work_client + "</td><td><input id='allReports" + cont + "Details' type='image' name='image' src='https://cdn2.iconfinder.com/data/icons/flat-ui-icons-24-px/24/eye-24-20.png'></td></tr>");
+            $("#dataTableAllReport > tbody").append("<tr><td style='cursor:pointer' id='allReports" + cont + "'>" + report.ticket_id + "</td><td>" + report.site_id + "</td><td>" + report.site_name + "</td><td>" + report.project + "</td><td>" + report.region + "</td><td style='text-align:-webkit-center'>" + report.work_client + "</td><td><input id='allReports" + cont + "Details' type='image' name='image' src='https://cdn2.iconfinder.com/data/icons/flat-ui-icons-24-px/24/eye-24-20.png'></td></tr>");
             $('#allReports' + cont).add('#allReports' + cont + "Details").on("click", { "id_ticket": report.ticket_id }
                 , function (event) {
                     reports.reportSelected = { "ticket_id": event.data.id_ticket };

@@ -112,24 +112,14 @@
                             <span class="icon fa fa-fire"></span><span class="title">Mis Reportes</span>
                         </a>
                     </li>
-                    <li>
-                        <a id="itemTemplates" style="cursor: pointer">
+                    <li id="itemTemplates" style="cursor: pointer">
+                        <a>
                             <span class="icon fa fa-book"></span><span class="title">Plantillas</span>
                         </a>
                     </li>
-                    <li>
+                    <li id="itemUsers" style="cursor: pointer">
                         <a>
                             <span class="icon fa fa-user-secret"></span><span class="title">Usuarios</span>
-                        </a>
-                    </li>
-                    <li id="itemDeveloper" style="cursor: pointer">
-                        <a>
-                            <span class="icon fa fa-asterisk"></span><span class="title">Developer Zone</span>
-                        </a>
-                    </li>
-                    <li id="itemTesting" style="cursor: pointer">
-                        <a>
-                            <span class="icon fa fa-file-code-o"></span><span class="title">Testing Zone</span>
                         </a>
                     </li>
                     <li id="itemCreator" style="cursor: pointer">

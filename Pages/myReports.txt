@@ -24,7 +24,6 @@
                                     <thead>
                                     <tr>
                                         <th>ID Ticket SDM</th>
-                                        <th># Reportes </th>
                                         <th>ID Sitio</th>
                                         <th>Nombre Sitio</th>
                                         <th>Proyecto</th>
@@ -36,7 +35,6 @@
                                     <tfoot>
                                     <tr>
                                         <th>ID Ticket SDM</th>
-                                        <th># Reportes </th>
                                         <th>ID Sitio</th>
                                         <th>Nombre Sitio</th>
                                         <th>Proyecto</th>

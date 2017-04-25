@@ -73,7 +73,9 @@ self.addEventListener('message', function (e) {
                                             })
                                             
                                         }
-                                        else if (item.table.order == 'DESC') {                                            
+                                        else if (item.table.order == 'DESC') {
+                                            tableItem.reverse();
+                                            
                                             tableItem.reverse(function (a, b) {
                                                 return a[1] > b[1]
                                             });

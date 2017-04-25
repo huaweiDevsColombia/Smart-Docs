@@ -5,7 +5,7 @@
                 <!--
                 <div class="card-header">
                     <div class="card-title">
-                        <div class="title">Mis Reportes</div>
+                        <div class="title">Todos los Usuarios</div>
                     </div>
                 </div>
                 -->
@@ -20,27 +20,23 @@
                         <div class="tab-content">
                             <div role="tabpanel" class="tab-pane active" id="allTab">
                                 <div>
-                                    <table class="table table-hover" cellspacing="0" width="100%" id="dataTableAllReport">
+                                    <table class="table table-hover" cellspacing="0" width="100%" id="dataTableUsers">
                                     <thead>
                                     <tr>
-                                        <th>ID Ticket SDM</th>
-                                        <th>ID Sitio</th>
-                                        <th>Nombre Sitio</th>
-                                        <th>Proyecto</th>
-                                        <th>Region</th>
-                                        <th>ID Ticket Cliente</th>
-                                        <th>&nbsp</th>
+                                        <th>Usuario</th>
+                                        <th>ID Usuario</th>
+                                        <th>Nombre</th>
+                                        <th># Sesiones</th>
+                                        <th>Ultima Sesion</th>
                                     </tr>
                                     </thead>
                                     <tfoot>
                                     <tr>
-                                        <th>ID Ticket SDM</th>
-                                        <th>ID Sitio</th>
-                                        <th>Nombre Sitio</th>
-                                        <th>Proyecto</th>
-                                        <th>Region</th>
-                                        <th>ID Ticket Cliente</th>
-                                        <th>&nbsp</th>
+                                        <th>Usuario</th>
+                                        <th>ID Usuario</th>
+                                        <th>Nombre</th>
+                                        <th># Sesiones</th>
+                                        <th>Ultima Sesion</th>
                                     </tr>
                                     </tfoot>
                                     <tbody>
