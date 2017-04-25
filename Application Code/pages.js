@@ -176,11 +176,15 @@ module.exports = {
         $("#" + id).addClass("active");
     },
     showUserInformationNav: function (userInformation) {
+        if (screen.width < 576) {
+            $("#navbarBig").remove();
+        } else {
+            $("#navbarSmall").remove();
+        }
         $("#userFullname").text(userInformation.fullname);
         $("#userFullname").append("<span class='caret'></span>");
         $("#userRol").text(userInformation.userGroups);
         $("#userGroup").text(userInformation.userGroup);
-        $("#explainUserGroup").text("Group Information");
         $("#userAccount").text(userInformation.username);
         $("#userEmail").text(userInformation.email);
     },
@@ -388,6 +392,9 @@ module.exports = {
             //Detail Report    
             case "page-021":
                 $("#pageName").text("Detalle del Reporte");
+                if (screen.width < 576) {
+                    $(".plan-detail > i").hide();
+                }
                 message.addMessageLoder("loaderMessage", "#mainContent2");
                 message.changeMessageLoader("loaderMessage", "Consultando Reporte en @OWS Datamodel");
                 reports.loadStatistic(reference.userGroup).then(function () {
@@ -420,6 +427,7 @@ module.exports = {
         message.addMessageLoder("loaderMessage", "#mainContent2");
         message.changeMessageLoader("loaderMessage", "Cargando Estadisticas");
         let statusFME = [
+            { status: "SM-Status001", selector: "statisticTotal", labelSel: "labelStatisticTotal", label: "Total Reportes (SOLO YO)" },
             { status: "SM-Status002", selector: "statisticCompleted", labelSel: "labelStatisticCompleted", label: "Reportes Completados (SOLO YO)" },
             { status: "SM-Status003", selector: "statisticApproved", labelSel: "labelStatisticApproved", label: "Reportes Aprobados (SOLO YO)" },
             { status: "SM-Status004", selector: "statisticRejected", labelSel: "labelStatisticRejected", label: "Reportes Rechazados (SOLO YO)" },
@@ -441,7 +449,7 @@ module.exports = {
                 console.log("Estado FME: " + statusFME);
                 for (let statusFilter of statusFME) {
                     var reportFiltered = allReports.filter(function (report) {
-                        return report.status == statusFilter.status;
+                        return report.status == statusFilter.status && report.author_user == username;
                     });
                     $("#" + statusFilter.labelSel).text(reportFiltered.label);
                     $("#" + statusFilter.selector).text(reportFiltered.length);

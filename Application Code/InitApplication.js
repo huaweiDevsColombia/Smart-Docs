@@ -12,14 +12,34 @@ $(function () {
             $("script").remove();
             reference.disabledBackButton();
             reference.promptRefreshMessage();
-            workers.getCurrentTime.then(function (data) {
-                reference.currentTime = data;
-                console.log("CurrentTime" + reference.currentTime);
+            /*
+            workers.checkUserSmart.then(function (userSmartResponse) {
+
+                var userRegisterOnSmart = (Object.keys(JSON.parse(userSmartResponse)).length === 0);
+                var data = {};
+                switch (userRegisterOnSmart) {
+                    case true:
+                        //User not exist in Smart Docs Users Database
+                        data["account_id"] = e.data.userInformation.account_id;
+                        data["name"] = e.data.userInformation.name;
+                        data["user_id"] = e.data.userInformation.user_id;
+                        params = "&csrfToken=" + e.data.token + "&account_id=" + data.account_id + "&name=" + data.name + "&user_id=" + data.user_id + "&serviceId=co_sm_users_create"
+                        return reference.get("co_sm_users_create", e.data.username, "100l", params);
+                        break;
+                    case false:
+                        var userSmart = JSON.parse(userSmartResponse).result;
+                        console.log("Times " + userSmart.start_times);
+                        data["start_times"] = parseInt(userSmart.start_times) + 1;
+                        data["account_id"] = userSmart.account_id;
+                        return reference.update("co_sm_users_update", data);
+                        break;
+                }
+            }).then(function () {
+                console.log("Visti registered");
+            }).catch(function (error) {
+                console.log(error);
             });
-            workers.checkUserSmart.then(function (data) {
-                reference.userRegisterOnSmart = (Object.keys(data).length === 0);
-                console.log("Check User Smart:" + reference.userRegisterOnSmart);
-            });
+            */
 
             message.addMessageLoder("pageLoaderContent", "body");
             cssLibs.loadFonts.then(function () {
@@ -40,33 +60,21 @@ $(function () {
                 return jsLibs.loadHighJS();
             }).then(function () {
                 console.log("High JS were loaded");
-                message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 1/6 han sido cargadas");
+                message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 1/4 han sido cargadas");
                 return jsLibs.loadMediumJS();
             }).then(function () {
                 console.log("JS Medium Libs were loaded");
-                message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 2/6 han sido cargadas");
+                message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 2/4 han sido cargadas");
                 return jsLibs.loadLowJS();
             })
                 .then(function () {
                     console.log("JS Low Libs were loaded");
-                    message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 2/6 han sido cargadas");
+                    message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 3/4 han sido cargadas");
                     return jsLibs.loadDataTables();
                 })
-            /*.then(function () {
-                console.log("JS Load Plugins 1 were loaded");
-                message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 3/6 han sido cargadas");
-                return jsLibs.loadPlugins_1();
-            }).then(function () {
-                console.log("JS Load Plugins 2 were loaded");
-                message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 4/6 han sido cargadas");
-                return jsLibs.loadPlugins_2();
-            }).then(function () {
-                console.log("JS Load Plugins 3 were loaded");
-                message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 5/6 han sido cargadas");
-                return jsLibs.loadPlugins_3();
-            })*/.then(function () {
+                .then(function () {
                     console.log("JS Low 2 were loaded");
-                    message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 6/6 han sido cargadas");
+                    message.changeMessageLoader("pageLoaderContent", "Librerias Javascript 4/4 han sido cargadas");
                     return pages.loadAllPages();
                 }).then(function (data) {
                     message.changeMessageLoader("pageLoaderContent", "Las Paginas han sido cargadas");
@@ -94,15 +102,69 @@ $(function () {
                             pages.showUserInformationNav(reference.userInformation);
                             console.log("User Groups :" + JSON.stringify(reference.userGroups));
                             reference.grantPermissions(reference.userGroups);
-                        });
+                            return workers.checkUserSmart;
+                        })
+                        .then(function (userSmartResponse) {
+                            //message.changeMessageLoader("pageLoaderContent", "Registrando Visita en la aplicacion");
+                            var userRegisterOnSmart = (Object.keys(JSON.parse(userSmartResponse)).length === 0);
+                            var data = {};
+                            switch (userRegisterOnSmart) {
+                                case true:
+                                    //User not exist in Smart Docs Users Database
+                                    data["account_id"] = username;
+                                    data["name"] = reference.userInformation.fullname;
+                                    data["user_id"] = USER_ID;
+                                    return reference.update("co_sm_users_create", data);
+                                    break;
+                                case false:
+                                    var userSmart = JSON.parse(userSmartResponse).result;
+                                    console.log("Times " + userSmart.start_times);
+                                    data["start_times"] = parseInt(userSmart.start_times) + 1;
+                                    data["account_id"] = userSmart.account_id;
+                                    return reference.update("co_sm_users_update", data);
+                                    break;
+                            }
+                        }).then(function () {
+                            console.log("Visti registered");
+                        })
                 })
                 .catch(function (error) {
                     console.log(error);
                     message.changeMessageLoader("pageLoaderContent", "Ha ocurrido un error: " + JSON.stringify(error));
                 });
         },
+        get: function (serviceName, username, tenantId, params) {
+            return new Promise(function (resolve, reject) {
+                var url = "https://100l-app.teleows.com/servicecreator/pageservices/service.do?forAccessLog={serviceName:" + serviceName + ",username:" + username + ",tenantId:" + tenantId + "}";
+                var parameters = "serviceId=" + serviceName;
+                parameters = parameters + params;
+                var xhttp = new XMLHttpRequest();
+                xhttp.open("POST", url, true);
+                xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                xhttp.onreadystatechange = function () {//Call a function when the state changes.
+                    if (xhttp.readyState == 4 && xhttp.status == 200) {
+                        resolve(xhttp.response);
+                    }
+                }
+                xhttp.onerror = function () {
+                    reject(xhttp.statusText);
+                };
+                xhttp.send(parameters);
+            })
+        },
+        update: function (serviceName, params) {
+            return new Promise(function (resolve, reject) {
+                MessageProcessor.process({
+                    serviceId: serviceName,
+                    data: params,
+                    success: function (data) {
+                        console.log(data);
+                        resolve();
+                    }
+                });
+            });
+        },
         userRegisterOnSmart: "",
-        currentTime: "",
         userInformation: "",
         userGroups: "",
         userGroup: "",
@@ -120,6 +182,7 @@ $(function () {
         },
         grantPermissions: function (userGroups) {
             let reference = this;
+            reference.userGroups = userGroups;
             let groups = "";
             for (let group of userGroups) {
                 groups += group.group_id;
@@ -269,7 +332,7 @@ $(function () {
                 console.log("Group Selected :" + groupSelected);
                 reference.userGroup = groupSelected;
                 /* Check for subGroups */
-                for (let group of userGroups) {
+                for (let group of reference.userGroups) {
                     if (group.group_id == "SERDAN") {
                         reference.userSubGroup = "SERDAN";
                     }
