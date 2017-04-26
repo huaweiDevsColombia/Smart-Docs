@@ -1,5 +1,5 @@
 module.exports = {
-    "generateZipFile": function (answerImages) {
+    "generateZipFile": function (answerImages,filenameZip) {
         let reference = this;
         reference.disabledPromptRefreshMessage();
         var zip = new JSZip();
@@ -34,7 +34,7 @@ module.exports = {
             };
         }());
 
-        var url = blobUrl,fileName = "Smart Report.zip";
+        var url = blobUrl,fileName = filenameZip + ".zip";
 
         saveData(url, fileName);
 

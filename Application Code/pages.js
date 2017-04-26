@@ -682,12 +682,17 @@ module.exports = {
                     }, function (event) {
                         templates.templateSelected = event.data.val;
                         console.log(templates.templateSelected);
-                        reference.bootstrapPage("page-005").then(function () {
-                            $("#btnSave").remove();
-                            $("#saveZoneDiv").append("<button id='btnGoBack' class='btn btn-primary'>Volver Atrás</button>");
-                            $("#btnGoBack").click(function () {
-                                reference.bootstrapPage('page-007');
-                                templates.templateSelected = "";
+                        message.addMessageLoder("loaderMessage", "#mainContent2");
+                        message.changeMessageLoader("loaderMessage", "Consultando Plantilla en @OWS Datamodel");
+                        templates.loadTemplate(event.data.val.template_web, event.data.val.template_pdf).then(function () {
+                            message.removeMessageLoader();
+                            reference.bootstrapPage("page-005").then(function () {
+                                $("#btnSave").remove();
+                                $("#saveZoneDiv").append("<button id='btnGoBack' class='btn btn-primary'>Volver Atrás</button>");
+                                $("#btnGoBack").click(function () {
+                                    reference.bootstrapPage('page-007');
+                                    templates.templateSelected = "";
+                                });
                             });
                         });
                     });
@@ -779,6 +784,7 @@ module.exports = {
                     let saveAnswerWeek = reference.saveAnswerReport("week_answer", answerWeek, idReport);
                     let saveAnswerMonth = reference.saveAnswerReport("month_answer", answerMonth, idReport);
                     let saveAnswerText = reference.saveAnswerReport("text_answer", answerText, idReport);
+                    let saveAnswerTextArea = reference.saveAnswerReport("textarea_answer", answerTextArea, idReport);
                     let saveAnswerNumber = reference.saveAnswerReport("number_answer", answerNumber, idReport);
                     let saveAnswerRadio = reference.saveAnswerReport("radio_answer", answerRadio, idReport);
                     let saveAnswerCheckBox = reference.saveAnswerReport("radio_answer", answerCheckbox, idReport);
@@ -798,7 +804,7 @@ module.exports = {
 
                     //Check save images must be equals like creation - Currently is not working 
 
-                    Promise.all([updateReportInfo, saveAnswerDate, saveAnswerDateTime, saveAnswerTime, saveAnswerWeek, saveAnswerMonth, saveAnswerText, saveAnswerNumber, saveAnswerRadio, answerCheckbox, saveAnswerSelect, saveAnswerMultiSelect, saveAnswerList, saveAnswerTable]).then(values => {
+                    Promise.all([updateReportInfo, saveAnswerDate, saveAnswerDateTime, saveAnswerTime, saveAnswerWeek, saveAnswerMonth, saveAnswerText, saveAnswerTextArea, saveAnswerNumber, saveAnswerRadio, answerCheckbox, saveAnswerSelect, saveAnswerMultiSelect, saveAnswerList, saveAnswerTable]).then(values => {
                         let contProImg = 0; let subIdNumber = 0; let subId = "-SB";
                         let promisesSave = [saveAnswerDate, saveAnswerDateTime, saveAnswerTime, saveAnswerWeek, saveAnswerMonth, saveAnswerNumber, saveAnswerText, saveAnswerRadio, saveAnswerSelect, saveAnswerMultiSelect, saveAnswerList, saveAnswerTable];
                         do {
@@ -907,6 +913,7 @@ module.exports = {
                     let saveAnswerWeek = reference.saveAnswerReport("week_answer", answerWeek, idReport);
                     let saveAnswerMonth = reference.saveAnswerReport("month_answer", answerMonth, idReport);
                     let saveAnswerText = reference.saveAnswerReport("text_answer", answerText, idReport);
+                    let saveAnswerTextArea = reference.saveAnswerReport("textarea_answer", answerTextArea, idReport);
                     let saveAnswerNumber = reference.saveAnswerReport("number_answer", answerNumber, idReport);
                     let saveAnswerRadio = reference.saveAnswerReport("radio_answer", answerRadio, idReport);
                     //let saveAnswerCheckBox = reference.saveAnswerReport("radio_answer", answerCheckbox, idReport);
@@ -916,7 +923,7 @@ module.exports = {
                     let saveAnswerTable = reference.saveAnswerReport("table_answer", answerTable, idReport);
 
                     let contProImg = 0; let subIdNumber = 0; let subId = "-SB";
-                    let promisesSave = [saveAnswerDate, saveAnswerDateTime, saveAnswerTime, saveAnswerWeek, saveAnswerMonth, saveAnswerNumber, saveAnswerText, saveAnswerRadio, saveAnswerSelect, saveAnswerMultiSelect, saveAnswerList, saveAnswerTable];
+                    let promisesSave = [saveAnswerDate, saveAnswerDateTime, saveAnswerTime, saveAnswerWeek, saveAnswerMonth, saveAnswerNumber, saveAnswerText, saveAnswerTextArea, saveAnswerRadio, saveAnswerSelect, saveAnswerMultiSelect, saveAnswerList, saveAnswerTable];
                     do {
                         console.log(this["answerImages_" + contProImg]);
                         if (contProImg % 2 == 0) {
@@ -1114,7 +1121,7 @@ module.exports = {
                 success: function (data) {
                     console.log(data);
                     reports.reportTemp.total_images_saved += 1;
-                    reference.changeSaveModalText("Se han guardado " + reports.reportTemp.total_images_saved + " imagenes de " + reports.reportTemp.total_images * 2);
+                    reference.changeSaveModalText("Se han guardado " + reports.reportTemp.total_images_saved + " imagenes de " + reports.reportTemp.total_images);
                     //message.changeMessageLoader("mainContent2", "Se han guardado algunas imagenes");
                     resolve();
                 }
@@ -1184,9 +1191,10 @@ module.exports = {
             $("#showComments").append("<li class='" + class_background_comment + "'><span class='badge'>" + comment.time + "<br>" + status + "</span>" + comment.comment + "<br>" + comment.author + "</li>");
         }
 
-        templates.templateSelected = { "template_web": reports.reportSelected.template_web, "template_pdf": reports.reportSelected.template_pdf };
+        templates.templateSelected = { "template_web": reports.reportSelected.template_web, "template_pdf": reports.reportSelected.template_pdf, "template_name_export": reportFiltered.template_name_export };
 
         let templateSelected = templates.templateSelected;
+        console.log("Template Selected : ", templateSelected);
         message.changeMessageLoader("loaderMessage", "Consultando Reporte en @OWS Datamodel");
         templates.loadTemplate(templateSelected.template_web, templateSelected.template_pdf).then(function () {
             if (reports.reportSelected.id_report != undefined) {
@@ -1247,6 +1255,7 @@ module.exports = {
             message.addMessageLoder("loaderMessage", "#mainContent2");
             message.changeMessageLoader("loaderMessage", "Generando PDF del Reporte");
             let answerReport = reports.reportResponse;
+            let watermark;
             for (let reportAnswer of reports.reportResponseImages) {
                 if (Array.isArray(reportAnswer.images)) {
                     answerReport.push([reportAnswer.images[0]]);
@@ -1255,12 +1264,29 @@ module.exports = {
                     }
                 }
             }
+            console.log(templates);
 
-            workers.loadPDF(templates.template[0].jsonPdf, "Template Name", true, "Ticked id", answerReport, reference.userInformation.fullname)
+            switch (reports.reportSelected.status) {
+                case "SM-Status001":
+                    watermark = true;
+                    break;
+                case "SM-Status002":
+                    watermark = true;
+                    break;
+                case "SM-Status003":
+                    watermark = false;
+                    break;
+                case "SM-Status004":
+                    watermark = true;
+                    break;
+            }
+            workers.loadPDF(templates.template[0].jsonPdf, reports.reportSelected.web_template_name, watermark, reports.reportSelected.ticket_id, answerReport, reference.userInformation.fullname)
                 .then(function (loadPdfResponse) {
                     console.log("Pdf Response was correct");
                     //console.log(loadPdfResponse);
+
                     let preview_pdf = JSON.parse(loadPdfResponse);
+                    console.log("Recibiendo Data", preview_pdf);
 
                     let pdfUID = uid.generateUID().then(function (uidCode) {
                         preview_pdf.footer = function (currentPage, pageCount) {
@@ -1271,7 +1297,9 @@ module.exports = {
                             text["link"] = "https://100l-app.teleows.com/servicecreator/spl/CO_SMART_DOCS/CO_SMART_DOCS_WELCOME.spl";
                             return text;
                         };
-                        pdfMake.createPdf(preview_pdf).download("Test" + " - " + " Works" + ".pdf");
+                        let export_pdf_name = templates.templateSelected.template_name_export.replace("{{ticketId}}", reports.reportSelected.ticket_id);
+                        export_pdf_name = templates.templateSelected.template_name_export.replace("{{site_name}}", reports.reportSelected.site_name);
+                        pdfMake.createPdf(preview_pdf).download(export_pdf_name + ".pdf");
                         message.removeMessageLoader("#mainContent2");
                     });
                 });
@@ -1287,7 +1315,10 @@ module.exports = {
                     }
                 }
             }
-            zip.generateZipFile(answerReport);
+            let export_pdf_name = templates.templateSelected.template_name_export.replace("{{ticketId}}", reports.reportSelected.ticket_id);
+            export_pdf_name = templates.templateSelected.template_name_export.replace("{{site_name}}", reports.reportSelected.site_name);
+
+            zip.generateZipFile(answerReport,export_pdf_name);
         });
 
         /*
@@ -1444,7 +1475,7 @@ module.exports = {
     launchSaveModal: function () {
         let reference = this;
         $("#save_report_modal").remove();
-        $("body").append("<div class='fade modal modal-warning'aria-hidden=true aria-labelledby=myModalLabel1 id=save_report_modal role=dialog style=display:block tabindex=-1><div class=modal-dialog><div class=modal-content><div class=modal-header><h4 class=modal-title id=myModalLabel13>Se esta guardando el reporte </h4></div><div><i style='color:black' class='fa fa-spinner fa-pulse fa-3x text-center'></i></div><h4 style='text-align:center'>Por favor no cierres la aplicacion, estamos guardando tu progreso .</h4><br><h5 style='text-align:center'><b> Estado : </b><div id='save_report_status'></div></h5></div></div></div></div>");
+        $("body").append("<div class='fade modal modal-warning'aria-hidden=true aria-labelledby=myModalLabel1 id=save_report_modal role=dialog style=display:block tabindex=-1><div class=modal-dialog><div class=modal-content><div class=modal-header><h4 class=modal-title id=myModalLabel13>Se esta guardando el reporte </h4></div><br><div style='float:none;margin: 0 auto;text-align:center'><i style='color:black' class='fa fa-spinner fa-pulse fa-3x text-center'></i></div><h4 style='text-align:center'>Por favor no cierres la aplicacion, estamos guardando tu progreso . </h4><br><h5 style='text-align:center'><b> Estado : </b><div id='save_report_status'></div></h5></div></div></div></div>");
         $("#save_report_modal").modal({ backdrop: 'static', keyboard: false });
     },
     changeSaveModalText: function (msg) {
@@ -1656,7 +1687,7 @@ module.exports = {
         $("#template_logo").attr('src', templates.templateSelected.icon_template.substr(1).slice(0, -1));
         $("#template_id_template").val(templates.templateSelected.id_template);
         $("#template_web_name").val(templates.templateSelected.template_name_web);
-        $("#template_pdf_name").val(templates.templateSelected.template_name_web);
+        $("#template_pdf_name").val(templates.templateSelected.template_name_export);
         $("#template_project").val(templates.templateSelected.template_project);
         $("#template_web_route").val(templates.templateSelected.template_web);
         $("#template_pdf_route").val(templates.templateSelected.template_pdf);
