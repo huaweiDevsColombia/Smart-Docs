@@ -4,6 +4,7 @@ let reports = require("./reports");
 let templates = require("./templates");
 let smartEngine = require("./smartEngine");
 let message = require("./messages");
+let users = require("./users");
 let uid = require("./uid");
 let zip = require("./zip");
 
@@ -384,6 +385,19 @@ module.exports = {
                     $('#allReportsNavTab a:first').tab('show');
                 });
                 break;
+            // Smart Creator
+            case "page-017":
+                $("#pageName").text("Usuarios");
+                message.addMessageLoder("loaderMessage", "#mainContent2");
+                message.changeMessageLoader("loaderMessage", "Consultando Usuarios Registrados en @OWS Datamodel");
+                users.getUsers().then(function () {
+                    users.fillTableUsers();
+                    $('#allUsersNavTab a:first').tab('show');
+                    message.removeMessageLoader("#mainContent2");
+                });
+
+                break;
+
             // My Reports Related
             case "page-024":
                 $("#pageName").text("Reportes Relacionados");
@@ -418,6 +432,10 @@ module.exports = {
                     reference.fillProjects("template_project", projects);
                     reference.enableEditTemplatesButtons();
                 });
+                break;
+            // Smart Creator
+            case "page-027":
+                $("#pageName").text("Smart Creator");
                 break;
         }
     },
@@ -1009,7 +1027,7 @@ module.exports = {
             "id_report": idReport,
             "status": status,
             "comments": JSON.stringify(comment),
-            
+
         };
         switch (status) {
             case "SM-Status002":
@@ -1426,7 +1444,7 @@ module.exports = {
     launchSaveModal: function () {
         let reference = this;
         $("#save_report_modal").remove();
-        $("body").append("<div class='fade modal modal-warning'aria-hidden=true aria-labelledby=myModalLabel1 id=save_report_modal role=dialog style=display:block tabindex=-1><div class=modal-dialog><div class=modal-content><div class=modal-header><h4 class=modal-title id=myModalLabel13>Se esta guardando el reporte </h4></div><div><i style='color:black' class='fa fa-spinner fa-pulse fa-3x'></i></div><h4 style='text-align:center'>Por favor no cierres la aplicacion, estamos guardando tu progreso .</h4><br><h5 style='text-align:center'><b> Estado : </b><div id='save_report_status'></div></h5></div></div></div></div>");
+        $("body").append("<div class='fade modal modal-warning'aria-hidden=true aria-labelledby=myModalLabel1 id=save_report_modal role=dialog style=display:block tabindex=-1><div class=modal-dialog><div class=modal-content><div class=modal-header><h4 class=modal-title id=myModalLabel13>Se esta guardando el reporte </h4></div><div><i style='color:black' class='fa fa-spinner fa-pulse fa-3x text-center'></i></div><h4 style='text-align:center'>Por favor no cierres la aplicacion, estamos guardando tu progreso .</h4><br><h5 style='text-align:center'><b> Estado : </b><div id='save_report_status'></div></h5></div></div></div></div>");
         $("#save_report_modal").modal({ backdrop: 'static', keyboard: false });
     },
     changeSaveModalText: function (msg) {
