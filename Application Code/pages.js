@@ -1426,7 +1426,7 @@ module.exports = {
     launchSaveModal: function () {
         let reference = this;
         $("#save_report_modal").remove();
-        $("body").append("<div class='fade modal modal-warning'aria-hidden=true aria-labelledby=myModalLabel1 id=save_report_modal role=dialog style=display:block tabindex=-1><div class=modal-dialog><div class=modal-content><div class=modal-header><h4 class=modal-title id=myModalLabel13>Se esta guardando el reporte </h4></div><div class=modal-body><div class='loader-container text-center' style='color:black'><div><i style='color:black' class='fa fa-spinner fa-pulse fa-3x'></i></div></div><h4 style='text-align:center'>Por favor no cierres la aplicacion, estamos guardando tu progreso .</h4><br><h5 style='text-align:center'><b> Estado : </b><div id='save_report_status'></div></h5></div></div></div></div>");
+        $("body").append("<div class='fade modal modal-warning'aria-hidden=true aria-labelledby=myModalLabel1 id=save_report_modal role=dialog style=display:block tabindex=-1><div class=modal-dialog><div class=modal-content><div class=modal-header><h4 class=modal-title id=myModalLabel13>Se esta guardando el reporte </h4></div><div><i style='color:black' class='fa fa-spinner fa-pulse fa-3x'></i></div><h4 style='text-align:center'>Por favor no cierres la aplicacion, estamos guardando tu progreso .</h4><br><h5 style='text-align:center'><b> Estado : </b><div id='save_report_status'></div></h5></div></div></div></div>");
         $("#save_report_modal").modal({ backdrop: 'static', keyboard: false });
     },
     changeSaveModalText: function (msg) {
