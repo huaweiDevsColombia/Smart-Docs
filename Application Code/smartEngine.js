@@ -1,4 +1,5 @@
-let ticket = require('./tickets.js');
+let ticket = require('./tickets');
+let reports = require ("./reports");
 let message = require('./messages');
 
 module.exports = {
@@ -925,8 +926,8 @@ module.exports = {
                                 ctx.fillStyle = "white";
                                 ctx.shadowBlur = 7;
 
-                                ctx.fillText('SDM Ticket : ' + ticket.ticketSelected.ticket_id, 10, (myCanvas.height - 150));
-                                ctx.fillText('Sitio: ' + ticket.ticketSelected.site_name, 10, (myCanvas.height - 130));
+                                ctx.fillText('SDM Ticket : ' + (ticket.ticketSelected.ticket_id || reports.reportSelected.ticket_id), 10, (myCanvas.height - 150));
+                                ctx.fillText('Sitio: ' + (ticket.ticketSelected.site_name || reports.reportSelected.status_name ), 10, (myCanvas.height - 130));
                                 ctx.fillText('Hora Actual: ' + new Date().toString().split("GMT")[0], 10, (myCanvas.height - 110));
                                 ctx.font = "bold 8pt sans-serif";
                                 ctx.shadowColor = 'black';

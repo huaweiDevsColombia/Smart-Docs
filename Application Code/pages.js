@@ -1298,7 +1298,7 @@ module.exports = {
                             return text;
                         };
                         let export_pdf_name = templates.templateSelected.template_name_export.replace("{{ticketId}}", reports.reportSelected.ticket_id);
-                        export_pdf_name = templates.templateSelected.template_name_export.replace("{{site_name}}", reports.reportSelected.site_name);
+                        export_pdf_name = export_pdf_name.replace("{{site_name}}", reports.reportSelected.site_name);
                         pdfMake.createPdf(preview_pdf).download(export_pdf_name + ".pdf");
                         message.removeMessageLoader("#mainContent2");
                     });
@@ -1315,8 +1315,9 @@ module.exports = {
                     }
                 }
             }
+            console.log("Repor Selected",reports.reportSelected);
             let export_pdf_name = templates.templateSelected.template_name_export.replace("{{ticketId}}", reports.reportSelected.ticket_id);
-            export_pdf_name = templates.templateSelected.template_name_export.replace("{{site_name}}", reports.reportSelected.site_name);
+            export_pdf_name = export_pdf_name.replace("{{site_name}}", reports.reportSelected.site_name);
 
             zip.generateZipFile(answerReport,export_pdf_name);
         });
