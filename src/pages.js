@@ -1318,7 +1318,7 @@ module.exports = {
             let export_pdf_name = templates.templateSelected.template_name_export.replace("{{ticketId}}", reports.reportSelected.ticket_id);
             export_pdf_name = templates.templateSelected.template_name_export.replace("{{site_name}}", reports.reportSelected.site_name);
 
-            zip.generateZipFile(answerReport,export_pdf_name);
+            zip.generateZipFile(answerReport, export_pdf_name);
         });
 
         /*
@@ -1651,14 +1651,30 @@ module.exports = {
                 let template_project = $("#template_project").val();
                 let template_web = $("#template_web_route").val();
                 let template_pdf = $("#template_pdf_route").val();
+
+
                 if ($("#web_template_file_div > .filelist_cls").attr("id") != undefined) {
                     let template_web_batchId = $("#web_template_file").val();
                     let template_web_attachmentId = $("#web_template_file_div > .filelist_cls").attr("id").split('div_')[1];
+                    let data = {
+                        batchId: template_web.split('&')[0].replace("/get?batchId=", ""),
+                        attachmentId: template_web.split('&')[1].replace("attachmentId=", "")
+                    }
+                    $.post("https://100l-app.teleows.com/servicecreator/fileservice/delete", data, function (result) {
+                        console.log("The file was deleted", result);
+                    });
                     template_web = "/get?batchId=" + template_web_batchId + "&attachmentId=" + template_web_attachmentId;
                 }
                 if ($("#pdf_template_file_div > .filelist_cls").attr("id") != undefined) {
                     let template_pdf_batchId = $("#pdf_template_file").val();
                     let template_pdf_attachmentId = $("#pdf_template_file_div > .filelist_cls").attr("id").split('div_')[1];
+                    let data = {
+                        batchId: template_pdf.split('&')[0].replace("/get?batchId=", ""),
+                        attachmentId: template_pdf.split('&')[1].replace("attachmentId=", "")
+                    }
+                    $.post("https://100l-app.teleows.com/servicecreator/fileservice/delete", data, function (result) {
+                        console.log("The file was deleted", result);
+                    });
                     template_pdf = "/get?batchId=" + template_pdf_batchId + "&attachmentId=" + template_pdf_attachmentId;
                 }
                 let templateToEdit = {
