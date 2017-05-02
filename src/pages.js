@@ -427,10 +427,13 @@ module.exports = {
             // Edit Report
             case "page-026":
                 reference.showOWSFileInputs();
-                reference.fillTemplateData();
+                message.addMessageLoder("loaderMessage", "#mainContent2");
+                message.changeMessageLoader("loaderMessage", "Consultando Informacion Plantilla en @OWS Datamodel");
                 reference.getProjects().then(function (projects) {
                     reference.fillProjects("template_project", projects);
+                    reference.fillTemplateData();
                     reference.enableEditTemplatesButtons();
+                    message.removeMessageLoader("#mainContent2");
                 });
                 break;
             // Smart Creator
@@ -1620,7 +1623,7 @@ module.exports = {
     },
     fillProjects: function (selector, projects) {
         for (let project of projects) {
-            $("#" + selector).append("<option vaue=" + project.project + ">" + project.project_name + "</option>");
+            $("#" + selector).append("<option value='" + project.project + "'>" + project.project_name + "</option>");
         }
     },
     enableEditTemplatesButtons: function () {
