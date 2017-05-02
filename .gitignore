@@ -1,4 +1,4 @@
-./node_modules
-./vs_code
-./build
+/node_modules
+/vs_code
+/build
 npm-debug.log
