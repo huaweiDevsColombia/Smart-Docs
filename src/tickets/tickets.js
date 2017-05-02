@@ -1,4 +1,4 @@
-let workers = require("./loadsWorkers");
+let workers = require("./../bootstrap/loadsWorkers");
 
 module.exports = {
     allTickets: "",

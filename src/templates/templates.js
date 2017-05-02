@@ -1,5 +1,5 @@
-let workers = require("./loadsWorkers");
-let tickets = require("./tickets");
+let workers = require("./../bootstrap/loadsWorkers");
+let tickets = require("./../tickets/tickets");
 module.exports = {
     allTemplates: "",
     templateSelected: "",

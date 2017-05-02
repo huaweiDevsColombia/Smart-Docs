@@ -115,12 +115,12 @@ function loadCustomLibs(){
     return new Promise(function(resolve,reject){
         let style = $.ajax({
                 method: "GET",
-                url: "https://100l-app.teleows.com/servicecreator/pageruntime/pageScript.action?appName=CO_SMART_DOCS&name=style%20&type=css",
+                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=2219d2ef-e6bf-4775-ac56-c1933f4feeca&attachmentId=666945",
                 cache: false
             });
             let flat_blue = $.ajax({
                 method: "GET",
-                url: "https://100l-app.teleows.com/servicecreator/pageruntime/pageScript.action?appName=CO_SMART_DOCS&name=flat%20blue&type=css",
+                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=8c80323c-54c5-4372-b413-d08542b94fca&attachmentId=638599",
                 cache: false
             });
             $.when(style, flat_blue).done(function (styleResponse, flat_blueResponse) {

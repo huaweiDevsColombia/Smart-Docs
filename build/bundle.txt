@@ -543,9 +543,9 @@ module.exports = {
 
 let workers = __webpack_require__(0);
 let tickets = __webpack_require__(2);
-let reports = __webpack_require__(6);
+let reports = __webpack_require__(7);
 let templates = __webpack_require__(8);
-let smartEngine = __webpack_require__(7);
+let smartEngine = __webpack_require__(6);
 let message = __webpack_require__(1);
 let users = __webpack_require__(10);
 let uid = __webpack_require__(9);
@@ -970,10 +970,13 @@ module.exports = {
             // Edit Report
             case "page-026":
                 reference.showOWSFileInputs();
-                reference.fillTemplateData();
+                message.addMessageLoder("loaderMessage", "#mainContent2");
+                message.changeMessageLoader("loaderMessage", "Consultando Informacion Plantilla en @OWS Datamodel");
                 reference.getProjects().then(function (projects) {
                     reference.fillProjects("template_project", projects);
+                    reference.fillTemplateData();
                     reference.enableEditTemplatesButtons();
+                    message.removeMessageLoader("#mainContent2");
                 });
                 break;
             // Smart Creator
@@ -1861,7 +1864,7 @@ module.exports = {
             let export_pdf_name = templates.templateSelected.template_name_export.replace("{{ticketId}}", reports.reportSelected.ticket_id);
             export_pdf_name = templates.templateSelected.template_name_export.replace("{{site_name}}", reports.reportSelected.site_name);
 
-            zip.generateZipFile(answerReport,export_pdf_name);
+            zip.generateZipFile(answerReport, export_pdf_name);
         });
 
         /*
@@ -2163,7 +2166,7 @@ module.exports = {
     },
     fillProjects: function (selector, projects) {
         for (let project of projects) {
-            $("#" + selector).append("<option vaue=" + project.project + ">" + project.project_name + "</option>");
+            $("#" + selector).append("<option value='" + project.project + "'>" + project.project_name + "</option>");
         }
     },
     enableEditTemplatesButtons: function () {
@@ -2194,14 +2197,30 @@ module.exports = {
                 let template_project = $("#template_project").val();
                 let template_web = $("#template_web_route").val();
                 let template_pdf = $("#template_pdf_route").val();
+
+
                 if ($("#web_template_file_div > .filelist_cls").attr("id") != undefined) {
                     let template_web_batchId = $("#web_template_file").val();
                     let template_web_attachmentId = $("#web_template_file_div > .filelist_cls").attr("id").split('div_')[1];
+                    let data = {
+                        batchId: template_web.split('&')[0].replace("/get?batchId=", ""),
+                        attachmentId: template_web.split('&')[1].replace("attachmentId=", "")
+                    }
+                    $.post("https://100l-app.teleows.com/servicecreator/fileservice/delete", data, function (result) {
+                        console.log("The file was deleted", result);
+                    });
                     template_web = "/get?batchId=" + template_web_batchId + "&attachmentId=" + template_web_attachmentId;
                 }
                 if ($("#pdf_template_file_div > .filelist_cls").attr("id") != undefined) {
                     let template_pdf_batchId = $("#pdf_template_file").val();
                     let template_pdf_attachmentId = $("#pdf_template_file_div > .filelist_cls").attr("id").split('div_')[1];
+                    let data = {
+                        batchId: template_pdf.split('&')[0].replace("/get?batchId=", ""),
+                        attachmentId: template_pdf.split('&')[1].replace("attachmentId=", "")
+                    }
+                    $.post("https://100l-app.teleows.com/servicecreator/fileservice/delete", data, function (result) {
+                        console.log("The file was deleted", result);
+                    });
                     template_pdf = "/get?batchId=" + template_pdf_batchId + "&attachmentId=" + template_pdf_attachmentId;
                 }
                 let templateToEdit = {
@@ -2595,12 +2614,12 @@ function loadCustomLibs(){
     return new Promise(function(resolve,reject){
         let style = $.ajax({
                 method: "GET",
-                url: "https://100l-app.teleows.com/servicecreator/pageruntime/pageScript.action?appName=CO_SMART_DOCS&name=style%20&type=css",
+                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=2219d2ef-e6bf-4775-ac56-c1933f4feeca&attachmentId=666945",
                 cache: false
             });
             let flat_blue = $.ajax({
                 method: "GET",
-                url: "https://100l-app.teleows.com/servicecreator/pageruntime/pageScript.action?appName=CO_SMART_DOCS&name=flat%20blue&type=css",
+                url: "https://100l-app.teleows.com/servicecreator/fileservice/get?batchId=8c80323c-54c5-4372-b413-d08542b94fca&attachmentId=638599",
                 cache: false
             });
             $.when(style, flat_blue).done(function (styleResponse, flat_blueResponse) {
@@ -2623,162 +2642,6 @@ module.exports = {
 
 /***/ }),
 /* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-let workers = __webpack_require__(0);
-let page = __webpack_require__(3);
-
-module.exports = {
-    allReports: "",
-    allTickets: "",
-    userGroup: "",
-    reportSelected: "",
-    reportTemp: { "total_images": 0, "total_images_saved": 0 },
-    reportResponse: "",
-    reportResponseImages: "",
-    loadStatistic: function (userGroup) {
-        let reference = this;
-        reference.userGroup = userGroup;
-        return new Promise(function (resolve, reject) {
-            workers.getReports(userGroup).then(function (data) {
-                reference.allReports = JSON.parse(data)[0].results;
-                resolve();
-            }).catch(function (error) {
-                reject(error);
-            });
-        });
-    },
-    loadReport: function (idReport) {
-        let reference = this;
-        return new Promise(function (resolve, reject) {
-            let idReport = reference.reportSelected.id_report;
-            let getAnswerDate = reference.getAnswer("date_answer", idReport);
-            let getAnswerDateTime = reference.getAnswer("datetime_answer", idReport);
-            let getAnswerTime = reference.getAnswer("time_answer", idReport);
-            let getAnswerWeek = reference.getAnswer("week_answer", idReport);
-            let getAnswerMonth = reference.getAnswer("month_answer", idReport);
-            let getAnswerText = reference.getAnswer("text_answer", idReport);
-            let getAnswerTextArea = reference.getAnswer("textarea_answer", idReport);
-            let getAnswerNumber = reference.getAnswer("number_answer", idReport);
-            let getAnswerRadio = reference.getAnswer("radio_answer", idReport);
-            let getAnswerCheckbox = reference.getAnswer("radio_answer", idReport);
-            let getAnswerSelect = reference.getAnswer("select_answer", idReport);
-            let getAnswerMultiSelect = reference.getAnswer("multiselect_answer", idReport);
-            let getAnswerList = reference.getAnswer("list_answer", idReport);
-            let getAnswerTable = reference.getAnswer("table_answer", idReport);
-            let totalImages = reference.getAnswerImageTotal(idReport);
-            let getAnswerImages = [];
-            Promise.all([getAnswerDate, getAnswerDateTime, getAnswerTime, getAnswerWeek, getAnswerMonth, getAnswerText, getAnswerTextArea, getAnswerNumber, getAnswerRadio, getAnswerCheckbox, getAnswerSelect, getAnswerMultiSelect, getAnswerList, getAnswerTable, totalImages]).then(values => {
-                let contProImg = 0; let subIdNumber = 0; let subId = "-SB";
-                reference.reportResponse = values;
-                do {
-                    this["getAnswerImage_" + contProImg] = reference.getAnswerImage(idReport + subId + subIdNumber);
-                    getAnswerImages.push(this["getAnswerImage_" + contProImg]);
-                    subIdNumber++;
-                    contProImg++;
-                }
-                while (contProImg < parseInt(values[values.length - 1]));
-                Promise.all(getAnswerImages).then(function (values) {
-                    console.log("Promise Resolve", values);
-                    reference.reportResponseImages = values;
-                    resolve();
-                });
-            });
-        });
-    },
-    getAnswer: function (service, idReport) {
-        return new Promise(function (resolve, reject) {
-            let data = {};
-            data["id_report"] = idReport;
-            MessageProcessor.process({
-                serviceId: "co_sm_report_get_" + service,
-                data: data,
-                success: function (data) {
-                    resolve(data.result[service]);
-                }
-            });
-        });
-    },
-    getAnswerImage: function (idReportImg) {
-        return new Promise(function (resolve, reject) {
-            let data = {};
-            data["report_img_id"] = idReportImg;
-            MessageProcessor.process({
-                serviceId: "co_sm_report_images_get",
-                data: data,
-                success: function (data) {
-                    resolve(data.result);
-                }
-            });
-        });
-    },
-    getAnswerImageTotal: function (idReport) {
-        return new Promise(function (resolve, reject) {
-            let data = {};
-            data["id_report"] = idReport;
-            data["start"] = 0;
-            data["limit"] = 100;
-            MessageProcessor.process({
-                serviceId: "co_sm_report_images_getList",
-                data: data,
-                success: function (data) {
-                    resolve(data.total);
-                }
-            });
-        });
-    },
-    fillMyReports: function (userGroup, userSubGroup) {
-        console.log("User Group:" + userGroup);
-        console.log("User SubGroup:" + userSubGroup);
-        let reference = this;
-        //Save the reference of one report to don't add again
-        let wrapReports = [];
-        console.log("All Reports ", reference.allReports);
-        let reportsFiltered = reference.allReports.filter(function (report) {
-            console.log(wrapReports.indexOf(report.ticket_id));
-            if (userGroup == "FME") {
-                if (wrapReports.indexOf(report.ticket_id) == -1) {
-                    wrapReports.push(report.ticket_id);
-                    return report.author_user == username;
-                }
-            }
-            else if (userGroup == "Quality") {
-                if (userSubGroup != "") {
-                    console.log("User Sub Group is not empty");
-                    if (wrapReports.indexOf(report.ticket_id) == -1) {
-                        wrapReports.push(report.ticket_id);
-                        console.log("Retornado Reporte QualitySUB");
-                        return report.supplier == userSubGroup;
-                    }
-                }
-                else {
-                    if (wrapReports.indexOf(report.ticket_id) == -1) {
-                        wrapReports.push(report.ticket_id);
-                        console.log("Retornado Reporte Quality");
-                        return report;
-                    }
-                }
-            }
-        });
-
-        return reportsFiltered;
-    },
-    fillMyReportsRelated: function () {
-        let reference = this;
-        //Save the reference of one report to don't add again
-        let wrapReports = [];
-
-        let reportsFiltered = reference.allReports.filter(function (report) {
-            if (report.ticket_id == reference.reportSelected.ticket_id) {
-                return report;
-            }
-        });
-        return reportsFiltered;
-    }
-}
-
-/***/ }),
-/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 let ticket = __webpack_require__(2);
@@ -4047,6 +3910,162 @@ module.exports = {
 
 
 /***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+let workers = __webpack_require__(0);
+let page = __webpack_require__(3);
+
+module.exports = {
+    allReports: "",
+    allTickets: "",
+    userGroup: "",
+    reportSelected: "",
+    reportTemp: { "total_images": 0, "total_images_saved": 0 },
+    reportResponse: "",
+    reportResponseImages: "",
+    loadStatistic: function (userGroup) {
+        let reference = this;
+        reference.userGroup = userGroup;
+        return new Promise(function (resolve, reject) {
+            workers.getReports(userGroup).then(function (data) {
+                reference.allReports = JSON.parse(data)[0].results;
+                resolve();
+            }).catch(function (error) {
+                reject(error);
+            });
+        });
+    },
+    loadReport: function (idReport) {
+        let reference = this;
+        return new Promise(function (resolve, reject) {
+            let idReport = reference.reportSelected.id_report;
+            let getAnswerDate = reference.getAnswer("date_answer", idReport);
+            let getAnswerDateTime = reference.getAnswer("datetime_answer", idReport);
+            let getAnswerTime = reference.getAnswer("time_answer", idReport);
+            let getAnswerWeek = reference.getAnswer("week_answer", idReport);
+            let getAnswerMonth = reference.getAnswer("month_answer", idReport);
+            let getAnswerText = reference.getAnswer("text_answer", idReport);
+            let getAnswerTextArea = reference.getAnswer("textarea_answer", idReport);
+            let getAnswerNumber = reference.getAnswer("number_answer", idReport);
+            let getAnswerRadio = reference.getAnswer("radio_answer", idReport);
+            let getAnswerCheckbox = reference.getAnswer("radio_answer", idReport);
+            let getAnswerSelect = reference.getAnswer("select_answer", idReport);
+            let getAnswerMultiSelect = reference.getAnswer("multiselect_answer", idReport);
+            let getAnswerList = reference.getAnswer("list_answer", idReport);
+            let getAnswerTable = reference.getAnswer("table_answer", idReport);
+            let totalImages = reference.getAnswerImageTotal(idReport);
+            let getAnswerImages = [];
+            Promise.all([getAnswerDate, getAnswerDateTime, getAnswerTime, getAnswerWeek, getAnswerMonth, getAnswerText, getAnswerTextArea, getAnswerNumber, getAnswerRadio, getAnswerCheckbox, getAnswerSelect, getAnswerMultiSelect, getAnswerList, getAnswerTable, totalImages]).then(values => {
+                let contProImg = 0; let subIdNumber = 0; let subId = "-SB";
+                reference.reportResponse = values;
+                do {
+                    this["getAnswerImage_" + contProImg] = reference.getAnswerImage(idReport + subId + subIdNumber);
+                    getAnswerImages.push(this["getAnswerImage_" + contProImg]);
+                    subIdNumber++;
+                    contProImg++;
+                }
+                while (contProImg < parseInt(values[values.length - 1]));
+                Promise.all(getAnswerImages).then(function (values) {
+                    console.log("Promise Resolve", values);
+                    reference.reportResponseImages = values;
+                    resolve();
+                });
+            });
+        });
+    },
+    getAnswer: function (service, idReport) {
+        return new Promise(function (resolve, reject) {
+            let data = {};
+            data["id_report"] = idReport;
+            MessageProcessor.process({
+                serviceId: "co_sm_report_get_" + service,
+                data: data,
+                success: function (data) {
+                    resolve(data.result[service]);
+                }
+            });
+        });
+    },
+    getAnswerImage: function (idReportImg) {
+        return new Promise(function (resolve, reject) {
+            let data = {};
+            data["report_img_id"] = idReportImg;
+            MessageProcessor.process({
+                serviceId: "co_sm_report_images_get",
+                data: data,
+                success: function (data) {
+                    resolve(data.result);
+                }
+            });
+        });
+    },
+    getAnswerImageTotal: function (idReport) {
+        return new Promise(function (resolve, reject) {
+            let data = {};
+            data["id_report"] = idReport;
+            data["start"] = 0;
+            data["limit"] = 100;
+            MessageProcessor.process({
+                serviceId: "co_sm_report_images_getList",
+                data: data,
+                success: function (data) {
+                    resolve(data.total);
+                }
+            });
+        });
+    },
+    fillMyReports: function (userGroup, userSubGroup) {
+        console.log("User Group:" + userGroup);
+        console.log("User SubGroup:" + userSubGroup);
+        let reference = this;
+        //Save the reference of one report to don't add again
+        let wrapReports = [];
+        console.log("All Reports ", reference.allReports);
+        let reportsFiltered = reference.allReports.filter(function (report) {
+            console.log(wrapReports.indexOf(report.ticket_id));
+            if (userGroup == "FME") {
+                if (wrapReports.indexOf(report.ticket_id) == -1) {
+                    wrapReports.push(report.ticket_id);
+                    return report.author_user == username;
+                }
+            }
+            else if (userGroup == "Quality") {
+                if (userSubGroup != "") {
+                    console.log("User Sub Group is not empty");
+                    if (wrapReports.indexOf(report.ticket_id) == -1) {
+                        wrapReports.push(report.ticket_id);
+                        console.log("Retornado Reporte QualitySUB");
+                        return report.supplier == userSubGroup;
+                    }
+                }
+                else {
+                    if (wrapReports.indexOf(report.ticket_id) == -1) {
+                        wrapReports.push(report.ticket_id);
+                        console.log("Retornado Reporte Quality");
+                        return report;
+                    }
+                }
+            }
+        });
+
+        return reportsFiltered;
+    },
+    fillMyReportsRelated: function () {
+        let reference = this;
+        //Save the reference of one report to don't add again
+        let wrapReports = [];
+
+        let reportsFiltered = reference.allReports.filter(function (report) {
+            if (report.ticket_id == reference.reportSelected.ticket_id) {
+                return report;
+            }
+        });
+        return reportsFiltered;
+    }
+}
+
+/***/ }),
 /* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -4631,7 +4650,7 @@ $(function () {
                 console.log('Latitude : ' + crd.latitude);
                 console.log('Longitude: ' + crd.longitude);
                 console.log('More or less ' + crd.accuracy + ' meters.');
-                reference.openSmatApp();
+                reference.openSmartApp();
             };
 
             function error(err) {
@@ -4646,7 +4665,7 @@ $(function () {
             $("body").append("<div class='fade modal modal-danger'aria-hidden=true aria-labelledby=myModalLabel2 id=errorPosition role=dialog style=display:block tabindex=-1><div class=modal-dialog><div class=modal-content><div class=modal-header><h4 class=modal-title id=myModalLabel13>No has permitido el acceso a tu localizacion </h4></div><div class=modal-body><img src='https://cdn4.iconfinder.com/data/icons/flatified/128/map.png' style=margin-left:auto;margin-right:auto;display:block width=150px><h4 style=text-align:center> Por favor, configura tu dispositivo correctamente </h4><h5 style=text-align:center>El accesor a la localizacion ha sido bloqueado <br> <b> Solucion> </b> Ingresa a la configuracion del navegador y modifica los permisos de localizacion </h5><div class='text-center'></div></div></div></div></div>");
             $("#errorPosition").modal({ backdrop: 'static', keyboard: false });
         },
-        openSmatApp: function () {
+        openSmartApp: function () {
             let reference = this;
             $("#userGroup").text(reference.userGroup + " - " + reference.userSubGroup);
             pages.hideMenuItems(reference.userGroup, reference.userSubGroup);

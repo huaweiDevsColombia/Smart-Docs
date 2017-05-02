@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "webpack ./src/InitApplication.js ../build/bundle.txt"
+    "start": "webpack ./src/InitApplication.js ./build/bundle.txt"
   },
   "repository": {
     "type": "git",
@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/huaweiDevsColombia/Smart-Docs/issues"
   },
-  "homepage": "https://github.com/huaweiDevsColombia/Smart-Docs#readme"
+  "homepage": "https://github.com/huaweiDevsColombia/Smart-Docs#readme",
+  "devDependencies": {
+    "uglifyjs-webpack-plugin": "^0.4.3"
+  }
 }

@@ -1,5 +1,5 @@
-let workers = require("./loadsWorkers");
-let page = require("./pages");
+let workers = require("./../bootstrap/loadsWorkers");
+let page = require("./../pageFlow/pages");
 
 module.exports = {
     allReports: "",

@@ -1,5 +1,5 @@
-let ticket = require('./tickets.js');
-let message = require('./messages');
+let ticket = require('./../tickets/tickets');
+let message = require('./../message/messages');
 
 module.exports = {
     "imgTo64": function (input) {

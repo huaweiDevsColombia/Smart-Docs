@@ -1,12 +1,12 @@
-let workers = require("./loadsWorkers");
-let tickets = require("./tickets");
-let reports = require("./reports");
-let templates = require("./templates");
-let smartEngine = require("./smartEngine");
-let message = require("./messages");
-let users = require("./users");
-let uid = require("./uid");
-let zip = require("./zip");
+let workers = require("./../bootstrap/loadsWorkers");
+let tickets = require("./../tickets/tickets");
+let reports = require("./../reports/reports");
+let templates = require("./../templates/templates");
+let smartEngine = require("./../engine/smartEngine");
+let message = require("./../message/messages");
+let users = require("./../users/users");
+let uid = require("./../uidGenerator/uid");
+let zip = require("./../zipGenerator/zip");
 
 module.exports = {
     loadAllPages: function () {

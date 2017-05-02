@@ -1,9 +1,9 @@
 $(function () {
-    let workers = require("./loadsWorkers");
-    let cssLibs = require("./loadStyleLibs");
-    let jsLibs = require("./loadJSLibs");
-    let message = require("./messages");
-    let pages = require("./pages");
+    let workers = require("./bootstrap/loadsWorkers");
+    let cssLibs = require("./bootstrap/loadStyleLibs");
+    let jsLibs = require("./bootstrap/loadJsLibs");
+    let message = require("./message/messages");
+    let pages = require("./pageFlow/pages");
 
     let smart = {
         onInit: function () {
@@ -362,7 +362,7 @@ $(function () {
                 console.log('Latitude : ' + crd.latitude);
                 console.log('Longitude: ' + crd.longitude);
                 console.log('More or less ' + crd.accuracy + ' meters.');
-                reference.openSmatApp();
+                reference.openSmartApp();
             };
 
             function error(err) {
@@ -377,7 +377,7 @@ $(function () {
             $("body").append("<div class='fade modal modal-danger'aria-hidden=true aria-labelledby=myModalLabel2 id=errorPosition role=dialog style=display:block tabindex=-1><div class=modal-dialog><div class=modal-content><div class=modal-header><h4 class=modal-title id=myModalLabel13>No has permitido el acceso a tu localizacion </h4></div><div class=modal-body><img src='https://cdn4.iconfinder.com/data/icons/flatified/128/map.png' style=margin-left:auto;margin-right:auto;display:block width=150px><h4 style=text-align:center> Por favor, configura tu dispositivo correctamente </h4><h5 style=text-align:center>El accesor a la localizacion ha sido bloqueado <br> <b> Solucion> </b> Ingresa a la configuracion del navegador y modifica los permisos de localizacion </h5><div class='text-center'></div></div></div></div></div>");
             $("#errorPosition").modal({ backdrop: 'static', keyboard: false });
         },
-        openSmatApp: function () {
+        openSmartApp: function () {
             let reference = this;
             $("#userGroup").text(reference.userGroup + " - " + reference.userSubGroup);
             pages.hideMenuItems(reference.userGroup, reference.userSubGroup);
